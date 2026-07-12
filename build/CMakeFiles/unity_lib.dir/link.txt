@@ -1,0 +1,2 @@
+C:\msys64\ucrt64\bin\ar.exe qc libunity_lib.a CMakeFiles/unity_lib.dir/Unity/src/unity.c.obj CMakeFiles/unity_lib.dir/Unity/extras/fixture/src/unity_fixture.c.obj CMakeFiles/unity_lib.dir/Unity/extras/memory/src/unity_memory.c.obj
+C:\msys64\ucrt64\bin\ranlib.exe libunity_lib.a

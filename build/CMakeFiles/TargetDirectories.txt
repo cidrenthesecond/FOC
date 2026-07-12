@@ -1,0 +1,15 @@
+X:/Projects/FOC_Driver/Firmware/build/CMakeFiles/unity_lib.dir
+X:/Projects/FOC_Driver/Firmware/build/CMakeFiles/run_tests.dir
+X:/Projects/FOC_Driver/Firmware/build/CMakeFiles/edit_cache.dir
+X:/Projects/FOC_Driver/Firmware/build/CMakeFiles/rebuild_cache.dir
+X:/Projects/FOC_Driver/Firmware/build/CMakeFiles/list_install_components.dir
+X:/Projects/FOC_Driver/Firmware/build/CMakeFiles/install.dir
+X:/Projects/FOC_Driver/Firmware/build/CMakeFiles/install/local.dir
+X:/Projects/FOC_Driver/Firmware/build/CMakeFiles/install/strip.dir
+X:/Projects/FOC_Driver/Firmware/build/lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir
+X:/Projects/FOC_Driver/Firmware/build/lib/CMSIS-DSP/Source/CMakeFiles/edit_cache.dir
+X:/Projects/FOC_Driver/Firmware/build/lib/CMSIS-DSP/Source/CMakeFiles/rebuild_cache.dir
+X:/Projects/FOC_Driver/Firmware/build/lib/CMSIS-DSP/Source/CMakeFiles/list_install_components.dir
+X:/Projects/FOC_Driver/Firmware/build/lib/CMSIS-DSP/Source/CMakeFiles/install.dir
+X:/Projects/FOC_Driver/Firmware/build/lib/CMSIS-DSP/Source/CMakeFiles/install/local.dir
+X:/Projects/FOC_Driver/Firmware/build/lib/CMSIS-DSP/Source/CMakeFiles/install/strip.dir

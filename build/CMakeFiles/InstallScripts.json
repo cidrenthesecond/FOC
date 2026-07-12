@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"X:/Projects/FOC_Driver/Firmware/build/cmake_install.cmake",
+		"X:/Projects/FOC_Driver/Firmware/build/lib/CMSIS-DSP/Source/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
