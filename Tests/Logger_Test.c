@@ -110,8 +110,10 @@ TEST(Logger, ScheduledLogsIsCalledAfterWakeUp)
 
     LOG_WakeUp(); //LOG WakeUp Fakes finished transmission interrupt.
 
+
+    TEST_ASSERT_EQUAL('m',logBuffer[10]);
     TEST_ASSERT_EQUAL(2, PrintLogSpy_fake.call_count);
-    TEST_ASSERT_EQUAL_STRING("mouse\0",PrintLogSpy_fake.arg0_history[1]);
+    TEST_ASSERT_EQUAL_STRING("mouse",PrintLogSpy_fake.arg0_history[1]);
     TEST_ASSERT_EQUAL(5,PrintLogSpy_fake.arg1_history[1]);
 }
 
@@ -155,10 +157,10 @@ TEST(Logger, AllLogsAreSentCorrectly)
     TEST_ASSERT_EQUAL(strlen("board"),PrintLogSpy_fake.arg1_history[2]);
 }
 
-TEST(Logger, AfterInitBufferContentsAreZeroes)
+TEST(Logger, AfterInitBufferIsEmpty)
 {
     for(int index = 0; index < 20; index++)
-        TEST_ASSERT_EQUAL(0,logBuffer[10+index]);
+        TEST_ASSERT_EQUAL(' ',logBuffer[10+index]);
 }
 
 TEST(Logger, LoggerDoesntCurruptMemory)
@@ -166,7 +168,17 @@ TEST(Logger, LoggerDoesntCurruptMemory)
     LOG("123");
     LOG("123456789012345678901234567890");
 
-    TEST_ASSERT_EQUAL(0xAA, logBuffer[31]);
+    TEST_ASSERT_EQUAL_CHAR(0xAA, logBuffer[31]);
+}
+
+TEST(Logger, LoggerTruncatesLogs)
+{
+    LOG("123");
+    LOG("123456789012345678901234567890");
+
+    LOG_WakeUp();
+
+    TEST_ASSERT_EQUAL_STRING("1234567890123456789\0",logBuffer + 10);
 }
 
 
