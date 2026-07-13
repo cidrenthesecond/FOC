@@ -37,7 +37,7 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 65,
+				"line" : 68,
 				"parent" : 0
 			},
 			{
@@ -55,7 +55,7 @@
 			{
 				"command" : 4,
 				"file" : 0,
-				"line" : 57,
+				"line" : 60,
 				"parent" : 0
 			}
 		]
@@ -167,7 +167,10 @@
 				14,
 				15,
 				16,
-				17
+				17,
+				18,
+				19,
+				20
 			]
 		}
 	],
@@ -249,7 +252,10 @@
 				14,
 				15,
 				16,
-				17
+				17,
+				18,
+				19,
+				20
 			]
 		}
 	],
@@ -312,6 +318,18 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
+			"path" : "Tests/LogCircularBuffer_Test.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "Tests/LogCircularBuffer_TestRunner.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
 			"path" : "Src/Relay.c",
 			"sourceGroupIndex" : 0
 		},
@@ -325,6 +343,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "Src/Logger.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "Src/LogCircularBuffer.c",
 			"sourceGroupIndex" : 0
 		},
 		{

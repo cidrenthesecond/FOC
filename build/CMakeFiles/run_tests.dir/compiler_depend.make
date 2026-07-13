@@ -114,6 +114,19 @@ CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_TestRunner.c.obj: X:/Projects/FOC_D
   c:/mingw/lib/gcc/mingw32/6.3.0/include/stddef.h \
   c:/mingw/lib/gcc/mingw32/6.3.0/include/stdint.h
 
+CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.obj: X:/Projects/FOC_Driver/Firmware/Src/LogCircularBuffer.c \
+  X:/Projects/FOC_Driver/Firmware/Inc/LogCircularBuffer.h \
+  c:/mingw/include/_mingw.h \
+  c:/mingw/include/msvcrtver.h \
+  c:/mingw/include/sdkddkver.h \
+  c:/mingw/include/stdint.h \
+  c:/mingw/include/string.h \
+  c:/mingw/include/strings.h \
+  c:/mingw/include/w32api.h \
+  c:/mingw/include/wchar.h \
+  c:/mingw/lib/gcc/mingw32/6.3.0/include/stddef.h \
+  c:/mingw/lib/gcc/mingw32/6.3.0/include/stdint.h
+
 CMakeFiles/run_tests.dir/Src/Logger.c.obj: X:/Projects/FOC_Driver/Firmware/Src/Logger.c \
   X:/Projects/FOC_Driver/Firmware/Inc/Logger.h \
   c:/mingw/include/_mingw.h \
@@ -219,6 +232,52 @@ CMakeFiles/run_tests.dir/Tests/CMSIS_Test.c.obj: X:/Projects/FOC_Driver/Firmware
   c:/mingw/lib/gcc/mingw32/6.3.0/include/stdint.h
 
 CMakeFiles/run_tests.dir/Tests/CMSIS_TestRunner.c.obj: X:/Projects/FOC_Driver/Firmware/Tests/CMSIS_TestRunner.c \
+  X:/Projects/FOC_Driver/Firmware/Unity/extras/fixture/src/unity_fixture.h \
+  X:/Projects/FOC_Driver/Firmware/Unity/extras/fixture/src/unity_fixture_internals.h \
+  X:/Projects/FOC_Driver/Firmware/Unity/extras/memory/src/unity_memory.h \
+  X:/Projects/FOC_Driver/Firmware/Unity/src/unity.h \
+  X:/Projects/FOC_Driver/Firmware/Unity/src/unity_internals.h \
+  c:/mingw/include/_mingw.h \
+  c:/mingw/include/limits.h \
+  c:/mingw/include/math.h \
+  c:/mingw/include/msvcrtver.h \
+  c:/mingw/include/sdkddkver.h \
+  c:/mingw/include/setjmp.h \
+  c:/mingw/include/stdint.h \
+  c:/mingw/include/stdio.h \
+  c:/mingw/include/stdlib.h \
+  c:/mingw/include/sys/types.h \
+  c:/mingw/include/w32api.h \
+  c:/mingw/lib/gcc/mingw32/6.3.0/include/stdarg.h \
+  c:/mingw/lib/gcc/mingw32/6.3.0/include/stddef.h \
+  c:/mingw/lib/gcc/mingw32/6.3.0/include/stdint.h
+
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.obj: X:/Projects/FOC_Driver/Firmware/Tests/LogCircularBuffer_Test.c \
+  X:/Projects/FOC_Driver/Firmware/Inc/LogCircularBuffer.h \
+  X:/Projects/FOC_Driver/Firmware/Unity/extras/fixture/src/unity_fixture.h \
+  X:/Projects/FOC_Driver/Firmware/Unity/extras/fixture/src/unity_fixture_internals.h \
+  X:/Projects/FOC_Driver/Firmware/Unity/extras/memory/src/unity_memory.h \
+  X:/Projects/FOC_Driver/Firmware/Unity/src/unity.h \
+  X:/Projects/FOC_Driver/Firmware/Unity/src/unity_internals.h \
+  c:/mingw/include/_mingw.h \
+  c:/mingw/include/limits.h \
+  c:/mingw/include/math.h \
+  c:/mingw/include/msvcrtver.h \
+  c:/mingw/include/sdkddkver.h \
+  c:/mingw/include/setjmp.h \
+  c:/mingw/include/stdint.h \
+  c:/mingw/include/stdio.h \
+  c:/mingw/include/stdlib.h \
+  c:/mingw/include/string.h \
+  c:/mingw/include/strings.h \
+  c:/mingw/include/sys/types.h \
+  c:/mingw/include/w32api.h \
+  c:/mingw/include/wchar.h \
+  c:/mingw/lib/gcc/mingw32/6.3.0/include/stdarg.h \
+  c:/mingw/lib/gcc/mingw32/6.3.0/include/stddef.h \
+  c:/mingw/lib/gcc/mingw32/6.3.0/include/stdint.h
+
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.obj: X:/Projects/FOC_Driver/Firmware/Tests/LogCircularBuffer_TestRunner.c \
   X:/Projects/FOC_Driver/Firmware/Unity/extras/fixture/src/unity_fixture.h \
   X:/Projects/FOC_Driver/Firmware/Unity/extras/fixture/src/unity_fixture_internals.h \
   X:/Projects/FOC_Driver/Firmware/Unity/extras/memory/src/unity_memory.h \
@@ -385,11 +444,15 @@ c:/mingw/include/sdkddkver.h:
 
 X:/Projects/FOC_Driver/Firmware/Mocks/FakeDCLink_Test.c:
 
+X:/Projects/FOC_Driver/Firmware/Src/LogCircularBuffer.c:
+
 c:/mingw/include/string.h:
 
 X:/Projects/FOC_Driver/Firmware/Inc/ADC_Service.h:
 
 X:/Projects/FOC_Driver/Firmware/lib/CMSIS-DSP/Include/dsp/controller_functions.h:
+
+X:/Projects/FOC_Driver/Firmware/Tests/LogCircularBuffer_TestRunner.c:
 
 X:/Projects/FOC_Driver/Firmware/Unity/extras/fixture/src/unity_fixture_internals.h:
 
@@ -430,8 +493,6 @@ X:/Projects/FOC_Driver/Firmware/lib/CMSIS-DSP/Include/dsp/filtering_functions.h:
 c:/mingw/include/stdio.h:
 
 c:/mingw/include/sys/types.h:
-
-c:/mingw/lib/gcc/mingw32/6.3.0/include/float.h:
 
 X:/Projects/FOC_Driver/Firmware/lib/CMSIS-DSP/Include/dsp/basic_math_functions.h:
 
@@ -475,7 +536,7 @@ X:/Projects/FOC_Driver/Firmware/lib/CMSIS-DSP/Include/arm_math.h:
 
 X:/Projects/FOC_Driver/Firmware/Mocks/FakeMicroTime_TestRunner.c:
 
-X:/Projects/FOC_Driver/Firmware/Tests/CMSIS_TestRunner.c:
+X:/Projects/FOC_Driver/Firmware/Inc/LogCircularBuffer.h:
 
 X:/Projects/FOC_Driver/Firmware/Src/PID.c:
 
@@ -506,6 +567,12 @@ X:/Projects/FOC_Driver/Firmware/lib/CMSIS-DSP/Include/dsp/support_functions.h:
 X:/Projects/FOC_Driver/Firmware/lib/CMSIS-DSP/Include/dsp/svm_functions.h:
 
 X:/Projects/FOC_Driver/Firmware/lib/CMSIS-DSP/Include/dsp/utils.h:
+
+c:/mingw/lib/gcc/mingw32/6.3.0/include/float.h:
+
+X:/Projects/FOC_Driver/Firmware/Tests/CMSIS_TestRunner.c:
+
+X:/Projects/FOC_Driver/Firmware/Tests/LogCircularBuffer_Test.c:
 
 X:/Projects/FOC_Driver/Firmware/Tests/Relay_TestRunner.c:
 

@@ -37,10 +37,13 @@ add_executable(run_tests
     Tests/CMSIS_TestRunner.c
     Tests/Logger_Test.c
     Tests/Logger_TestRunner.c
+    Tests/LogCircularBuffer_Test.c
+    Tests/LogCircularBuffer_TestRunner.c
 
     Src/Relay.c
     Src/PID.c
     Src/Logger.c
+    Src/LogCircularBuffer.c
 
     Mocks/FakeDcLink.c
     Mocks/FakeDCLink_Test.c
