@@ -8,6 +8,8 @@ enum{
     LOGGER_SUCCES,
     LOGGER_NULL_PTR,
     LOGGER_BUSY,
+    LOG_SCHEDULED,
+    LOG_TRUNCATED,
 };
 
 void LOG_Init(void (*ExternPrintLog)(const char *pData,uint8_t length),

@@ -14,8 +14,10 @@ enum{
 };
 
 static char *scheduledText;
-static char *putPtr;
-static char *getPtr;
+// static char *putPtr;
+// static char *getPtr;
+static uint32_t putIndex;
+static uint32_t getIndex;
 static uint32_t bufferSize;
 
 void LOG_Init(void (*ExternPrintLog)(const char *pData,uint8_t length),
@@ -28,10 +30,10 @@ void LOG_Init(void (*ExternPrintLog)(const char *pData,uint8_t length),
     scheduledText = logBuffer;
     bufferSize = size;
 
-    memset(scheduledText,0,bufferSize);
+    memset(scheduledText,' ',bufferSize);
 
-    putPtr = logBuffer;
-    getPtr = logBuffer;   
+    putIndex = 0;
+    getIndex = 0;
 
 }
 
@@ -46,16 +48,23 @@ int LOG(const char* text)
     if(isLoggerBusy)
     {
         scheduledLogsNum++;
-        //strcpy(putPtr,text);
+
         while(*text != '\0')
-        {
-            *putPtr = *text;
-            putPtr++;
+        {  
+            uint32_t nextIndex = (putIndex + 1) % bufferSize;
+            if(nextIndex == getIndex)
+            {
+                scheduledText[putIndex] = '\0';
+                return LOG_TRUNCATED;
+            }
+
+            scheduledText[putIndex] = *text; 
+            putIndex = nextIndex;
             text++;
         }
-        *putPtr = '\0';
-        putPtr++;
-        //putPtr+= strlen(text) + TERMINATION_SIGN;
+        scheduledText[putIndex] = '\0';
+        putIndex = (putIndex + 1) % bufferSize;
+
         return LOGGER_BUSY;
     }
         
@@ -72,8 +81,8 @@ void LOG_WakeUp()
 
     if(scheduledLogsNum > 0)
     {
-        LOG(getPtr);
-        getPtr += strlen(getPtr) + TERMINATION_SIGN;
+        LOG(scheduledText + getIndex);
+        getIndex += strlen(scheduledText + getIndex) + TERMINATION_SIGN;
         scheduledLogsNum--;
     }
 }
@@ -86,5 +95,4 @@ void * LOG_GetPrintingFunction()
 void LOG_Destroy()
 {
     PrintLog = NULL;
-    free(scheduledText);
 }

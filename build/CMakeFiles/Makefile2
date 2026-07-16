@@ -142,7 +142,7 @@ CMakeFiles/run_tests.dir/all: CMakeFiles/unity_lib.dir/all
 CMakeFiles/run_tests.dir/all: lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=97,98,99 "Built target run_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=96,97,98,99 "Built target run_tests"
 .PHONY : CMakeFiles/run_tests.dir/all
 
 # Build rule for subdir invocation for target.
@@ -159,7 +159,7 @@ run_tests: CMakeFiles/run_tests.dir/rule
 # codegen rule for target.
 CMakeFiles/run_tests.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=97,98,99 "Finished codegen for target run_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=96,97,98,99 "Finished codegen for target run_tests"
 .PHONY : CMakeFiles/run_tests.dir/codegen
 
 # clean rule for target.
@@ -174,12 +174,12 @@ CMakeFiles/run_tests.dir/clean:
 lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir/all:
 	$(MAKE) $(MAKESILENT) -f lib\CMSIS-DSP\Source\CMakeFiles\CMSISDSP.dir\build.make lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir/depend
 	$(MAKE) $(MAKESILENT) -f lib\CMSIS-DSP\Source\CMakeFiles\CMSISDSP.dir\build.make lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96 "Built target CMSISDSP"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95 "Built target CMSISDSP"
 .PHONY : lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir/all
 
 # Build rule for subdir invocation for target.
 lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start X:\Projects\FOC_Driver\Firmware\build\CMakeFiles 96
+	$(CMAKE_COMMAND) -E cmake_progress_start X:\Projects\FOC_Driver\Firmware\build\CMakeFiles 95
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start X:\Projects\FOC_Driver\Firmware\build\CMakeFiles 0
 .PHONY : lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir/rule
@@ -191,7 +191,7 @@ CMSISDSP: lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir/rule
 # codegen rule for target.
 lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f lib\CMSIS-DSP\Source\CMakeFiles\CMSISDSP.dir\build.make lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96 "Finished codegen for target CMSISDSP"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95 "Finished codegen for target CMSISDSP"
 .PHONY : lib/CMSIS-DSP/Source/CMakeFiles/CMSISDSP.dir/codegen
 
 # clean rule for target.

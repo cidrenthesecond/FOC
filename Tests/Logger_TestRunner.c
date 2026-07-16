@@ -16,6 +16,7 @@ TEST_GROUP_RUNNER(Logger)
     RUN_TEST_CASE(Logger, WakeupWithNoScheduledLogsDoesntCallPrint);
     RUN_TEST_CASE(Logger, MoreThanOneLogCanBeScheduled);
     RUN_TEST_CASE(Logger, AllLogsAreSentCorrectly);
-    RUN_TEST_CASE(Logger, AfterInitBufferContentsAreZeroes);
+    RUN_TEST_CASE(Logger, AfterInitBufferIsEmpty);
     RUN_TEST_CASE(Logger, LoggerDoesntCurruptMemory);
+    RUN_TEST_CASE(Logger, LoggerTruncatesLogs);
 }

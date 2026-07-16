@@ -343,6 +343,30 @@ Mocks/FakeMicroTime_TestRunner.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_TestRunner.c.s
 .PHONY : Mocks/FakeMicroTime_TestRunner.c.s
 
+Src/LogCircularBuffer.obj: Src/LogCircularBuffer.c.obj
+.PHONY : Src/LogCircularBuffer.obj
+
+# target to build an object file
+Src/LogCircularBuffer.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.obj
+.PHONY : Src/LogCircularBuffer.c.obj
+
+Src/LogCircularBuffer.i: Src/LogCircularBuffer.c.i
+.PHONY : Src/LogCircularBuffer.i
+
+# target to preprocess a source file
+Src/LogCircularBuffer.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.i
+.PHONY : Src/LogCircularBuffer.c.i
+
+Src/LogCircularBuffer.s: Src/LogCircularBuffer.c.s
+.PHONY : Src/LogCircularBuffer.s
+
+# target to generate assembly for a file
+Src/LogCircularBuffer.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.s
+.PHONY : Src/LogCircularBuffer.c.s
+
 Src/Logger.obj: Src/Logger.c.obj
 .PHONY : Src/Logger.obj
 
@@ -486,6 +510,54 @@ Tests/CMSIS_TestRunner.s: Tests/CMSIS_TestRunner.c.s
 Tests/CMSIS_TestRunner.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/CMSIS_TestRunner.c.s
 .PHONY : Tests/CMSIS_TestRunner.c.s
+
+Tests/LogCircularBuffer_Test.obj: Tests/LogCircularBuffer_Test.c.obj
+.PHONY : Tests/LogCircularBuffer_Test.obj
+
+# target to build an object file
+Tests/LogCircularBuffer_Test.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.obj
+.PHONY : Tests/LogCircularBuffer_Test.c.obj
+
+Tests/LogCircularBuffer_Test.i: Tests/LogCircularBuffer_Test.c.i
+.PHONY : Tests/LogCircularBuffer_Test.i
+
+# target to preprocess a source file
+Tests/LogCircularBuffer_Test.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.i
+.PHONY : Tests/LogCircularBuffer_Test.c.i
+
+Tests/LogCircularBuffer_Test.s: Tests/LogCircularBuffer_Test.c.s
+.PHONY : Tests/LogCircularBuffer_Test.s
+
+# target to generate assembly for a file
+Tests/LogCircularBuffer_Test.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.s
+.PHONY : Tests/LogCircularBuffer_Test.c.s
+
+Tests/LogCircularBuffer_TestRunner.obj: Tests/LogCircularBuffer_TestRunner.c.obj
+.PHONY : Tests/LogCircularBuffer_TestRunner.obj
+
+# target to build an object file
+Tests/LogCircularBuffer_TestRunner.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.obj
+.PHONY : Tests/LogCircularBuffer_TestRunner.c.obj
+
+Tests/LogCircularBuffer_TestRunner.i: Tests/LogCircularBuffer_TestRunner.c.i
+.PHONY : Tests/LogCircularBuffer_TestRunner.i
+
+# target to preprocess a source file
+Tests/LogCircularBuffer_TestRunner.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.i
+.PHONY : Tests/LogCircularBuffer_TestRunner.c.i
+
+Tests/LogCircularBuffer_TestRunner.s: Tests/LogCircularBuffer_TestRunner.c.s
+.PHONY : Tests/LogCircularBuffer_TestRunner.s
+
+# target to generate assembly for a file
+Tests/LogCircularBuffer_TestRunner.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.s
+.PHONY : Tests/LogCircularBuffer_TestRunner.c.s
 
 Tests/Logger_Test.obj: Tests/Logger_Test.c.obj
 .PHONY : Tests/Logger_Test.obj
@@ -736,6 +808,9 @@ help:
 	@echo ... Mocks/FakeMicroTime_TestRunner.obj
 	@echo ... Mocks/FakeMicroTime_TestRunner.i
 	@echo ... Mocks/FakeMicroTime_TestRunner.s
+	@echo ... Src/LogCircularBuffer.obj
+	@echo ... Src/LogCircularBuffer.i
+	@echo ... Src/LogCircularBuffer.s
 	@echo ... Src/Logger.obj
 	@echo ... Src/Logger.i
 	@echo ... Src/Logger.s
@@ -754,6 +829,12 @@ help:
 	@echo ... Tests/CMSIS_TestRunner.obj
 	@echo ... Tests/CMSIS_TestRunner.i
 	@echo ... Tests/CMSIS_TestRunner.s
+	@echo ... Tests/LogCircularBuffer_Test.obj
+	@echo ... Tests/LogCircularBuffer_Test.i
+	@echo ... Tests/LogCircularBuffer_Test.s
+	@echo ... Tests/LogCircularBuffer_TestRunner.obj
+	@echo ... Tests/LogCircularBuffer_TestRunner.i
+	@echo ... Tests/LogCircularBuffer_TestRunner.s
 	@echo ... Tests/Logger_Test.obj
 	@echo ... Tests/Logger_Test.i
 	@echo ... Tests/Logger_Test.s
