@@ -206,11 +206,41 @@ CMakeFiles/run_tests.dir/Tests/Logger_TestRunner.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/run_tests.dir/Tests/Logger_TestRunner.c.s"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S X:\Projects\FOC_Driver\Firmware\Tests\Logger_TestRunner.c -o CMakeFiles\run_tests.dir\Tests\Logger_TestRunner.c.s
 
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.obj: CMakeFiles/run_tests.dir/flags.make
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.obj: CMakeFiles/run_tests.dir/includes_C.rsp
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.obj: X:/Projects/FOC_Driver/Firmware/Tests/LogCircularBuffer_Test.c
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.obj: CMakeFiles/run_tests.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.obj"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.obj -MF CMakeFiles\run_tests.dir\Tests\LogCircularBuffer_Test.c.obj.d -o CMakeFiles\run_tests.dir\Tests\LogCircularBuffer_Test.c.obj -c X:\Projects\FOC_Driver\Firmware\Tests\LogCircularBuffer_Test.c
+
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.i"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E X:\Projects\FOC_Driver\Firmware\Tests\LogCircularBuffer_Test.c > CMakeFiles\run_tests.dir\Tests\LogCircularBuffer_Test.c.i
+
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.s"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S X:\Projects\FOC_Driver\Firmware\Tests\LogCircularBuffer_Test.c -o CMakeFiles\run_tests.dir\Tests\LogCircularBuffer_Test.c.s
+
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.obj: CMakeFiles/run_tests.dir/flags.make
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.obj: CMakeFiles/run_tests.dir/includes_C.rsp
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.obj: X:/Projects/FOC_Driver/Firmware/Tests/LogCircularBuffer_TestRunner.c
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.obj: CMakeFiles/run_tests.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.obj"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.obj -MF CMakeFiles\run_tests.dir\Tests\LogCircularBuffer_TestRunner.c.obj.d -o CMakeFiles\run_tests.dir\Tests\LogCircularBuffer_TestRunner.c.obj -c X:\Projects\FOC_Driver\Firmware\Tests\LogCircularBuffer_TestRunner.c
+
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.i"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E X:\Projects\FOC_Driver\Firmware\Tests\LogCircularBuffer_TestRunner.c > CMakeFiles\run_tests.dir\Tests\LogCircularBuffer_TestRunner.c.i
+
+CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.s"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S X:\Projects\FOC_Driver\Firmware\Tests\LogCircularBuffer_TestRunner.c -o CMakeFiles\run_tests.dir\Tests\LogCircularBuffer_TestRunner.c.s
+
 CMakeFiles/run_tests.dir/Src/Relay.c.obj: CMakeFiles/run_tests.dir/flags.make
 CMakeFiles/run_tests.dir/Src/Relay.c.obj: CMakeFiles/run_tests.dir/includes_C.rsp
 CMakeFiles/run_tests.dir/Src/Relay.c.obj: X:/Projects/FOC_Driver/Firmware/Src/Relay.c
 CMakeFiles/run_tests.dir/Src/Relay.c.obj: CMakeFiles/run_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/run_tests.dir/Src/Relay.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/run_tests.dir/Src/Relay.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/run_tests.dir/Src/Relay.c.obj -MF CMakeFiles\run_tests.dir\Src\Relay.c.obj.d -o CMakeFiles\run_tests.dir\Src\Relay.c.obj -c X:\Projects\FOC_Driver\Firmware\Src\Relay.c
 
 CMakeFiles/run_tests.dir/Src/Relay.c.i: cmake_force
@@ -225,7 +255,7 @@ CMakeFiles/run_tests.dir/Src/PID.c.obj: CMakeFiles/run_tests.dir/flags.make
 CMakeFiles/run_tests.dir/Src/PID.c.obj: CMakeFiles/run_tests.dir/includes_C.rsp
 CMakeFiles/run_tests.dir/Src/PID.c.obj: X:/Projects/FOC_Driver/Firmware/Src/PID.c
 CMakeFiles/run_tests.dir/Src/PID.c.obj: CMakeFiles/run_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/run_tests.dir/Src/PID.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/run_tests.dir/Src/PID.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/run_tests.dir/Src/PID.c.obj -MF CMakeFiles\run_tests.dir\Src\PID.c.obj.d -o CMakeFiles\run_tests.dir\Src\PID.c.obj -c X:\Projects\FOC_Driver\Firmware\Src\PID.c
 
 CMakeFiles/run_tests.dir/Src/PID.c.i: cmake_force
@@ -240,7 +270,7 @@ CMakeFiles/run_tests.dir/Src/Logger.c.obj: CMakeFiles/run_tests.dir/flags.make
 CMakeFiles/run_tests.dir/Src/Logger.c.obj: CMakeFiles/run_tests.dir/includes_C.rsp
 CMakeFiles/run_tests.dir/Src/Logger.c.obj: X:/Projects/FOC_Driver/Firmware/Src/Logger.c
 CMakeFiles/run_tests.dir/Src/Logger.c.obj: CMakeFiles/run_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/run_tests.dir/Src/Logger.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/run_tests.dir/Src/Logger.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/run_tests.dir/Src/Logger.c.obj -MF CMakeFiles\run_tests.dir\Src\Logger.c.obj.d -o CMakeFiles\run_tests.dir\Src\Logger.c.obj -c X:\Projects\FOC_Driver\Firmware\Src\Logger.c
 
 CMakeFiles/run_tests.dir/Src/Logger.c.i: cmake_force
@@ -251,11 +281,26 @@ CMakeFiles/run_tests.dir/Src/Logger.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/run_tests.dir/Src/Logger.c.s"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S X:\Projects\FOC_Driver\Firmware\Src\Logger.c -o CMakeFiles\run_tests.dir\Src\Logger.c.s
 
+CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.obj: CMakeFiles/run_tests.dir/flags.make
+CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.obj: CMakeFiles/run_tests.dir/includes_C.rsp
+CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.obj: X:/Projects/FOC_Driver/Firmware/Src/LogCircularBuffer.c
+CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.obj: CMakeFiles/run_tests.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.obj"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.obj -MF CMakeFiles\run_tests.dir\Src\LogCircularBuffer.c.obj.d -o CMakeFiles\run_tests.dir\Src\LogCircularBuffer.c.obj -c X:\Projects\FOC_Driver\Firmware\Src\LogCircularBuffer.c
+
+CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.i"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E X:\Projects\FOC_Driver\Firmware\Src\LogCircularBuffer.c > CMakeFiles\run_tests.dir\Src\LogCircularBuffer.c.i
+
+CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.s"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S X:\Projects\FOC_Driver\Firmware\Src\LogCircularBuffer.c -o CMakeFiles\run_tests.dir\Src\LogCircularBuffer.c.s
+
 CMakeFiles/run_tests.dir/Mocks/FakeDcLink.c.obj: CMakeFiles/run_tests.dir/flags.make
 CMakeFiles/run_tests.dir/Mocks/FakeDcLink.c.obj: CMakeFiles/run_tests.dir/includes_C.rsp
 CMakeFiles/run_tests.dir/Mocks/FakeDcLink.c.obj: X:/Projects/FOC_Driver/Firmware/Mocks/FakeDcLink.c
 CMakeFiles/run_tests.dir/Mocks/FakeDcLink.c.obj: CMakeFiles/run_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/run_tests.dir/Mocks/FakeDcLink.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/run_tests.dir/Mocks/FakeDcLink.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/run_tests.dir/Mocks/FakeDcLink.c.obj -MF CMakeFiles\run_tests.dir\Mocks\FakeDcLink.c.obj.d -o CMakeFiles\run_tests.dir\Mocks\FakeDcLink.c.obj -c X:\Projects\FOC_Driver\Firmware\Mocks\FakeDcLink.c
 
 CMakeFiles/run_tests.dir/Mocks/FakeDcLink.c.i: cmake_force
@@ -270,7 +315,7 @@ CMakeFiles/run_tests.dir/Mocks/FakeDCLink_Test.c.obj: CMakeFiles/run_tests.dir/f
 CMakeFiles/run_tests.dir/Mocks/FakeDCLink_Test.c.obj: CMakeFiles/run_tests.dir/includes_C.rsp
 CMakeFiles/run_tests.dir/Mocks/FakeDCLink_Test.c.obj: X:/Projects/FOC_Driver/Firmware/Mocks/FakeDCLink_Test.c
 CMakeFiles/run_tests.dir/Mocks/FakeDCLink_Test.c.obj: CMakeFiles/run_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/run_tests.dir/Mocks/FakeDCLink_Test.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/run_tests.dir/Mocks/FakeDCLink_Test.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/run_tests.dir/Mocks/FakeDCLink_Test.c.obj -MF CMakeFiles\run_tests.dir\Mocks\FakeDCLink_Test.c.obj.d -o CMakeFiles\run_tests.dir\Mocks\FakeDCLink_Test.c.obj -c X:\Projects\FOC_Driver\Firmware\Mocks\FakeDCLink_Test.c
 
 CMakeFiles/run_tests.dir/Mocks/FakeDCLink_Test.c.i: cmake_force
@@ -285,7 +330,7 @@ CMakeFiles/run_tests.dir/Mocks/FakeDcLink_TestRunner.c.obj: CMakeFiles/run_tests
 CMakeFiles/run_tests.dir/Mocks/FakeDcLink_TestRunner.c.obj: CMakeFiles/run_tests.dir/includes_C.rsp
 CMakeFiles/run_tests.dir/Mocks/FakeDcLink_TestRunner.c.obj: X:/Projects/FOC_Driver/Firmware/Mocks/FakeDcLink_TestRunner.c
 CMakeFiles/run_tests.dir/Mocks/FakeDcLink_TestRunner.c.obj: CMakeFiles/run_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/run_tests.dir/Mocks/FakeDcLink_TestRunner.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/run_tests.dir/Mocks/FakeDcLink_TestRunner.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/run_tests.dir/Mocks/FakeDcLink_TestRunner.c.obj -MF CMakeFiles\run_tests.dir\Mocks\FakeDcLink_TestRunner.c.obj.d -o CMakeFiles\run_tests.dir\Mocks\FakeDcLink_TestRunner.c.obj -c X:\Projects\FOC_Driver\Firmware\Mocks\FakeDcLink_TestRunner.c
 
 CMakeFiles/run_tests.dir/Mocks/FakeDcLink_TestRunner.c.i: cmake_force
@@ -300,7 +345,7 @@ CMakeFiles/run_tests.dir/Mocks/FakeMicroTime.c.obj: CMakeFiles/run_tests.dir/fla
 CMakeFiles/run_tests.dir/Mocks/FakeMicroTime.c.obj: CMakeFiles/run_tests.dir/includes_C.rsp
 CMakeFiles/run_tests.dir/Mocks/FakeMicroTime.c.obj: X:/Projects/FOC_Driver/Firmware/Mocks/FakeMicroTime.c
 CMakeFiles/run_tests.dir/Mocks/FakeMicroTime.c.obj: CMakeFiles/run_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/run_tests.dir/Mocks/FakeMicroTime.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/run_tests.dir/Mocks/FakeMicroTime.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/run_tests.dir/Mocks/FakeMicroTime.c.obj -MF CMakeFiles\run_tests.dir\Mocks\FakeMicroTime.c.obj.d -o CMakeFiles\run_tests.dir\Mocks\FakeMicroTime.c.obj -c X:\Projects\FOC_Driver\Firmware\Mocks\FakeMicroTime.c
 
 CMakeFiles/run_tests.dir/Mocks/FakeMicroTime.c.i: cmake_force
@@ -315,7 +360,7 @@ CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_Test.c.obj: CMakeFiles/run_tests.di
 CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_Test.c.obj: CMakeFiles/run_tests.dir/includes_C.rsp
 CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_Test.c.obj: X:/Projects/FOC_Driver/Firmware/Mocks/FakeMicroTime_Test.c
 CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_Test.c.obj: CMakeFiles/run_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_Test.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_Test.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_Test.c.obj -MF CMakeFiles\run_tests.dir\Mocks\FakeMicroTime_Test.c.obj.d -o CMakeFiles\run_tests.dir\Mocks\FakeMicroTime_Test.c.obj -c X:\Projects\FOC_Driver\Firmware\Mocks\FakeMicroTime_Test.c
 
 CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_Test.c.i: cmake_force
@@ -330,7 +375,7 @@ CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_TestRunner.c.obj: CMakeFiles/run_te
 CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_TestRunner.c.obj: CMakeFiles/run_tests.dir/includes_C.rsp
 CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_TestRunner.c.obj: X:/Projects/FOC_Driver/Firmware/Mocks/FakeMicroTime_TestRunner.c
 CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_TestRunner.c.obj: CMakeFiles/run_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_TestRunner.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_TestRunner.c.obj"
 	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_TestRunner.c.obj -MF CMakeFiles\run_tests.dir\Mocks\FakeMicroTime_TestRunner.c.obj.d -o CMakeFiles\run_tests.dir\Mocks\FakeMicroTime_TestRunner.c.obj -c X:\Projects\FOC_Driver\Firmware\Mocks\FakeMicroTime_TestRunner.c
 
 CMakeFiles/run_tests.dir/Mocks/FakeMicroTime_TestRunner.c.i: cmake_force
@@ -352,9 +397,12 @@ run_tests_OBJECTS = \
 "CMakeFiles/run_tests.dir/Tests/CMSIS_TestRunner.c.obj" \
 "CMakeFiles/run_tests.dir/Tests/Logger_Test.c.obj" \
 "CMakeFiles/run_tests.dir/Tests/Logger_TestRunner.c.obj" \
+"CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.obj" \
+"CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.obj" \
 "CMakeFiles/run_tests.dir/Src/Relay.c.obj" \
 "CMakeFiles/run_tests.dir/Src/PID.c.obj" \
 "CMakeFiles/run_tests.dir/Src/Logger.c.obj" \
+"CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.obj" \
 "CMakeFiles/run_tests.dir/Mocks/FakeDcLink.c.obj" \
 "CMakeFiles/run_tests.dir/Mocks/FakeDCLink_Test.c.obj" \
 "CMakeFiles/run_tests.dir/Mocks/FakeDcLink_TestRunner.c.obj" \
@@ -374,9 +422,12 @@ run_tests.exe: CMakeFiles/run_tests.dir/Tests/CMSIS_Test.c.obj
 run_tests.exe: CMakeFiles/run_tests.dir/Tests/CMSIS_TestRunner.c.obj
 run_tests.exe: CMakeFiles/run_tests.dir/Tests/Logger_Test.c.obj
 run_tests.exe: CMakeFiles/run_tests.dir/Tests/Logger_TestRunner.c.obj
+run_tests.exe: CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_Test.c.obj
+run_tests.exe: CMakeFiles/run_tests.dir/Tests/LogCircularBuffer_TestRunner.c.obj
 run_tests.exe: CMakeFiles/run_tests.dir/Src/Relay.c.obj
 run_tests.exe: CMakeFiles/run_tests.dir/Src/PID.c.obj
 run_tests.exe: CMakeFiles/run_tests.dir/Src/Logger.c.obj
+run_tests.exe: CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.obj
 run_tests.exe: CMakeFiles/run_tests.dir/Mocks/FakeDcLink.c.obj
 run_tests.exe: CMakeFiles/run_tests.dir/Mocks/FakeDCLink_Test.c.obj
 run_tests.exe: CMakeFiles/run_tests.dir/Mocks/FakeDcLink_TestRunner.c.obj
@@ -389,7 +440,7 @@ run_tests.exe: lib/CMSIS-DSP/Source/libCMSISDSP.a
 run_tests.exe: CMakeFiles/run_tests.dir/linkLibs.rsp
 run_tests.exe: CMakeFiles/run_tests.dir/objects1.rsp
 run_tests.exe: CMakeFiles/run_tests.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Linking C executable run_tests.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=X:\Projects\FOC_Driver\Firmware\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Linking C executable run_tests.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\run_tests.dir\link.txt --verbose=$(VERBOSE)
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold "Automatyczne uruchamianie testow..."
 	.\run_tests -v
