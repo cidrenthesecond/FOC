@@ -174,16 +174,12 @@ TEST(LogCircularBuffer, BufferReturnsWrappedLogInTwoTries)
     TEST_ASSERT_EQUAL(4,receivedLength);
 }
 
-TEST(LogCircularBuffer, PutFillingBufferExactlyDoesNotCorruptPutIndex)
+TEST(LogCircularBuffer, PuttingIntoFullBufferReturnsError)
 {
     // 19 chars + terminator == UUT_BufferSize, i.e. zero sentinel gap left
     LogCircularBuffer_Put("1234567890123456789");
 
-    LogCircularBuffer_Put("x");   // should NOT silently start overwriting live data
-    TEST_ASSERT_EQUAL_CHAR(0xAA,buffer[UUT_BufferOffset+UUT_BufferSize]);
-    // currently fails: reports BUFFER_EMPTY despite the first message
-    // never having been read
-
+    TEST_ASSERT_EQUAL(BUFFER_FULL,LogCircularBuffer_Put("x"));
 }
 
 TEST(LogCircularBuffer, TerminatorLandingOnLastByteReturnsFull)

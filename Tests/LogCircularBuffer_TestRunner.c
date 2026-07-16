@@ -16,7 +16,7 @@ TEST_GROUP_RUNNER(LogCircularBuffer)
     RUN_TEST_CASE(LogCircularBuffer, BufferReturnsItemsInCorrectOrder);
     RUN_TEST_CASE(LogCircularBuffer, BufferDoesntReturnFullLogOnEdge);
     RUN_TEST_CASE(LogCircularBuffer, BufferReturnsWrappedLogInTwoTries);
-    RUN_TEST_CASE(LogCircularBuffer, PutFillingBufferExactlyDoesNotCorruptPutIndex);
+    RUN_TEST_CASE(LogCircularBuffer, PuttingIntoFullBufferReturnsError);
     RUN_TEST_CASE(LogCircularBuffer, TerminatorLandingOnLastByteReturnsFull);
     RUN_TEST_CASE(LogCircularBuffer, PutReturnsSuccessOnNormalWrite);
     RUN_TEST_CASE(LogCircularBuffer, AdvanceGetIndexWithNothingPendingIsSafe);
