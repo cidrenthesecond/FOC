@@ -18,6 +18,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "X:/Projects/FOC_Driver/Firmware/Src/Logger.c" "CMakeFiles/run_tests.dir/Src/Logger.c.obj" "gcc" "CMakeFiles/run_tests.dir/Src/Logger.c.obj.d"
   "X:/Projects/FOC_Driver/Firmware/Src/PID.c" "CMakeFiles/run_tests.dir/Src/PID.c.obj" "gcc" "CMakeFiles/run_tests.dir/Src/PID.c.obj.d"
   "X:/Projects/FOC_Driver/Firmware/Src/Relay.c" "CMakeFiles/run_tests.dir/Src/Relay.c.obj" "gcc" "CMakeFiles/run_tests.dir/Src/Relay.c.obj.d"
+  "X:/Projects/FOC_Driver/Firmware/Src/SVPWM.c" "CMakeFiles/run_tests.dir/Src/SVPWM.c.obj" "gcc" "CMakeFiles/run_tests.dir/Src/SVPWM.c.obj.d"
   "X:/Projects/FOC_Driver/Firmware/Tests/AllTest.c" "CMakeFiles/run_tests.dir/Tests/AllTest.c.obj" "gcc" "CMakeFiles/run_tests.dir/Tests/AllTest.c.obj.d"
   "X:/Projects/FOC_Driver/Firmware/Tests/CMSIS_Test.c" "CMakeFiles/run_tests.dir/Tests/CMSIS_Test.c.obj" "gcc" "CMakeFiles/run_tests.dir/Tests/CMSIS_Test.c.obj.d"
   "X:/Projects/FOC_Driver/Firmware/Tests/CMSIS_TestRunner.c" "CMakeFiles/run_tests.dir/Tests/CMSIS_TestRunner.c.obj" "gcc" "CMakeFiles/run_tests.dir/Tests/CMSIS_TestRunner.c.obj.d"
@@ -29,6 +30,8 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "X:/Projects/FOC_Driver/Firmware/Tests/PID_TestRunner.c" "CMakeFiles/run_tests.dir/Tests/PID_TestRunner.c.obj" "gcc" "CMakeFiles/run_tests.dir/Tests/PID_TestRunner.c.obj.d"
   "X:/Projects/FOC_Driver/Firmware/Tests/Relay_Test.c" "CMakeFiles/run_tests.dir/Tests/Relay_Test.c.obj" "gcc" "CMakeFiles/run_tests.dir/Tests/Relay_Test.c.obj.d"
   "X:/Projects/FOC_Driver/Firmware/Tests/Relay_TestRunner.c" "CMakeFiles/run_tests.dir/Tests/Relay_TestRunner.c.obj" "gcc" "CMakeFiles/run_tests.dir/Tests/Relay_TestRunner.c.obj.d"
+  "X:/Projects/FOC_Driver/Firmware/Tests/SVPWM_Test.c" "CMakeFiles/run_tests.dir/Tests/SVPWM_Test.c.obj" "gcc" "CMakeFiles/run_tests.dir/Tests/SVPWM_Test.c.obj.d"
+  "X:/Projects/FOC_Driver/Firmware/Tests/SVPWM_TestRunner.c" "CMakeFiles/run_tests.dir/Tests/SVPWM_TestRunner.c.obj" "gcc" "CMakeFiles/run_tests.dir/Tests/SVPWM_TestRunner.c.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

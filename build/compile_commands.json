@@ -85,6 +85,18 @@
 },
 {
   "directory": "X:/Projects/FOC_Driver/Firmware/build",
+  "command": "C:\\MinGW\\bin\\gcc.exe -DUNITY_FIXTURE_NO_EXTERN -D__GNUC_PYTHON__ @CMakeFiles/run_tests.dir/includes_C.rsp -g -std=gnu99 -Wall -Wextra -o CMakeFiles\\run_tests.dir\\Tests\\SVPWM_Test.c.obj -c X:\\Projects\\FOC_Driver\\Firmware\\Tests\\SVPWM_Test.c",
+  "file": "X:/Projects/FOC_Driver/Firmware/Tests/SVPWM_Test.c",
+  "output": "CMakeFiles/run_tests.dir/Tests/SVPWM_Test.c.obj"
+},
+{
+  "directory": "X:/Projects/FOC_Driver/Firmware/build",
+  "command": "C:\\MinGW\\bin\\gcc.exe -DUNITY_FIXTURE_NO_EXTERN -D__GNUC_PYTHON__ @CMakeFiles/run_tests.dir/includes_C.rsp -g -std=gnu99 -Wall -Wextra -o CMakeFiles\\run_tests.dir\\Tests\\SVPWM_TestRunner.c.obj -c X:\\Projects\\FOC_Driver\\Firmware\\Tests\\SVPWM_TestRunner.c",
+  "file": "X:/Projects/FOC_Driver/Firmware/Tests/SVPWM_TestRunner.c",
+  "output": "CMakeFiles/run_tests.dir/Tests/SVPWM_TestRunner.c.obj"
+},
+{
+  "directory": "X:/Projects/FOC_Driver/Firmware/build",
   "command": "C:\\MinGW\\bin\\gcc.exe -DUNITY_FIXTURE_NO_EXTERN -D__GNUC_PYTHON__ @CMakeFiles/run_tests.dir/includes_C.rsp -g -std=gnu99 -Wall -Wextra -o CMakeFiles\\run_tests.dir\\Src\\Relay.c.obj -c X:\\Projects\\FOC_Driver\\Firmware\\Src\\Relay.c",
   "file": "X:/Projects/FOC_Driver/Firmware/Src/Relay.c",
   "output": "CMakeFiles/run_tests.dir/Src/Relay.c.obj"
@@ -106,6 +118,12 @@
   "command": "C:\\MinGW\\bin\\gcc.exe -DUNITY_FIXTURE_NO_EXTERN -D__GNUC_PYTHON__ @CMakeFiles/run_tests.dir/includes_C.rsp -g -std=gnu99 -Wall -Wextra -o CMakeFiles\\run_tests.dir\\Src\\LogCircularBuffer.c.obj -c X:\\Projects\\FOC_Driver\\Firmware\\Src\\LogCircularBuffer.c",
   "file": "X:/Projects/FOC_Driver/Firmware/Src/LogCircularBuffer.c",
   "output": "CMakeFiles/run_tests.dir/Src/LogCircularBuffer.c.obj"
+},
+{
+  "directory": "X:/Projects/FOC_Driver/Firmware/build",
+  "command": "C:\\MinGW\\bin\\gcc.exe -DUNITY_FIXTURE_NO_EXTERN -D__GNUC_PYTHON__ @CMakeFiles/run_tests.dir/includes_C.rsp -g -std=gnu99 -Wall -Wextra -o CMakeFiles\\run_tests.dir\\Src\\SVPWM.c.obj -c X:\\Projects\\FOC_Driver\\Firmware\\Src\\SVPWM.c",
+  "file": "X:/Projects/FOC_Driver/Firmware/Src/SVPWM.c",
+  "output": "CMakeFiles/run_tests.dir/Src/SVPWM.c.obj"
 },
 {
   "directory": "X:/Projects/FOC_Driver/Firmware/build",

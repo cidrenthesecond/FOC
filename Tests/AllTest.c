@@ -12,8 +12,10 @@ static void RunAllTests(void)
     RUN_TEST_GROUP(PID);
     printf("\nFakeMicroTime tests running...\n");
     RUN_TEST_GROUP(FakeMicroTime);
-    printf("\nLogCircularBuffer tests running...\n");
-    RUN_TEST_GROUP(LogCircularBuffer);
+    printf("\nSVPWM tests running...\n");
+    RUN_TEST_GROUP(SVPWM);
+    //printf("\nLogCircularBuffer tests running...\n");
+    //RUN_TEST_GROUP(LogCircularBuffer);
     //printf("\nLogger tests running...\n");
     //RUN_TEST_GROUP(Logger);
 

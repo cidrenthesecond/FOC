@@ -439,6 +439,30 @@ Src/Relay.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Src/Relay.c.s
 .PHONY : Src/Relay.c.s
 
+Src/SVPWM.obj: Src/SVPWM.c.obj
+.PHONY : Src/SVPWM.obj
+
+# target to build an object file
+Src/SVPWM.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Src/SVPWM.c.obj
+.PHONY : Src/SVPWM.c.obj
+
+Src/SVPWM.i: Src/SVPWM.c.i
+.PHONY : Src/SVPWM.i
+
+# target to preprocess a source file
+Src/SVPWM.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Src/SVPWM.c.i
+.PHONY : Src/SVPWM.c.i
+
+Src/SVPWM.s: Src/SVPWM.c.s
+.PHONY : Src/SVPWM.s
+
+# target to generate assembly for a file
+Src/SVPWM.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Src/SVPWM.c.s
+.PHONY : Src/SVPWM.c.s
+
 Tests/AllTest.obj: Tests/AllTest.c.obj
 .PHONY : Tests/AllTest.obj
 
@@ -703,6 +727,54 @@ Tests/Relay_TestRunner.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/Relay_TestRunner.c.s
 .PHONY : Tests/Relay_TestRunner.c.s
 
+Tests/SVPWM_Test.obj: Tests/SVPWM_Test.c.obj
+.PHONY : Tests/SVPWM_Test.obj
+
+# target to build an object file
+Tests/SVPWM_Test.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/SVPWM_Test.c.obj
+.PHONY : Tests/SVPWM_Test.c.obj
+
+Tests/SVPWM_Test.i: Tests/SVPWM_Test.c.i
+.PHONY : Tests/SVPWM_Test.i
+
+# target to preprocess a source file
+Tests/SVPWM_Test.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/SVPWM_Test.c.i
+.PHONY : Tests/SVPWM_Test.c.i
+
+Tests/SVPWM_Test.s: Tests/SVPWM_Test.c.s
+.PHONY : Tests/SVPWM_Test.s
+
+# target to generate assembly for a file
+Tests/SVPWM_Test.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/SVPWM_Test.c.s
+.PHONY : Tests/SVPWM_Test.c.s
+
+Tests/SVPWM_TestRunner.obj: Tests/SVPWM_TestRunner.c.obj
+.PHONY : Tests/SVPWM_TestRunner.obj
+
+# target to build an object file
+Tests/SVPWM_TestRunner.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/SVPWM_TestRunner.c.obj
+.PHONY : Tests/SVPWM_TestRunner.c.obj
+
+Tests/SVPWM_TestRunner.i: Tests/SVPWM_TestRunner.c.i
+.PHONY : Tests/SVPWM_TestRunner.i
+
+# target to preprocess a source file
+Tests/SVPWM_TestRunner.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/SVPWM_TestRunner.c.i
+.PHONY : Tests/SVPWM_TestRunner.c.i
+
+Tests/SVPWM_TestRunner.s: Tests/SVPWM_TestRunner.c.s
+.PHONY : Tests/SVPWM_TestRunner.s
+
+# target to generate assembly for a file
+Tests/SVPWM_TestRunner.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\run_tests.dir\build.make CMakeFiles/run_tests.dir/Tests/SVPWM_TestRunner.c.s
+.PHONY : Tests/SVPWM_TestRunner.c.s
+
 Unity/extras/fixture/src/unity_fixture.obj: Unity/extras/fixture/src/unity_fixture.c.obj
 .PHONY : Unity/extras/fixture/src/unity_fixture.obj
 
@@ -820,6 +892,9 @@ help:
 	@echo ... Src/Relay.obj
 	@echo ... Src/Relay.i
 	@echo ... Src/Relay.s
+	@echo ... Src/SVPWM.obj
+	@echo ... Src/SVPWM.i
+	@echo ... Src/SVPWM.s
 	@echo ... Tests/AllTest.obj
 	@echo ... Tests/AllTest.i
 	@echo ... Tests/AllTest.s
@@ -853,6 +928,12 @@ help:
 	@echo ... Tests/Relay_TestRunner.obj
 	@echo ... Tests/Relay_TestRunner.i
 	@echo ... Tests/Relay_TestRunner.s
+	@echo ... Tests/SVPWM_Test.obj
+	@echo ... Tests/SVPWM_Test.i
+	@echo ... Tests/SVPWM_Test.s
+	@echo ... Tests/SVPWM_TestRunner.obj
+	@echo ... Tests/SVPWM_TestRunner.i
+	@echo ... Tests/SVPWM_TestRunner.s
 	@echo ... Unity/extras/fixture/src/unity_fixture.obj
 	@echo ... Unity/extras/fixture/src/unity_fixture.i
 	@echo ... Unity/extras/fixture/src/unity_fixture.s
