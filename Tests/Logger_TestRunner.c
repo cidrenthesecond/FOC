@@ -1,22 +1,17 @@
 #include "unity_fixture.h"
 
-TEST_GROUP_RUNNER(Logger)
-{   
-    RUN_TEST_CASE(Logger, SpyDirectCallCatchesArguments);
-    RUN_TEST_CASE(Logger, NoInitPrintIsNULL);
-    RUN_TEST_CASE(Logger, NoInitNoCrash);
-    RUN_TEST_CASE(Logger, NoInitThrowsError);
-    RUN_TEST_CASE(Logger, NoInitDoesNotCallSpy);
-    RUN_TEST_CASE(Logger, InitSetsPrintingFunction);
-    RUN_TEST_CASE(Logger, SpyIndirectCallCatchesArguments);
-    RUN_TEST_CASE(Logger, LoggerCantDereferenceItself);
-    RUN_TEST_CASE(Logger, NoMoreLogsUntilSygnalingTransmitEnd);
-    RUN_TEST_CASE(Logger, SecondLogIsCalledAfterWakeUp);
-    RUN_TEST_CASE(Logger, ScheduledLogsIsCalledAfterWakeUp);
-    RUN_TEST_CASE(Logger, WakeupWithNoScheduledLogsDoesntCallPrint);
-    RUN_TEST_CASE(Logger, MoreThanOneLogCanBeScheduled);
-    RUN_TEST_CASE(Logger, AllLogsAreSentCorrectly);
-    RUN_TEST_CASE(Logger, AfterInitBufferIsEmpty);
-    RUN_TEST_CASE(Logger, LoggerDoesntCurruptMemory);
-    RUN_TEST_CASE(Logger, LoggerTruncatesLogs);
+TEST_GROUP_RUNNER(Logger_Test)
+{
+    RUN_TEST_CASE(Logger_Test, FakeCatchesArgumentsAndCallCount);
+    RUN_TEST_CASE(Logger_Test, CallingInterfaceWithNoInitThrowsError);
+    RUN_TEST_CASE(Logger_Test, InitWithNULLThrowsError);
+    RUN_TEST_CASE(Logger_Test, LoggerUsesPassedFunction);
+    RUN_TEST_CASE(Logger_Test, LoggerParsesCorrectTextAndLength);
+    RUN_TEST_CASE(Logger_Test, WakeUpWithoutLogsDoesNothing);
+    RUN_TEST_CASE(Logger_Test, NewLogWhileBusyIsQueued);
+    RUN_TEST_CASE(Logger_Test, LoggerReturnsLogsInCorrectOrder);
+    RUN_TEST_CASE(Logger_Test, DoesNotSendNextLogBeforeWakeUp);
+    RUN_TEST_CASE(Logger_Test, WhenLogsAreEmptyNoMoreCalls);
+    RUN_TEST_CASE(Logger_Test, AfterEmptyingPeripheralCanBeUsedAgain);
+    RUN_TEST_CASE(Logger_Test, PassedFifoCantBeNULL);
 }

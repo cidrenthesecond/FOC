@@ -1,196 +1,138 @@
-#include "unity.h"
 #include "unity_fixture.h"
-
 #include "fff.h"
 #include "PrintLogSpy.h"
-#include "stdlib.h"
 
 #include "Logger.h"
+#include "FIFO.h"
 
 DEFINE_FFF_GLOBALS;
-FAKE_VOID_FUNC(PrintLogSpy,const char *,uint8_t);
+FAKE_VOID_FUNC(PrintLogSpy, const char *,uint8_t);
 
-static char logBuffer[40];
+TEST_GROUP(Logger_Test);
 
+#define QUEUE_SIZE 5
 
-TEST_GROUP(Logger);
+FIFO fifo;
 
-TEST_SETUP(Logger)
+TEST_SETUP(Logger_Test)
 {
     RESET_FAKE(PrintLogSpy);
     FFF_RESET_HISTORY();
 
-    memset(logBuffer,0xAA,sizeof(logBuffer));
+    fifo = FIFO_Create(QUEUE_SIZE);
 
-    LOG_Init(PrintLogSpy,logBuffer+10,20);   
+    LOG_Init(PrintLogSpy, fifo);
 }
 
-TEST_TEAR_DOWN(Logger)
+TEST_TEAR_DOWN(Logger_Test)
 {
     LOG_Destroy();
+    FIFO_Destroy(fifo);
 }
 
-TEST(Logger, SpyDirectCallCatchesArguments)
+TEST(Logger_Test,FakeCatchesArgumentsAndCallCount)
 {
-    PrintLogSpy("Hello World",11);
-
-    TEST_ASSERT_EQUAL_STRING("Hello World",PrintLogSpy_fake.arg0_val);
-    TEST_ASSERT_EQUAL(11,PrintLogSpy_fake.arg1_val);
-}
-
-TEST(Logger, NoInitPrintIsNULL)
-{   
-    LOG_Destroy();
-
-    TEST_ASSERT_EQUAL_PTR(NULL,LOG_GetPrintingFunction());
-}
-
-TEST(Logger, NoInitNoCrash)
-{   
-    LOG_Destroy();
-
-    LOG("Hello World");
-}
-
-TEST(Logger, NoInitThrowsError)
-{   
-    LOG_Destroy();
-
-    TEST_ASSERT_EQUAL(LOGGER_NOINIT,LOG("Hello World"));
-}
-
-TEST(Logger, NoInitDoesNotCallSpy)
-{
-    LOG_Destroy();
-    LOG("Hello World");
-
-    TEST_ASSERT_EQUAL(0,PrintLogSpy_fake.call_count);
-}
-
-TEST(Logger, InitSetsPrintingFunction)
-{
-    TEST_ASSERT_EQUAL_PTR(PrintLogSpy,LOG_GetPrintingFunction());
-}
-
-TEST(Logger, SpyIndirectCallCatchesArguments)
-{
-    LOG("Hello World");
+    PrintLogSpy("miau",5);
     TEST_ASSERT_EQUAL(1,PrintLogSpy_fake.call_count);
-    TEST_ASSERT_EQUAL_STRING("Hello World",PrintLogSpy_fake.arg0_val);
-    TEST_ASSERT_EQUAL(11,PrintLogSpy_fake.arg1_val);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("miau\0",PrintLogSpy_fake.arg0_history[0],5);
+    TEST_ASSERT_EQUAL(5,PrintLogSpy_fake.arg1_history[0]);
 }
 
-TEST(Logger, LoggerCantDereferenceItself)
+TEST(Logger_Test,CallingInterfaceWithNoInitThrowsError)
 {
-    TEST_ASSERT_EQUAL(LOGGER_NULL_PTR, LOG(NULL));
-    TEST_ASSERT_EQUAL(0,PrintLogSpy_fake.call_count);
+    LOG_Destroy();
+    TEST_ASSERT_EQUAL(LOGGER_NOINIT,LOG("laptop"));
+    TEST_ASSERT_EQUAL(LOGGER_NOINIT,LOG_WakeUp());
 }
 
-TEST(Logger, NoMoreLogsUntilSygnalingTransmitEnd)
+TEST(Logger_Test,InitWithNULLThrowsError)
 {
-    LOG("pizza");
-    LOG("kittyMeow");
+    LOG_Destroy();
+    TEST_ASSERT_EQUAL(LOGGER_FAIL,LOG_Init(NULL,fifo));
+}
 
+TEST(Logger_Test,LoggerUsesPassedFunction)
+{
+    LOG("Mountain");
     TEST_ASSERT_EQUAL(1,PrintLogSpy_fake.call_count);
 }
 
-TEST(Logger, SecondLogIsCalledAfterWakeUp)
+TEST(Logger_Test,LoggerParsesCorrectTextAndLength)
 {
-    LOG("cup");
+    LOG("helmet");
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("helmet\0",PrintLogSpy_fake.arg0_val,strlen("helmet") + 1);
+    TEST_ASSERT_EQUAL(strlen("helmet")+1,PrintLogSpy_fake.arg1_val);
+}
+
+TEST(Logger_Test, WakeUpWithoutLogsDoesNothing)
+{
     LOG_WakeUp();
-    LOG("mug");
+
+    TEST_ASSERT_EQUAL(0, PrintLogSpy_fake.call_count);
+}
+
+TEST(Logger_Test,NewLogWhileBusyIsQueued)
+{
+    LOG("treeline");
+    LOG("house");
+
+    TEST_ASSERT_EQUAL(1,PrintLogSpy_fake.call_count);
+}
+
+TEST(Logger_Test, LoggerReturnsLogsInCorrectOrder)
+{
+    LOG("railway");
+    LOG("light");
+    LOG("wall");
+    LOG_WakeUp();
+    LOG_WakeUp();
+
+    TEST_ASSERT_EQUAL(3,PrintLogSpy_fake.call_count);
+
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("light\0", PrintLogSpy_fake.arg0_history[1],strlen("light") + 1);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("wall\0",  PrintLogSpy_fake.arg0_history[2],strlen("wall")+1);
+    TEST_ASSERT_EQUAL(strlen("light") + 1,PrintLogSpy_fake.arg1_history[1]);
+    TEST_ASSERT_EQUAL(strlen("wall") + 1, PrintLogSpy_fake.arg1_history[2]);
+}
+
+TEST(Logger_Test, DoesNotSendNextLogBeforeWakeUp)
+{
+    LOG("first");
+    LOG("second");
+
+    TEST_ASSERT_EQUAL(1, PrintLogSpy_fake.call_count);
+
+    LOG_WakeUp();
+
+    TEST_ASSERT_EQUAL(2, PrintLogSpy_fake.call_count);
+}
+
+TEST(Logger_Test, WhenLogsAreEmptyNoMoreCalls)
+{
+    LOG("chair");
+    LOG("rocks");
+    LOG_WakeUp();
+    LOG_WakeUp();
+    LOG_WakeUp();
 
     TEST_ASSERT_EQUAL(2,PrintLogSpy_fake.call_count);
 }
 
-TEST(Logger, ScheduledLogsIsCalledAfterWakeUp)
+TEST(Logger_Test, AfterEmptyingPeripheralCanBeUsedAgain)
 {
-    LOG("gamepad");
-    LOG("mouse");
-
-    LOG_WakeUp(); //LOG WakeUp Fakes finished transmission interrupt.
-
-
-    TEST_ASSERT_EQUAL('m',logBuffer[10]);
-    TEST_ASSERT_EQUAL(2, PrintLogSpy_fake.call_count);
-    TEST_ASSERT_EQUAL_STRING("mouse",PrintLogSpy_fake.arg0_history[1]);
-    TEST_ASSERT_EQUAL(5,PrintLogSpy_fake.arg1_history[1]);
-}
-
-TEST(Logger, WakeupWithNoScheduledLogsDoesntCallPrint)
-{
-    LOG_WakeUp();
-
-    TEST_ASSERT_EQUAL(0,PrintLogSpy_fake.call_count);
-}
-
-TEST(Logger, MoreThanOneLogCanBeScheduled)
-{
-    LOG("cable");
-    LOG("drugs");
-    LOG("water");
-
+    LOG("Cat");
+    LOG("Dog");
     LOG_WakeUp();
     LOG_WakeUp();
+    LOG("Penguin");
 
     TEST_ASSERT_EQUAL(3,PrintLogSpy_fake.call_count);
 }
 
-TEST(Logger, AllLogsAreSentCorrectly)
+TEST(Logger_Test, PassedFifoCantBeNULL)
 {
-    LOG("Chopstick");
-    LOG("ketchup");
-    LOG("board");
-
-    LOG_WakeUp();
-    LOG_WakeUp();
-
-    TEST_ASSERT_EQUAL(3,PrintLogSpy_fake.call_count);
-
-    TEST_ASSERT_EQUAL_STRING("Chopstick",PrintLogSpy_fake.arg0_history[0]);
-    TEST_ASSERT_EQUAL(strlen("Chopstick"),PrintLogSpy_fake.arg1_history[0]);
-
-    TEST_ASSERT_EQUAL_STRING("ketchup",PrintLogSpy_fake.arg0_history[1]);
-    TEST_ASSERT_EQUAL(strlen("ketchup"),PrintLogSpy_fake.arg1_history[1]);
-
-    TEST_ASSERT_EQUAL_STRING("board",PrintLogSpy_fake.arg0_history[2]);
-    TEST_ASSERT_EQUAL(strlen("board"),PrintLogSpy_fake.arg1_history[2]);
+    LOG_Destroy();
+    TEST_ASSERT_EQUAL(LOGGER_FAIL, LOG_Init(PrintLogSpy,NULL));
 }
-
-TEST(Logger, AfterInitBufferIsEmpty)
-{
-    for(int index = 0; index < 20; index++)
-        TEST_ASSERT_EQUAL(' ',logBuffer[10+index]);
-}
-
-TEST(Logger, LoggerDoesntCurruptMemory)
-{
-    LOG("123");
-    LOG("123456789012345678901234567890");
-
-    TEST_ASSERT_EQUAL_CHAR(0xAA, logBuffer[31]);
-}
-
-TEST(Logger, LoggerTruncatesLogs)
-{
-    LOG("123");
-    LOG("123456789012345678901234567890");
-
-    LOG_WakeUp();
-
-    TEST_ASSERT_EQUAL_STRING("1234567890123456789\0",logBuffer + 10);
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 

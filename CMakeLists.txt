@@ -41,12 +41,15 @@ add_executable(run_tests
     Tests/LogCircularBuffer_TestRunner.c
     Tests/SVPWM_Test.c
     Tests/SVPWM_TestRunner.c
+    Tests/FIFO_Test.c
+    Tests/FIFO_TestRunner.c
 
     Src/Relay.c
     Src/PID.c
     Src/Logger.c
     Src/LogCircularBuffer.c
     Src/SVPWM.c
+    Src/FIFO.c
 
     Mocks/FakeDcLink.c
     Mocks/FakeDCLink_Test.c

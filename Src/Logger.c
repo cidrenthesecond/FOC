@@ -1,90 +1,67 @@
 #include "Logger.h"
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
-
+#include "string.h"
 
 static void (*PrintLog)(const char *pData,uint8_t length) = NULL;
 
-static uint8_t isLoggerBusy;
-static uint8_t scheduledLogsNum;
+static volatile uint8_t isInitialized = 0;
+static uint8_t isBusy = 0;
+FIFO queue;
 
-enum{
-    TERMINATION_SIGN = 1
-};
+int LOG_Init(void (*ExternPrintLog)(const char *pData,uint8_t length),
+             FIFO fifo)       
+{   
+    if(ExternPrintLog == NULL)
+        return LOGGER_FAIL;
+    
+    if(fifo == NULL)
+        return LOGGER_FAIL;
 
-static char *scheduledText;
-// static char *putPtr;
-// static char *getPtr;
-static uint32_t putIndex;
-static uint32_t getIndex;
-static uint32_t bufferSize;
-
-void LOG_Init(void (*ExternPrintLog)(const char *pData,uint8_t length),
-              char *logBuffer,
-              uint32_t size)
-{
     PrintLog = ExternPrintLog;
-    isLoggerBusy = 0;
-    scheduledLogsNum = 0;
-    scheduledText = logBuffer;
-    bufferSize = size;
+    queue = fifo;
+    isInitialized = 1;
+    isBusy = 0;
 
-    memset(scheduledText,' ',bufferSize);
-
-    putIndex = 0;
-    getIndex = 0;
-
+    return LOGGER_SUCCESS;
 }
 
 int LOG(const char* text)
 {   
-    if(PrintLog == NULL)
+    if(!isInitialized)
         return LOGGER_NOINIT;
 
-    if(text == NULL)
-        return LOGGER_NULL_PTR;
+    FIFO_Put(queue,text);
 
-    if(isLoggerBusy)
-    {
-        scheduledLogsNum++;
+    if(isBusy)
+        return LOG_SCHEDULED;
 
-        while(*text != '\0')
-        {  
-            uint32_t nextIndex = (putIndex + 1) % bufferSize;
-            if(nextIndex == getIndex)
-            {
-                scheduledText[putIndex] = '\0';
-                return LOG_TRUNCATED;
-            }
-
-            scheduledText[putIndex] = *text; 
-            putIndex = nextIndex;
-            text++;
-        }
-        scheduledText[putIndex] = '\0';
-        putIndex = (putIndex + 1) % bufferSize;
-
-        return LOGGER_BUSY;
-    }
-        
-
-    PrintLog(text,strlen(text));
-
-    isLoggerBusy = 1;
-    return LOGGER_SUCCES;
+    char* resultText;
+    uint8_t resultLen;
+    FIFO_Get(queue,&resultText,&resultLen);
+    
+    isBusy = 1;
+    PrintLog(resultText,resultLen);
+    
+    return LOGGER_SUCCESS;
 }
 
-void LOG_WakeUp()
+int LOG_WakeUp()
 {
-    isLoggerBusy = 0;
+    if(!isInitialized)
+        return LOGGER_NOINIT;
 
-    if(scheduledLogsNum > 0)
+    char* text;
+    uint8_t len;
+
+    if(FIFO_Get(queue,&text,&len) == FIFO_EMPTY)
     {
-        LOG(scheduledText + getIndex);
-        getIndex += strlen(scheduledText + getIndex) + TERMINATION_SIGN;
-        scheduledLogsNum--;
+        isBusy = 0;
+        return LOGGER_SUCCESS;
     }
+
+    isBusy = 1;
+    PrintLog(text,len);
+
+    return LOGGER_SUCCESS;
 }
 
 void * LOG_GetPrintingFunction()
@@ -93,6 +70,7 @@ void * LOG_GetPrintingFunction()
 }
 
 void LOG_Destroy()
-{
+{   
+    isInitialized = 0;
     PrintLog = NULL;
 }
