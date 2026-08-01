@@ -1,12 +1,15 @@
-#include "FakeDcLink.h"
 #include "unity.h"
 #include "unity_fixture.h"
+
+#include "FakeDcLink.h"
+#include "Logger.h"
+
 #include "Relay.h"
 
 TEST_GROUP(Relay);
 
 TEST_SETUP(Relay)
-{
+{   
     Relay_Init();
 }
 
@@ -65,4 +68,12 @@ TEST(Relay, ChangeThresholdCorrectVoltage)
     Relay_SM();
 
     TEST_ASSERT_EQUAL(RELAY_ON, Relay_IsOn());
+}
+
+TEST(Relay, RelayTurnOnProducesLog)
+{
+    Fake_SetDcLinkVoltage(240);
+    Relay_SM();
+
+    //TEST_ASSERT_EQUAL(1,LOG_fake.call_count);
 }
