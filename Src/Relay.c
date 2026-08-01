@@ -30,7 +30,7 @@ void Relay_SM()
     if(DcLinkVoltage > relayThresholdVoltage)
         Relay_TurnOn();
 
-    LOG("Some stupid log");
+    //LOG("Some stupid log");
 }
 
 void Relay_SetThreshold(uint16_t threshold)
