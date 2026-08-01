@@ -25,10 +25,14 @@ target_include_directories(unity_lib PUBLIC
     ${UNITY_DIR}/extras/memory/src           # DLA UNITY_MEMORY.H - To naprawia Twój błąd
 )
 
+# Add the CMSIS-DSP library from the relative path
+add_subdirectory(lib/CMSIS-DSP/Source)
+
 add_subdirectory(Tests/Relay)
 add_subdirectory(Tests/PID)
 add_subdirectory(Tests/FIFO)
 add_subdirectory(Tests/Logger)
+add_subdirectory(Tests/CMSIS)
 
 # # Add the CMSIS-DSP library from the relative path
 # add_subdirectory(lib/CMSIS-DSP/Source)
@@ -46,10 +50,4 @@ add_subdirectory(Tests/Logger)
 #     CMSISDSP
 # )
 
-
-# # 5. Automatyczne uruchamianie testów po kompilacji
-# add_custom_command(TARGET run_tests POST_BUILD
-#     COMMAND ./run_tests -v
-#     COMMENT "Automatyczne uruchamianie testow..."
-# )
 
