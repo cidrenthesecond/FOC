@@ -26,7 +26,7 @@ target_include_directories(unity_lib PUBLIC
 )
 
 add_subdirectory(Tests/Relay)
-
+add_subdirectory(Tests/PID)
 
 # # Add the CMSIS-DSP library from the relative path
 # add_subdirectory(lib/CMSIS-DSP/Source)
