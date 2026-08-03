@@ -2,7 +2,7 @@
 
 #include "ADC_Service.h"
 #include "Logger.h"
-
+#include "stdio.h"
 
 static uint8_t relayState = RELAY_OFF;
 static uint8_t relayThresholdVoltage = 230;
@@ -30,7 +30,9 @@ void Relay_SM()
     if(DcLinkVoltage > relayThresholdVoltage)
         Relay_TurnOn();
 
-    //LOG("Some stupid log");
+    char log[30];
+    sprintf(log,"RELAY : ON : %uV\n",DcLinkVoltage);
+    LOG(log);
 }
 
 void Relay_SetThreshold(uint16_t threshold)

@@ -10,4 +10,6 @@ TEST_GROUP_RUNNER(Relay)
     RUN_TEST_CASE(Relay, VoltageCorrectRelayOn);
     RUN_TEST_CASE(Relay, ChangeThresholdWrongVoltage);
     RUN_TEST_CASE(Relay, ChangeThresholdCorrectVoltage);
+    RUN_TEST_CASE(Relay, RelayTurnOnProducesLog);
+    RUN_TEST_CASE(Relay, LogFormatting);
 }

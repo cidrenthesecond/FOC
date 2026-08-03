@@ -3,6 +3,7 @@
 
 #include "FakeDcLink.h"
 #include "Logger.h"
+#include "fff.h"
 
 #include "Relay.h"
 
@@ -75,5 +76,14 @@ TEST(Relay, RelayTurnOnProducesLog)
     Fake_SetDcLinkVoltage(240);
     Relay_SM();
 
-    //TEST_ASSERT_EQUAL(1,LOG_fake.call_count);
+    TEST_ASSERT_EQUAL(1,LOG_fake.call_count);
+}
+
+TEST(Relay, LogFormatting)
+{
+    Fake_SetDcLinkVoltage(240);
+    Relay_SM();
+
+    TEST_ASSERT_EQUAL(1,LOG_fake.call_count);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("RELAY : ON : 240V\n",LOG_fake.arg0_val,19);
 }

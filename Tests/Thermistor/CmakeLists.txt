@@ -1,0 +1,24 @@
+add_executable(test_Thermistor
+
+AllTests.c
+Thermistor_Test.c
+Thermistor_TestRunner.c
+
+${CMAKE_SOURCE_DIR}/Src/Thermistor.c
+)
+
+target_include_directories(test_Thermistor PRIVATE
+    ${CMAKE_SOURCE_DIR}/Inc
+)
+
+target_link_libraries(test_Thermistor PRIVATE
+    unity_lib
+)
+
+add_custom_command(TARGET test_Thermistor POST_BUILD
+
+    COMMAND test_Thermistor -v
+
+    COMMENT "Running Thermistor tests..."
+
+)
