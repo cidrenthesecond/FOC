@@ -13,6 +13,11 @@ void Relay_Init()
     relayThresholdVoltage = 230;
 }
 
+int LOG(const char* text)
+{
+    return 1;
+}
+
 uint8_t Relay_IsOn()
 {
     return relayState;

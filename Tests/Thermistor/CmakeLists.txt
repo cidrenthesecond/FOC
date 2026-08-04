@@ -20,5 +20,4 @@ add_custom_command(TARGET test_Thermistor POST_BUILD
     COMMAND test_Thermistor -v
 
     COMMENT "Running Thermistor tests..."
-
 )
