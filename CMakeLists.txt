@@ -35,6 +35,8 @@ add_subdirectory(Tests/Logger)
 add_subdirectory(Tests/CMSIS)
 add_subdirectory(Tests/Thermistor)
 
+add_subdirectory(Tests/Mocks/LOG_Spy)
+
 # # Add the CMSIS-DSP library from the relative path
 # add_subdirectory(lib/CMSIS-DSP/Source)
 
