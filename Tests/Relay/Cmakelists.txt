@@ -5,6 +5,7 @@ add_executable(test_relay
     ${CMAKE_CURRENT_SOURCE_DIR}/Mocks/FakeDCLink.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Mocks/FakeDCLink_Test.c
     ${CMAKE_CURRENT_SOURCE_DIR}/Mocks/FakeDcLink_TestRunner.c
+    ${CMAKE_SOURCE_DIR}/Mocks/LOG_Spy/LOG_Spy.c
     
     Relay_Test.c
     Relay_TestRunner.c
@@ -14,8 +15,8 @@ add_executable(test_relay
 )
 
 target_include_directories(test_relay PRIVATE
+    ${CMAKE_SOURCE_DIR}/Mocks/LOG_Spy
     ${CMAKE_SOURCE_DIR}/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/Mocks
 )
 

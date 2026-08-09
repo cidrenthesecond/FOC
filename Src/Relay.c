@@ -1,4 +1,5 @@
 #include "Relay.h"
+#include "GPIO_Driver.h"
 
 #include "ADC_Service.h"
 #include "Logger.h"
@@ -11,11 +12,6 @@ void Relay_Init()
 {
     relayState = RELAY_OFF;
     relayThresholdVoltage = 230;
-}
-
-int LOG(const char* text)
-{
-    return 1;
 }
 
 uint8_t Relay_IsOn()

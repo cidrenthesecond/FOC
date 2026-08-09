@@ -60,7 +60,7 @@ TEST(Logger_Test,LoggerUsesPassedFunction)
 TEST(Logger_Test,LoggerParsesCorrectTextAndLength)
 {
     LOG("helmet");
-    TEST_ASSERT_EQUAL_CHAR_ARRAY("helmet\0",PrintLogSpy_fake.arg0_val,strlen("helmet") + 1);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("helmet\n",PrintLogSpy_fake.arg0_val,strlen("helmet") + 1);
     TEST_ASSERT_EQUAL(strlen("helmet")+1,PrintLogSpy_fake.arg1_val);
 }
 
@@ -89,8 +89,8 @@ TEST(Logger_Test, LoggerReturnsLogsInCorrectOrder)
 
     TEST_ASSERT_EQUAL(3,PrintLogSpy_fake.call_count);
 
-    TEST_ASSERT_EQUAL_CHAR_ARRAY("light\0", PrintLogSpy_fake.arg0_history[1],strlen("light") + 1);
-    TEST_ASSERT_EQUAL_CHAR_ARRAY("wall\0",  PrintLogSpy_fake.arg0_history[2],strlen("wall")+1);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("light\n", PrintLogSpy_fake.arg0_history[1],strlen("light") + 1);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("wall\n",  PrintLogSpy_fake.arg0_history[2],strlen("wall")+1);
     TEST_ASSERT_EQUAL(strlen("light") + 1,PrintLogSpy_fake.arg1_history[1]);
     TEST_ASSERT_EQUAL(strlen("wall") + 1, PrintLogSpy_fake.arg1_history[2]);
 }

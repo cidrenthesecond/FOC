@@ -2,7 +2,7 @@
 #include "unity_fixture.h"
 
 #include "FakeDcLink.h"
-#include "Logger.h"
+#include "LOG_Spy.h"
 #include "fff.h"
 
 #include "Relay.h"
@@ -12,6 +12,7 @@ TEST_GROUP(Relay);
 TEST_SETUP(Relay)
 {   
     Relay_Init();
+    LOG_Spy_Init();
 }
 
 TEST_TEAR_DOWN(Relay)
@@ -76,7 +77,7 @@ TEST(Relay, RelayTurnOnProducesLog)
     Fake_SetDcLinkVoltage(240);
     Relay_SM();
 
-    //TEST_ASSERT_EQUAL(1,LOG_fake.call_count);
+    TEST_ASSERT_EQUAL(1,LOG_Spy_GetCallCount());
 }
 
 TEST(Relay, LogFormatting)
@@ -84,6 +85,6 @@ TEST(Relay, LogFormatting)
     Fake_SetDcLinkVoltage(240);
     Relay_SM();
 
-    //TEST_ASSERT_EQUAL(1,LOG_fake.call_count);
-    //TEST_ASSERT_EQUAL_CHAR_ARRAY("RELAY : ON : 240V\n",LOG_fake.arg0_val,19);
+    TEST_ASSERT_EQUAL(1,LOG_Spy_GetCallCount());
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("RELAY : ON : 240V\n",LOG_Spy_GetMessage(),19);
 }

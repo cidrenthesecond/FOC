@@ -33,6 +33,9 @@ FIFO FIFO_Create(uint8_t logSize)
     result -> getIndex = 0;
     result -> isInitialized = 1;
 
+    for(uint8_t index = 0; index < logSize; index++)
+        result->queue[index].len = 0;
+
     return result;
 }
 
@@ -70,7 +73,7 @@ static inline void StoreMessage(FIFO this,const char * log)
     int index = 0;
     uint8_t logLength = 0;
 
-    for(index; index < FIFO_LOG_SIZE - END_LINE_PADDING; index++)
+    for(; index < FIFO_LOG_SIZE - END_LINE_PADDING; index++)
     {   
         if(log[index] == '\0')
             break;
@@ -79,7 +82,7 @@ static inline void StoreMessage(FIFO this,const char * log)
         logLength++;
     }
 
-    this->queue[this->putIndex].data[index] = '\0';// Stop using strlen in tests
+    this->queue[this->putIndex].data[index] = '\n';// Stop using strlen in tests
     logLength++;
 
     this->queue[this->putIndex].len = logLength;

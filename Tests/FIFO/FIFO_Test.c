@@ -77,7 +77,7 @@ TEST(FIFO_Test, SuccessfullPutAndGetThrowsInfo)
 
 TEST(FIFO_Test, WontStoreMoreThanLogSize)
 {
-    char expected[FIFO_LOG_SIZE] = "Return where'd thou camst for thy is the place of belonging... ";
+    char expected[FIFO_LOG_SIZE] = "Return where'd thou camst for thy is the place of belonging... \n";
     FIFO_Put(UUT,"Return where'd thou camst for thy is the place of belonging... YOU DIED");
     FIFO_Get(UUT,&LOG, &LOG_len);
 
@@ -131,7 +131,7 @@ TEST(FIFO_Test, AfterOverFlowSpecialLogIsQueued)
 
     FIFO_Get(UUT,&LOG, &LOG_len);
 
-    TEST_ASSERT_EQUAL_CHAR_ARRAY("***LOG OVERFLOW***", LOG, 19);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("***LOG OVERFLOW***\n", LOG, 19);
 }
 
 TEST(FIFO_Test, GetIndexOverFlow)
@@ -143,7 +143,7 @@ TEST(FIFO_Test, GetIndexOverFlow)
 
     FIFO_Put(UUT,"I like big guns!");
     FIFO_Get(UUT,&LOG, &LOG_len);
-    TEST_ASSERT_EQUAL_CHAR_ARRAY("I like big guns!", LOG, 17);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("I like big guns!\n", LOG, 17);
 }
 
 TEST(FIFO_Test, MultiInstaceBehavior)
