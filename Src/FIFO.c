@@ -6,12 +6,11 @@
 #define BUFFER_PADDING_SIZE 2 //"Sentinel" for full state and additional overflowLog
 
 typedef struct {
-    char data[FIFO_LOG_SIZE];
+    char data[FIFO_MAX_LOG_LENGTH];
     uint8_t len;
 } LogEntry;
 
 static const char    OverflowMessage[19]   = "***LOG OVERFLOW***";
-static const uint8_t OverflowMessageLength = 19;
 
 static int isQueueFull(FIFO this);
 static void StoreMessage(FIFO this,const char * log);
@@ -22,6 +21,7 @@ typedef struct FIFO_Struct{
     uint8_t putIndex;
     uint8_t getIndex;
     uint8_t isInitialized;
+    uint8_t isOverflowPresent;
 } FIFO_Struct;
 
 FIFO FIFO_Create(uint8_t logSize)
@@ -32,6 +32,7 @@ FIFO FIFO_Create(uint8_t logSize)
     result -> putIndex = 0;
     result -> getIndex = 0;
     result -> isInitialized = 1;
+    result -> isOverflowPresent = 0;
 
     for(uint8_t index = 0; index < logSize; index++)
         result->queue[index].len = 0;
@@ -51,8 +52,12 @@ int FIFO_Put(FIFO this,const char * log)
 
     if(isQueueFull(this))
     {
+        if(this -> isOverflowPresent)
+            return FIFO_FULL;
+
         StoreMessage(this, OverflowMessage);
         this -> putIndex = nextPutIndex;
+        this -> isOverflowPresent = 1;
         return FIFO_FULL;
     }
 
@@ -64,8 +69,16 @@ int FIFO_Put(FIFO this,const char * log)
 
 static inline int isQueueFull(FIFO this)
 {
-    uint8_t fullConditionIndex = (this->putIndex + 2) % this->actualBufferSize; // +2: sentinel slot + reserved overflow slot
-    return fullConditionIndex == this->getIndex;
+    //uint8_t fullConditionIndex = (this->putIndex + 2) % this->actualBufferSize; // +2: sentinel slot + reserved overflow slot
+    //return fullConditionIndex == this->getIndex;
+    uint8_t nextPutIndex =
+        (this->putIndex + 1) % this->actualBufferSize;
+
+    uint8_t distance =
+        (this->getIndex - nextPutIndex + this->actualBufferSize)
+        % this->actualBufferSize;
+
+    return distance <= 1;
 }
 
 static inline void StoreMessage(FIFO this,const char * log)
@@ -73,7 +86,7 @@ static inline void StoreMessage(FIFO this,const char * log)
     int index = 0;
     uint8_t logLength = 0;
 
-    for(; index < FIFO_LOG_SIZE - END_LINE_PADDING; index++)
+    for(; index < FIFO_MAX_LOG_LENGTH - END_LINE_PADDING; index++)
     {   
         if(log[index] == '\0')
             break;
@@ -99,10 +112,12 @@ int FIFO_Get(FIFO this,char ** log, uint8_t *length)
     *log = this->queue[this->getIndex].data;
     *length = this->queue[this->getIndex].len;
 
-    this->queue[this->getIndex].len = 0; //NO TESTS FOR THAT!!!!
+    //this->queue[this->getIndex].len = 0; //NO TESTS FOR THAT!!!!
 
 
     this->getIndex = (this->getIndex + 1) % this->actualBufferSize;
+    this->isOverflowPresent = 0;
+
     return FIFO_SUCCESS;
 }
 

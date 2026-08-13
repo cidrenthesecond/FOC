@@ -12,7 +12,7 @@ enum {
 };
 
 enum {
-    FIFO_LOG_SIZE = 64,
+    FIFO_MAX_LOG_LENGTH = 64,
 };
 
 typedef struct FIFO_Struct * FIFO;

@@ -22,6 +22,8 @@ int LOG(const char* text)
     }
 
     message[index] = '\0';
+
+    return 1;
 }
 
 char *LOG_Spy_GetMessage()
