@@ -5,19 +5,19 @@ static void (*PrintLog)(const char *pData,uint8_t length) = NULL;
 
 static volatile uint8_t isInitialized = 0;
 static uint8_t isBusy = 0;
-FIFO queue;
+static FIFO queue;
 
 int LOG_Init(void (*ExternPrintLog)(const char *pData,uint8_t length),
-             FIFO fifo)       
+                    uint8_t FIFO_Size)       
 {   
     if(ExternPrintLog == NULL)
         return LOGGER_FAIL;
-    
-    if(fifo == NULL)
-        return LOGGER_FAIL;
 
+    if(FIFO_Size == 0)
+        return LOGGER_FAIL;
+    
     PrintLog = ExternPrintLog;
-    queue = fifo;
+    queue = FIFO_Create(FIFO_Size);
     isInitialized = 1;
     isBusy = 0;
 
@@ -71,6 +71,11 @@ void * LOG_GetPrintingFunction()
 
 void LOG_Destroy()
 {   
+     if(queue == NULL)
+        return;
+
     isInitialized = 0;
     PrintLog = NULL;
+    FIFO_Destroy(queue);
+    queue = NULL;
 }

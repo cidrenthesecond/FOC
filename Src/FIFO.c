@@ -114,7 +114,6 @@ int FIFO_Get(FIFO this,char ** log, uint8_t *length)
 
     //this->queue[this->getIndex].len = 0; //NO TESTS FOR THAT!!!!
 
-
     this->getIndex = (this->getIndex + 1) % this->actualBufferSize;
     this->isOverflowPresent = 0;
 
@@ -123,5 +122,6 @@ int FIFO_Get(FIFO this,char ** log, uint8_t *length)
 
 void FIFO_Destroy(FIFO this)
 {
+    free(this->queue);
     free(this);
 }

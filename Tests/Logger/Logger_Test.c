@@ -12,22 +12,16 @@ TEST_GROUP(Logger_Test);
 
 #define QUEUE_SIZE 5
 
-FIFO fifo;
-
 TEST_SETUP(Logger_Test)
 {
     RESET_FAKE(PrintLogSpy);
     FFF_RESET_HISTORY();
-
-    fifo = FIFO_Create(QUEUE_SIZE);
-
-    LOG_Init(PrintLogSpy, fifo);
+    LOG_Init(PrintLogSpy, QUEUE_SIZE);
 }
 
 TEST_TEAR_DOWN(Logger_Test)
 {
     LOG_Destroy();
-    FIFO_Destroy(fifo);
 }
 
 TEST(Logger_Test,FakeCatchesArgumentsAndCallCount)
@@ -36,6 +30,12 @@ TEST(Logger_Test,FakeCatchesArgumentsAndCallCount)
     TEST_ASSERT_EQUAL(1,PrintLogSpy_fake.call_count);
     TEST_ASSERT_EQUAL_CHAR_ARRAY("miau\0",PrintLogSpy_fake.arg0_history[0],5);
     TEST_ASSERT_EQUAL(5,PrintLogSpy_fake.arg1_history[0]);
+}
+
+TEST(Logger_Test,CallingDestroyMoreThanOnceIsSafe)
+{
+    LOG_Destroy();
+    LOG_Destroy();
 }
 
 TEST(Logger_Test,CallingInterfaceWithNoInitThrowsError)
@@ -48,7 +48,13 @@ TEST(Logger_Test,CallingInterfaceWithNoInitThrowsError)
 TEST(Logger_Test,InitWithNULLThrowsError)
 {
     LOG_Destroy();
-    TEST_ASSERT_EQUAL(LOGGER_FAIL,LOG_Init(NULL,fifo));
+    TEST_ASSERT_EQUAL(LOGGER_FAIL,LOG_Init(NULL,QUEUE_SIZE));
+}
+
+TEST(Logger_Test, InitWithZeroFifoLengthThrowsError)
+{
+    LOG_Destroy();
+    TEST_ASSERT_EQUAL(LOGGER_FAIL, LOG_Init(PrintLogSpy,0));
 }
 
 TEST(Logger_Test,LoggerUsesPassedFunction)
@@ -127,12 +133,6 @@ TEST(Logger_Test, AfterEmptyingPeripheralCanBeUsedAgain)
     LOG("Penguin");
 
     TEST_ASSERT_EQUAL(3,PrintLogSpy_fake.call_count);
-}
-
-TEST(Logger_Test, PassedFifoCantBeNULL)
-{
-    LOG_Destroy();
-    TEST_ASSERT_EQUAL(LOGGER_FAIL, LOG_Init(PrintLogSpy,NULL));
 }
 
 

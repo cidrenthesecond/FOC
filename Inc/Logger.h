@@ -11,10 +11,8 @@ enum{
     LOG_SCHEDULED,
 };
 
-#define LEN_STUB 5
-
 int LOG_Init(void (*ExternPrintLog)(const char *pData,uint8_t length),
-             FIFO fifo);
+                    uint8_t FIFO_Size);
 
 void *LOG_GetPrintingFunction();
 
