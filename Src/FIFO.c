@@ -26,6 +26,9 @@ typedef struct FIFO_Struct{
 
 FIFO FIFO_Create(uint8_t logSize)
 {
+    if(logSize == 0)
+        return NULL;
+
     FIFO result = malloc(sizeof(FIFO_Struct));
     result -> queue = malloc(sizeof(LogEntry) * (logSize + BUFFER_PADDING_SIZE));
     result -> actualBufferSize = logSize + BUFFER_PADDING_SIZE;
@@ -122,6 +125,9 @@ int FIFO_Get(FIFO this,char ** log, uint8_t *length)
 
 void FIFO_Destroy(FIFO this)
 {
+    if(this == NULL)
+        return;
+
     free(this->queue);
     free(this);
 }

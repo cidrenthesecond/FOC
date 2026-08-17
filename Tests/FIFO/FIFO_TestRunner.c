@@ -2,6 +2,8 @@
 
 TEST_GROUP_RUNNER(FIFO_Test)
 {
+    RUN_TEST_CASE(FIFO_Test, InitWithZeroLengthReturnsNULL);
+    RUN_TEST_CASE(FIFO_Test, CallingDestroyMoreThanOnceIsSafe);
     RUN_TEST_CASE(FIFO_Test, gettingFromEmptyBufferThrowsError);
     RUN_TEST_CASE(FIFO_Test, puttingOrGettingFromNoInitThrowsError);
     RUN_TEST_CASE(FIFO_Test, NullLogThrowsError);

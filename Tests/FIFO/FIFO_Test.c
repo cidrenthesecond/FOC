@@ -6,8 +6,6 @@
 
 TEST_GROUP(FIFO_Test);
 
-//TO DO: zmienic sposob dojscia do logow
-//dopisac spy
 FIFO UUT;
 
 static char *LOG;
@@ -36,7 +34,6 @@ static uint8_t SPY_GET_LEN()
     LOG_len_received = 0;
     return result;
 }
-
 
 #define FIFO_SIZE 64
 
@@ -75,6 +72,21 @@ IGNORE_TEST(FIFO_Test, puttingOrGettingFromNoInitThrowsError)
 
     TEST_ASSERT_EQUAL(FIFO_NO_INIT, FIFO_Put(UUT,"I like trains"));
     TEST_ASSERT_EQUAL(FIFO_NO_INIT, SPY_ACQUIRE_LOG());
+}
+
+TEST(FIFO_Test, InitWithZeroLengthReturnsNULL)
+{
+    FIFO_Destroy(UUT);
+
+    UUT = FIFO_Create(0);
+    TEST_ASSERT_EQUAL(NULL,UUT);
+}
+
+TEST(FIFO_Test, CallingDestroyMoreThanOnceIsSafe)
+{
+    FIFO_Destroy(UUT);
+    FIFO_Destroy(UUT);
+    FIFO_Destroy(UUT);
 }
 
 TEST(FIFO_Test, gettingFromEmptyBufferThrowsError)
