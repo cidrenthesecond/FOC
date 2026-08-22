@@ -34,9 +34,8 @@ int16_t Thermistor_GetHeatsinkTemp()
     }
 
     if(voltageOnNTC == NTC_LUT[NTC_LUT_ENTRIES - 1].NTC_Voltage)
-    {
         return NTC_LUT[NTC_LUT_ENTRIES - 1].temperature;
-    }
+
 
     return NTC_TOO_HIGH_VOLTAGE;
 }

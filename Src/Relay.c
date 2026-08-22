@@ -5,23 +5,13 @@
 #include "Logger.h"
 #include "stdio.h"
 
-static uint8_t relayState = RELAY_OFF;
+static uint8_t relayState;
 static uint8_t relayThresholdVoltage = 230;
 
 void Relay_Init()
 {
-    relayState = RELAY_OFF;
+    Relay_TurnOff();
     relayThresholdVoltage = 230;
-}
-
-uint8_t Relay_IsOn()
-{
-    return relayState;
-}
-
-void Relay_TurnOn()
-{
-    relayState = RELAY_ON;
 }
 
 void Relay_SM()
@@ -46,7 +36,19 @@ void Relay_SetThreshold(uint16_t threshold)
     relayThresholdVoltage = threshold;
 }
 
+uint8_t Relay_IsOn()
+{
+    return relayState;
+}
+
+void Relay_TurnOn()
+{
+    relayState = RELAY_ON;
+    GPIO_Relay_TurnOn();
+}
+
 void Relay_TurnOff()
 {
     relayState = RELAY_OFF;
+    GPIO_Relay_TurnOff();
 }
