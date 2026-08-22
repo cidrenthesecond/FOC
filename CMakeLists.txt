@@ -31,7 +31,7 @@ add_subdirectory(lib/CMSIS-DSP/Source)
 add_subdirectory(Tests/Mocks/LOG_Spy)
 add_subdirectory(Tests/Mocks/GPIO_Mock)
 
-#add_subdirectory(Tests/Relay)
+add_subdirectory(Tests/Relay)
 add_subdirectory(Tests/PID)
 add_subdirectory(Tests/FIFO)
 add_subdirectory(Tests/Logger)
