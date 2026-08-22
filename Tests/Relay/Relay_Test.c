@@ -1,9 +1,9 @@
 #include "unity.h"
 #include "unity_fixture.h"
-
 #include "FakeDcLink.h"
 #include "LOG_Spy.h"
 #include "fff.h"
+#include "GPIO_Driver.h"
 
 #include "Relay.h"
 
@@ -11,8 +11,8 @@ TEST_GROUP(Relay);
 
 TEST_SETUP(Relay)
 {   
-    Relay_Init();
     LOG_Spy_Init();
+    Relay_Init();
 }
 
 TEST_TEAR_DOWN(Relay)
