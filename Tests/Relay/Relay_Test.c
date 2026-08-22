@@ -1,17 +1,23 @@
 #include "unity.h"
 #include "unity_fixture.h"
-#include "FakeDcLink.h"
-#include "LOG_Spy.h"
+
 #include "fff.h"
+#include "LOG_Spy.h"
 #include "GPIO_Driver.h"
 
 #include "Relay.h"
+
+DEFINE_FFF_GLOBALS;
+FAKE_VALUE_FUNC(uint16_t, GetDcLinkVoltage);
 
 TEST_GROUP(Relay);
 
 TEST_SETUP(Relay)
 {   
     LOG_Spy_Init();
+    RESET_FAKE(GetDcLinkVoltage);
+    FFF_RESET_HISTORY();
+
     Relay_Init();
 }
 
@@ -40,7 +46,7 @@ TEST(Relay, AfterTurningOffRelayIsOff)
 
 TEST(Relay, VoltageWrongRelayOff)
 {
-    Fake_SetDcLinkVoltage(12);
+    GetDcLinkVoltage_fake.return_val = 12;
     Relay_SM();
 
     TEST_ASSERT_EQUAL(RELAY_OFF, Relay_IsOn());
@@ -48,7 +54,8 @@ TEST(Relay, VoltageWrongRelayOff)
 
 TEST(Relay, VoltageCorrectRelayOn)
 {
-    Fake_SetDcLinkVoltage(240);
+    GetDcLinkVoltage_fake.return_val = 230;
+
     Relay_SM();
 
     TEST_ASSERT_EQUAL(RELAY_ON, Relay_IsOn());
@@ -56,8 +63,9 @@ TEST(Relay, VoltageCorrectRelayOn)
 
 TEST(Relay, ChangeThresholdWrongVoltage)
 {
-    Fake_SetDcLinkVoltage(22);
+    GetDcLinkVoltage_fake.return_val = 22;
     Relay_SetThreshold(150);
+
     Relay_SM();
 
     TEST_ASSERT_EQUAL(RELAY_OFF, Relay_IsOn());
@@ -65,8 +73,9 @@ TEST(Relay, ChangeThresholdWrongVoltage)
 
 TEST(Relay, ChangeThresholdCorrectVoltage)
 {
-    Fake_SetDcLinkVoltage(22);
+    GetDcLinkVoltage_fake.return_val = 22;
     Relay_SetThreshold(12);
+
     Relay_SM();
 
     TEST_ASSERT_EQUAL(RELAY_ON, Relay_IsOn());
@@ -74,7 +83,8 @@ TEST(Relay, ChangeThresholdCorrectVoltage)
 
 TEST(Relay, RelayTurnOnProducesLog)
 {
-    Fake_SetDcLinkVoltage(240);
+    GetDcLinkVoltage_fake.return_val = 240;
+
     Relay_SM();
 
     TEST_ASSERT_EQUAL(1,LOG_Spy_GetCallCount());
@@ -82,7 +92,8 @@ TEST(Relay, RelayTurnOnProducesLog)
 
 TEST(Relay, LogFormatting)
 {
-    Fake_SetDcLinkVoltage(240);
+    GetDcLinkVoltage_fake.return_val = 240;
+    
     Relay_SM();
 
     TEST_ASSERT_EQUAL(1,LOG_Spy_GetCallCount());

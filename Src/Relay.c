@@ -18,7 +18,7 @@ void Relay_SM()
 {
     uint16_t DcLinkVoltage = GetDcLinkVoltage();
     
-    if(DcLinkVoltage > relayThresholdVoltage)
+    if(DcLinkVoltage >= relayThresholdVoltage)
         Relay_TurnOn();
 
     char log[30];
