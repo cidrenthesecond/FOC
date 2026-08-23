@@ -7,7 +7,10 @@ add_definitions(-DUNITY_FIXTURE_NO_EXTERN)
 add_compile_options(-Wall -Wextra)
 
 # Ścieżka bazowa do Twojego folderu Unity
-set(UNITY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Unity)
+set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
+set(UNITY_DIR ${MAIN_DIR}/Unity)
+set(CMSIS_DIR ${MAIN_DIR}/lib/CMSIS-DSP/Source)
+set(MOCK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Mocks)
 
 # set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -26,22 +29,23 @@ target_include_directories(unity_lib PUBLIC
 )
 
 # Add the CMSIS-DSP library from the relative path
-add_subdirectory(lib/CMSIS-DSP/Source)
+add_subdirectory(
+    "${MAIN_DIR}/lib/CMSIS-DSP/Source"
+    "${CMAKE_BINARY_DIR}/CMSIS-DSP"
+)
 
-add_subdirectory(Tests/Mocks/LOG_Spy)
-add_subdirectory(Tests/Mocks/GPIO_Mock)
+add_subdirectory(Mocks/LOG_Spy)
+add_subdirectory(Mocks/GPIO_Mock)
 
-add_subdirectory(Tests/Relay)
-add_subdirectory(Tests/PID)
-add_subdirectory(Tests/FIFO)
-add_subdirectory(Tests/Logger)
-add_subdirectory(Tests/CMSIS)
-add_subdirectory(Tests/Thermistor)
+add_subdirectory(Relay)
+add_subdirectory(PID)
+add_subdirectory(FIFO)
+add_subdirectory(Logger)
+add_subdirectory(CMSIS)
+add_subdirectory(Thermistor)
 
-
-
-# # Add the CMSIS-DSP library from the relative path
-# add_subdirectory(lib/CMSIS-DSP/Source)
+# Add the CMSIS-DSP library from the relative path
+#add_subdirectory(${CMSIS_DIR})
 
 # target_include_directories(run_tests PRIVATE
 #     Inc

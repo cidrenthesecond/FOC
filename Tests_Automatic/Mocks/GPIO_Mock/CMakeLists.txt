@@ -4,12 +4,12 @@ add_executable(test_gpio_mock
 
     GPIO_Mock_Test.c
     GPIO_Mock_TestRunner.c
-    ${CMAKE_SOURCE_DIR}/Mocks/GPIO_Mock/GPIO_Mock.c
+    GPIO_Mock.c
 )
 
 target_include_directories(test_gpio_mock PRIVATE
-    ${CMAKE_SOURCE_DIR}/Inc
-    ${CMAKE_SOURCE_DIR}/Mocks/GPIO_Mock
+    ${MAIN_DIR}/Common/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(test_gpio_mock PRIVATE

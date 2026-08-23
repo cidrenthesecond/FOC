@@ -5,11 +5,11 @@ add_executable(test_pid
     PID_Test.c
     PID_TestRunner.c
 
-    ${CMAKE_SOURCE_DIR}/Src/PID.c
+    ${MAIN_DIR}/Common/Src/PID.c
 )
 
 target_include_directories(test_pid PRIVATE
-    ${CMAKE_SOURCE_DIR}/Inc
+    ${MAIN_DIR}/Common/Inc
 )
 
 
