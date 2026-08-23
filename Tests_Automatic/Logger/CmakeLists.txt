@@ -1,0 +1,26 @@
+add_executable(test_logger
+
+    AllTests.c
+    Logger_Test.c
+    Logger_TestRunner.c
+
+    ${MAIN_DIR}/Common/Src/Logger.c
+    ${MAIN_DIR}/Common/Src/FIFO.c
+)
+
+target_include_directories(test_logger PRIVATE
+    ${MAIN_DIR}/Common/Inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Mocks
+)
+
+target_link_libraries(test_logger PRIVATE
+    unity_lib
+)
+
+add_custom_command(TARGET test_logger POST_BUILD
+
+    COMMAND test_logger -v
+
+    COMMENT "Running Logger tests..."
+
+)
