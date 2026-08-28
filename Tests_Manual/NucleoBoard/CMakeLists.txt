@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(${CMAKE_PROJECT_NAME})
-message("Build type: " ${CMAKE_BUILD_TYPE})
+
 
 # Setup compiler settings
 set(CMAKE_C_STANDARD 11)
@@ -16,6 +15,8 @@ endif()
 
 # Set the project name
 set(CMAKE_PROJECT_NAME PWM_TEST)
+project(${CMAKE_PROJECT_NAME})
+message("Build type: " ${CMAKE_BUILD_TYPE})
 
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
@@ -46,12 +47,14 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/GPIO_Driver.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/FunctionGenerator.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/FPU/FPU.c
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${MAIN_DIR}/Common/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO
+    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/FPU
     # Add user defined include paths
 )
 
