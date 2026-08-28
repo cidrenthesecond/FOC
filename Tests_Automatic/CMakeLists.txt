@@ -28,6 +28,15 @@ target_include_directories(unity_lib PUBLIC
     ${UNITY_DIR}/extras/memory/src           # DLA UNITY_MEMORY.H - To naprawia Twój błąd
 )
 
+add_library(pbPlots STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/pbPlots/pbPlots.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/pbPlots/supportLib.c
+)
+
+target_include_directories(pbPlots PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/pbPlots
+)
+
 # Add the CMSIS-DSP library from the relative path
 add_subdirectory(
     "${MAIN_DIR}/lib/CMSIS-DSP/Source"
@@ -43,6 +52,7 @@ add_subdirectory(FIFO)
 add_subdirectory(Logger)
 add_subdirectory(CMSIS)
 add_subdirectory(Thermistor)
+add_subdirectory(WaveGen)
 
 # Add the CMSIS-DSP library from the relative path
 #add_subdirectory(${CMSIS_DIR})
