@@ -8,7 +8,7 @@ TEST_GROUP(WaveGen);
 
 TEST_SETUP(WaveGen)
 {
-    UUT = WaveGen_Create();
+    UUT = WaveGen_Create(&SINE);
 }
 
 TEST_TEAR_DOWN(WaveGen)

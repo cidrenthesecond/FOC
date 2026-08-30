@@ -10,7 +10,7 @@ static WaveGen UUT;
 void Plot_Create(int32_t *y,int32_t y_len);
 void setup()
 {
-    UUT = WaveGen_Create();
+    UUT = WaveGen_Create(&SINE);
 }
 void teardown()
 {
