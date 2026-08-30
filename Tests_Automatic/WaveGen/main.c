@@ -1,7 +1,7 @@
-#include "pbPlots.h"
-#include "supportLib.h"
 #include "stdint.h"
 #include "string.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "WaveGen.h"
 
@@ -73,11 +73,36 @@ void test_reset()
     teardown();
 }
 
+void test_swipe()
+{
+    setup();
+    float startFrequency = 10.0f;
+    WaveGen_SetFrequency(UUT,10.0f,20000.0f);
+   
+    int32_t y[10000];
+    uint32_t y_size = sizeof(y) / sizeof(y[0]);
+
+    for(uint32_t sample = 0; sample < y_size; sample++)
+    {
+        y[sample] = WaveGen_Get(UUT);
+        if(sample % 1000 == 0 )
+        {
+            startFrequency += 5.0f;
+            WaveGen_SetFrequency(UUT,startFrequency,20000);
+        }
+    }
+
+    Plot_Create(y,y_size);
+
+    teardown();
+}
+
 int main()
 {   
     test_sinus50hz();
     test_frequencySwitch();
     test_reset();
+    test_swipe();
 
     return 0;
 }

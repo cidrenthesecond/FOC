@@ -2,5 +2,6 @@
 
 TEST_GROUP_RUNNER(WaveGen)
 {
-    RUN_TEST_CASE(WaveGen,start);
+    RUN_TEST_CASE(WaveGen, WhenNoFrequencyIsSetGettingReturnsZeroes);
+    RUN_TEST_CASE(WaveGen, ReturnNULLWhenLutSizeIsNotPowerOfTwo);
 }
