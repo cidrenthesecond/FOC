@@ -44,6 +44,7 @@ add_subdirectory(Logger)
 add_subdirectory(CMSIS)
 add_subdirectory(Thermistor)
 add_subdirectory(WaveGen)
+add_subdirectory(ScalarProfile)
 
 # Add the CMSIS-DSP library from the relative path
 #add_subdirectory(${CMSIS_DIR})

@@ -1,6 +1,9 @@
 #include "WaveGen.h"
-#include "SIN_LUT.h"
 #include "stdlib.h"
+
+enum {
+	INVALID_VALUE = 0xFF
+};
 
 typedef struct WaveGen_struct{
 	const WaveGen_LUT * LUT;
@@ -11,32 +14,43 @@ typedef struct WaveGen_struct{
 	float samplingFrequency;
 }WaveGen_struct;
 
+static uint8_t CalculateBitsToShift(const WaveGen_LUT *Wave);
+
 WaveGen WaveGen_Create(const WaveGen_LUT *desiredWave)
 {
+	uint8_t bitsToShift = CalculateBitsToShift(desiredWave);
+
+	if(bitsToShift == INVALID_VALUE)
+		return NULL;
+
 	WaveGen result = malloc(sizeof(WaveGen_struct));
+	result -> LUT = desiredWave;
+	result ->phaseAccumulatorBitsToShift = bitsToShift;
+	result -> phaseAccumulator = 0;
+	result -> phaseIncrement = 0;
 	result -> desiredFrequency = 0.0f;
 	result -> samplingFrequency = 0.0f;
-	result->phaseAccumulator = 0;
-	result->LUT = desiredWave;
+	return result;
+}
 
-	uint32_t lutSize = desiredWave->size;
+static uint8_t CalculateBitsToShift(const WaveGen_LUT *Wave)
+{
+	uint32_t lutSize = Wave->size;
 	uint8_t bitsUsed = 0;
 
 	for(uint8_t timeout = 32; timeout > 0; timeout--)
 	{
 		if(lutSize == 1)
-		{
-			result -> phaseAccumulatorBitsToShift = 32 - bitsUsed;
-			return result;
-		}
+			return 32 - bitsUsed;
 
 		if(lutSize % 2 != 0)
-			return NULL;
+			return INVALID_VALUE;
 	
 		lutSize = lutSize/2;
 		bitsUsed++;
 	}
-	return NULL;
+	
+	return INVALID_VALUE;
 }
 
 void WaveGen_SetFrequency(WaveGen w,float frequency,float samplingFrequency)
@@ -46,9 +60,16 @@ void WaveGen_SetFrequency(WaveGen w,float frequency,float samplingFrequency)
 	w -> phaseIncrement = (uint32_t)((frequency/samplingFrequency) * (float)UINT32_MAX);
 }
 
-int32_t WaveGen_SetDesiredWave(WaveGen w,WaveGen_LUT *desiredWave)
+uint8_t WaveGen_SetDesiredWave(WaveGen w,const WaveGen_LUT *desiredWave)
 {
+	uint8_t bitsToShift = CalculateBitsToShift(desiredWave);
+
+	if(bitsToShift == INVALID_VALUE)
+		return INVALID_VALUE;
+
 	w -> LUT = desiredWave;
+	w -> phaseAccumulatorBitsToShift = bitsToShift;
+
 	return 1;
 }
 

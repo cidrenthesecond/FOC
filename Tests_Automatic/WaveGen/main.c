@@ -97,12 +97,33 @@ void test_swipe()
     teardown();
 }
 
+void test_changeOfDesiredWave()
+{
+    setup();
+    WaveGen_SetFrequency(UUT,50.0f,20000.0f);
+
+    int32_t y[800];
+    uint32_t y_size = sizeof(y) / sizeof(y[0]);
+
+    for(uint32_t sample = 0; sample < y_size; sample++)
+    {
+        y[sample] = WaveGen_Get(UUT);
+        if(sample == y_size/2)
+            WaveGen_SetDesiredWave(UUT,&SIGMOID);
+    }
+
+    Plot_Create(y,y_size);
+
+    teardown();
+}
+
 int main()
 {   
     test_sinus50hz();
     test_frequencySwitch();
     test_reset();
     test_swipe();
+    test_changeOfDesiredWave();
 
     return 0;
 }
