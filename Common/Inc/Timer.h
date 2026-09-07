@@ -6,6 +6,7 @@
 enum {
     TIMER_NO_INIT,
     TIMER_NO_TASKS,
+    TIMER_FAIL,
     TIMER_SUCCESS,
 };
 
