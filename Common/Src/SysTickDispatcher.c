@@ -3,10 +3,6 @@
 static uint8_t isInitialised = 0;
 static uint8_t tasksNum = 0;
 
-// static void (*task_scheduled)(void);
-// static uint32_t task_period_ms;
-// static uint32_t task_lastTimeCalled_Timestamp;
-
 typedef struct{
     void (*taskToDispatch)(void);
     uint32_t period_ms;
@@ -63,9 +59,6 @@ int SysTickDispatcher_Subscribe(void (*Task)(void),uint32_t period_ms)
     if(period_ms == 0)
         return SYSTICKDISPATCHER_FAIL;
 
-    // task_scheduled = Task;
-    // task_period_ms = period_ms;
-    // task_lastTimeCalled_Timestamp = tick;
     tasksNum++;
 
     for(uint8_t index = 0; index < SYS_TICK_DISPATCHER_MAX_TASKS; index++)
@@ -89,13 +82,6 @@ int SysTickDispatcher_UnSubscribe(void (*Task)(void),uint32_t period_ms)
 
     if(tasksNum == 0)
         return SYSTICKDISPATCHER_NO_TASKS;
-
-    // if(Task != task_scheduled || period_ms != task_period_ms)
-    //     return SYSTICKDISPATCHER_FAIL;
-
-    // task_scheduled = NULL;
-    // task_lastTimeCalled_Timestamp = 0;
-    // task_period_ms = 0;
 
     for(uint8_t index = 0; index < SYS_TICK_DISPATCHER_MAX_TASKS; index++)
     {
