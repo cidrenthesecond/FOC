@@ -155,8 +155,30 @@ TEST(SysTickDispatcher, Wakeup_WhenMultipleTasksAreSubscribed_DispatchesEachAcco
 {
     SysTickDispatcher_Subscribe(FirstFakeFunction,10);
     SysTickDispatcher_Subscribe(SecondFakeFunction,20);
+    SysTickDispatcher_Subscribe(ThirdFakeFunction,25);
     ELAPSE_TIME(100);
 
     TEST_ASSERT_EQUAL(10, FirstFakeFunction_fake.call_count);
-    TEST_ASSERT_EQUAL(5,SecondFakeFunction_fake.call_count);
+    TEST_ASSERT_EQUAL(5,  SecondFakeFunction_fake.call_count);
+    TEST_ASSERT_EQUAL(4,  ThirdFakeFunction_fake.call_count);
+}
+
+TEST(SysTickDispatcher, Unsubscribe_WhenTaskHasElapsedPartOfPeriod_DoesNotDispatchTask)
+{
+    SysTickDispatcher_Subscribe(FirstFakeFunction, 10);
+
+    ELAPSE_TIME(5);
+    SysTickDispatcher_UnSubscribe(FirstFakeFunction, 10);
+
+    ELAPSE_TIME(10);
+
+    TEST_ASSERT_EQUAL(0, FirstFakeFunction_fake.call_count);
+}
+
+TEST(SysTickDispatcher, Wakeup_WhenLastTaskIsUnsubscribed_ReturnsNoTasksError)
+{
+    SysTickDispatcher_Subscribe(FirstFakeFunction, 10);
+    SysTickDispatcher_UnSubscribe(FirstFakeFunction, 10);
+
+    TEST_ASSERT_EQUAL(SYSTICKDISPATCHER_NO_TASKS,SysTickDispatcher_Wakeup());       
 }

@@ -19,4 +19,6 @@ TEST_GROUP_RUNNER(SysTickDispatcher)
     RUN_TEST_CASE(SysTickDispatcher, Unsubscribe_WhenPeriodDoesNotMatch_ReturnsFail);
     RUN_TEST_CASE(SysTickDispatcher, Unsubscribe_WhenOperationFails_KeepsTaskSubscribed);
     RUN_TEST_CASE(SysTickDispatcher, Wakeup_WhenMultipleTasksAreSubscribed_DispatchesEachAccordingToItsPeriod);
+    RUN_TEST_CASE(SysTickDispatcher, Unsubscribe_WhenTaskHasElapsedPartOfPeriod_DoesNotDispatchTask);
+    RUN_TEST_CASE(SysTickDispatcher, Wakeup_WhenLastTaskIsUnsubscribed_ReturnsNoTasksError);
 }
