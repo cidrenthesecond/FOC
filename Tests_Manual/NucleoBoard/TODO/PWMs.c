@@ -1,16 +1,12 @@
 #include <arm_math.h>
 #include "stdint.h"
+#include "tim.h"
 
-int
-
-
-
-float findMax(float a, float b)
+static float findMax(float a, float b)
 {
 	return (a >= b) ? a : b;
 }
-
-float findMin(float a, float b)
+static float findMin(float a, float b)
 {
 	return (a <= b) ? a : b;
 }
@@ -20,7 +16,6 @@ void SVPWM(float alpha, float beta)
 {
 	float _alpha = alpha/3.3f;
 	float _beta = beta/3.3f;
-
 
 	float a;
 	float b;

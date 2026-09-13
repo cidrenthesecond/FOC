@@ -20,7 +20,6 @@
 #include "main.h"
 #include "adc.h"
 #include "icache.h"
-#include "stm32h5xx_ll_gpio.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -72,20 +71,20 @@ uint32_t phaseAccumulator = 0;
 uint32_t  increment = UINT32_MAX/36;
 float target = 1.0f;
 
-void OpenLoop_LUT(float * alpha, float *beta)
-{
-	uint16_t index = phaseAccumulator >> 22;
+// void OpenLoop_LUT(float * alpha, float *beta)
+// {
+// 	uint16_t index = phaseAccumulator >> 22;
 
-	float sin = (float)lut[index] / (float)INT32_MAX;//INT32_MAX;
+// 	float sin = (float)lut[index] / (float)INT32_MAX;//INT32_MAX;
 
-	uint32_t cosIndex = (index + 256) & 1023;
-	float cos = (float)lut[cosIndex] / (float)INT32_MAX;
+// 	uint32_t cosIndex = (index + 256) & 1023;
+// 	float cos = (float)lut[cosIndex] / (float)INT32_MAX;
 
-	*alpha = target * cos;
-	*beta  = target * sin;
+// 	*alpha = target * cos;
+// 	*beta  = target * sin;
 
-	phaseAccumulator += increment;
-}
+// 	phaseAccumulator += increment;
+// }
 
 
 
@@ -129,12 +128,12 @@ void ADC_Start()
 
 }
 
-uint32_t GetDcLinkVoltage()
+uint32_t GetDcLinkVoltage(uint16_t adcMeasurement)
 {
-	ADC_Start();
+	// ADC_Start();
 
 	uint32_t result;
-	result = DIVIDER_CONSTANT * REFERENCE_VOLTAGE_mV * DcLinkMeasurement / ADC_MAX;
+	result = DIVIDER_CONSTANT * REFERENCE_VOLTAGE_mV * adcMeasurement / ADC_MAX;
 	return result;
 }
 
@@ -142,7 +141,139 @@ uint16_t GetNtcVoltage()
 {
 	ADC_Start();
 	return NtcMeasurement*REFERENCE_VOLTAGE_mV / ADC_MAX;
+}
 
+#define V_BIAS 1700
+
+int32_t GetCurrent(uint16_t adcMeasurement)
+{
+  int32_t Vmeasured = REFERENCE_VOLTAGE_mV * adcMeasurement /ADC_MAX;
+  int32_t Vsign = Vmeasured - V_BIAS;
+  return Vsign*3;
+  return Vsign * 3910;
+  //return (float)Vsign * 3.91f / 1000.0f;
+}
+
+void Print_ADC_CurrentValues()
+{
+  char buffer1[30] = {0};
+
+  sprintf(buffer1, "%u",LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2));
+  LOG(buffer1);
+
+  sprintf(buffer1, "%u",LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3));
+  LOG(buffer1);
+
+  sprintf(buffer1, "%u",LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_4));
+  LOG(buffer1);
+}
+
+void Print_Current()
+{
+  char buffer1[30] = {0};
+
+  sprintf(buffer1, "%ld",GetCurrent(LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2)));
+  LOG(buffer1);
+
+  sprintf(buffer1, "%ld",GetCurrent(LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3)));
+  LOG(buffer1);
+
+  sprintf(buffer1, "%ld",GetCurrent(LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_4)));
+  LOG(buffer1);
+}
+
+uint16_t a_mid,b_mid,c_mid;
+
+void Calculate_MIDpoints()
+{
+  LL_ADC_INJ_SetTriggerSource(ADC1, LL_ADC_INJ_TRIG_SOFTWARE);
+  LL_ADC_Enable(ADC1);
+  while (!LL_ADC_IsActiveFlag_ADRDY(ADC1))
+      ; // Czekamy aż przetwornik będzie gotowy
+
+  LL_ADC_ClearFlag_JEOS(ADC1);
+  LL_ADC_INJ_StartConversion(ADC1);
+  while (!LL_ADC_IsActiveFlag_JEOS(ADC1))
+    ;
+  LL_ADC_ClearFlag_JEOS(ADC1);
+
+  uint16_t a_data[5];
+  uint16_t b_data[5];
+  uint16_t c_data[5];
+
+  for(uint8_t i = 0; i < 5; i++)
+  {
+    LL_ADC_INJ_StartConversion(ADC1);
+
+    while(!LL_ADC_IsActiveFlag_JEOS(ADC1))
+      ;
+
+    a_data[i] = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
+    b_data[i] = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
+    c_data[i] = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_4);
+
+    LL_ADC_ClearFlag_JEOS(ADC1);
+  }
+
+  uint16_t a_sum = 0, b_sum = 0, c_sum = 0;
+
+
+  for(uint8_t i = 0 ; i < 5; i++)
+  {
+    a_sum += a_data[i];
+    b_sum += b_data[i];
+    c_sum += c_data[i];
+  }
+
+  a_mid = a_sum /5;
+  b_mid = b_sum /5;
+  c_mid = c_sum /5;
+
+  char buffer1[30] = {0};
+
+  sprintf(buffer1, "A : %u",a_mid);
+  LOG(buffer1);
+  sprintf(buffer1, "B : %u",b_mid);
+  LOG(buffer1);
+  sprintf(buffer1, "C : %u",c_mid);
+  LOG(buffer1);
+
+  LL_ADC_Disable(ADC1);
+  LL_ADC_INJ_SetTriggerSource(ADC1, LL_ADC_INJ_TRIG_EXT_TIM1_TRGO);
+  
+}
+
+void PrintCurrent_A()
+{
+  uint16_t adc_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
+  int16_t delta = (int16_t)adc_measurement - (int16_t)a_mid;
+  int16_t value = delta * 3;
+
+  char buffer1[30] = {0};
+  sprintf(buffer1,"A : %d",value);
+  LOG(buffer1);
+}
+
+void PrintCurrent_B()
+{
+  uint16_t adc_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
+  int16_t delta = (int16_t)adc_measurement - (int16_t)b_mid;
+  int16_t value = delta *3;
+
+  char buffer1[30] = {0};
+  sprintf(buffer1,"B : %d",value);
+  LOG(buffer1);
+}
+
+void PrintCurrent_C()
+{
+  uint16_t adc_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
+  int16_t delta = (int16_t)adc_measurement - (int16_t)c_mid;
+  int16_t value = delta *3;
+
+  char buffer1[30] = {0};
+  sprintf(buffer1,"C : %d",value);
+  LOG(buffer1);
 }
 
 int test;
@@ -192,34 +323,80 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   FPU_enable();
-  LL_TIM_EnableAllOutputs(TIM1);
-  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH1);
-  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH2);
-  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH3);
-  LL_TIM_EnableCounter(TIM1);
-
-  LL_USART_EnableDirectionTx(USART2);
-  LL_USART_Enable(USART2);
 
 
   LOG_Init(UART_PrintPolling, 10);
 
-  Relay_Init();
-  Relay_SetThreshold(8000);
 
-  LL_ADC_StartCalibration(ADC1, LL_ADC_SINGLE_ENDED);
 
-  while(LL_ADC_IsCalibrationOnGoing(ADC1))
-	  ;
+  Calculate_MIDpoints();
 
   LL_ADC_Enable(ADC1);
+  LL_ADC_INJ_StartConversion(ADC1);
 
+  LL_TIM_EnableAllOutputs(TIM1);
+  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH1);
+  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH2);
+  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH3);
+  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH1N);
+  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH2N);
+  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH3N);
+  LL_TIM_EnableCounter(TIM1);
+
+  LL_USART_EnableDirectionTx(USART2);
+  LL_USART_Enable(USART2);
+  
+
+
+
+
+  Relay_Init();
+  Relay_SetThreshold(8000);
+  TIM1->CCR1 = UINT16_MAX/2;//- 2000;
+  TIM1->CCR2 = 0;
+  TIM1->CCR3 = 0;
+
+  char buffer[30] = {0};
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    sprintf(buffer, "DC link voltage: %lu V",GetDcLinkVoltage(LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_1)));
+    LOG(buffer);
+
+    // float current = GetCurrent(LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2));
+
+    // // Wyciągamy część całkowitą i ułamkową (np. dla 2 miejsc po przecinku)
+    // int32_t integral = (int32_t)current;
+    // int32_t fractional = (int32_t)((current - integral) * 100);
+
+    // // Obsługa wartości ujemnych dla części ułamkowej
+    // if (fractional < 0) {
+    //   fractional = -fractional;
+    // }
+
+    // sprintf(buffer, "%ld.%02ld A", integral, fractional);
+    // LOG(buffer);
+    // Print_Current();
+    // PrintCurrent_A();
+    // PrintCurrent_B();
+    // PrintCurrent_C();
+
+    while(!LL_ADC_IsActiveFlag_JEOS(ADC1))
+      ;
+
+    //Print_ADC_CurrentValues();
+    PrintCurrent_A();
+    PrintCurrent_B();
+    PrintCurrent_C();
+    LL_ADC_ClearFlag_JEOS(ADC1);
+
+    for(uint32_t delay = 0; delay < 9000000; delay++)
+	    ;
+
+    
 //	  int16_t Temp = Thermistor_GetHeatsinkTemp();
 //	  char buff[20];
 //	  sprintf(buff, "HT : %d\n",Temp);
@@ -247,11 +424,11 @@ int main(void)
 	  //LL_GPIO_ResetOutputPin(WCET_GPIO_Port, WCET_Pin);
 	  //SVPWM(alpha, beta);
 
-	  for(uint32_t delay =0 ;delay < 600000; delay++)
-		  ;
+	  // for(uint32_t delay =0 ;delay < 600000; delay++)
+		//   ;
 
-	  LOG("Miau");
-	  test++;
+	  // LOG("Miau");
+	  // test++;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -279,7 +456,6 @@ void SystemClock_Config(void)
    /* Wait till HSI is ready */
   while(LL_RCC_HSI_IsReady() != 1)
   {
-
   }
 
   LL_RCC_HSI_SetCalibTrimming(64);
