@@ -4,7 +4,7 @@ TEST_GROUP_RUNNER(InitAndRegister)
 {
     RUN_TEST_CASE(InitAndRegister, Register_WhenNoInit_ThrowsFail);
     RUN_TEST_CASE(InitAndRegister, Register_WhenIndexEqualToZero_ThrowsFail);
-    RUN_TEST_CASE(InitAndRegister, Register_WhenIndexEqualMaxCommands_ThrowsFail);
+    RUN_TEST_CASE(InitAndRegister, Register_WhenIndexIsHigherThanMaxCommands_ThrowsFail);
     RUN_TEST_CASE(InitAndRegister, Register_WhenIndexBiggerThanMaxCommands_ThrowsFail);
     RUN_TEST_CASE(InitAndRegister, Register_WhenCommandIsNull_ThrowsError);
     RUN_TEST_CASE(InitAndRegister, Register_CorrectRegistration_ThrowsSuccess);

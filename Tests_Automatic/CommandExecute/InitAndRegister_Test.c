@@ -39,10 +39,10 @@ TEST(InitAndRegister, Register_WhenIndexEqualToZero_ThrowsFail)
     TEST_ASSERT_EQUAL(CMD_FAIL, CommandExecute_Register(0,FakeCommand1));
 }
 
-//ZMIANA DESGIN
-TEST(InitAndRegister, Register_WhenIndexEqualMaxCommands_ThrowsFail)
+//ZMIANA NAZWY
+TEST(InitAndRegister, Register_WhenIndexIsHigherThanMaxCommands_ThrowsFail)
 {
-    TEST_ASSERT_EQUAL(CMD_FAIL, CommandExecute_Register(MAX_COMMANDS,FakeCommand1));
+    TEST_ASSERT_EQUAL(CMD_FAIL, CommandExecute_Register(MAX_COMMANDS+1,FakeCommand1));
 }
 
 TEST(InitAndRegister, Register_WhenIndexBiggerThanMaxCommands_ThrowsFail)

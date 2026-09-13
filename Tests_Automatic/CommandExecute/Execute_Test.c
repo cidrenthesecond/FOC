@@ -49,6 +49,7 @@ TEST(CommandExecute, Execute_WhenToManyArguments_MaxArgumentsAreParsed)
     TEST_ASSERT_EQUAL(5,FakeCommand_fake.arg0_val);
 }
 
+
 //________Index_Behavior_________
 
 TEST(CommandExecute, Execute_WhenNoCommandIndex_ThrowsError)
@@ -79,6 +80,16 @@ TEST(CommandExecute, Execute_WhenIndexIsLetters_ThrowsError)
 TEST(CommandExecute, Execute_WhenIndexContainsLetters_ThrowsError)
 {
     TEST_ASSERT_EQUAL(CMD_FAIL,CommandExecute("cmd 3as"));
+}
+
+TEST(CommandExecute, Execute_WhenIndexContainsPlus_ThrowsSuccess)
+{
+    TEST_ASSERT_EQUAL(CMD_SUCCESS,CommandExecute("cmd +3"));
+}
+
+TEST(CommandExecute, Execute_WhenIndexIsLeadByZero_ThrowsSuccess)
+{
+    TEST_ASSERT_EQUAL(CMD_SUCCESS,CommandExecute("cmd 03"));
 }
 
 //__________Syntax____________
@@ -136,6 +147,22 @@ TEST(CommandExecute, Execute_WhenInputEndsWithCRLF)
 TEST(CommandExecute, Execute_WhenInputIsNULL_ThrowsError)
 {
     TEST_ASSERT_EQUAL(CMD_FAIL,CommandExecute(NULL));
+}
+
+//Overall behavior
+
+TEST(CommandExecute, Execute_WhenCommandIsNotRegistered_ThrowsError)
+{
+    TEST_ASSERT_EQUAL(CMD_FAIL,CommandExecute("cmd 16"));
+}
+
+TEST(CommandExecute, Execute_MultipleExecutions)
+{
+    CommandExecute("cmd 3");
+    CommandExecute("cmd 3");
+    CommandExecute("cmd 3");
+
+    TEST_ASSERT_EQUAL(3,FakeCommand_fake.call_count);
 }
 
 

@@ -4,6 +4,7 @@
 
 #define MAX_ARGS            5 
 #define COMMAND_BUFFER_SIZE 64
+#define MAX_LIST_INDEX      MAX_COMMANDS+1
 
 //Commands are structured this way...
 //cmd xxx <arg1> <arg2> <argx> ...
@@ -22,7 +23,7 @@ typedef struct {
     CommandFunc func;
 } Command;
 
-static Command CommandList[MAX_COMMANDS] = {0};
+static Command CommandList[MAX_COMMANDS+1] = {0};
 static uint8_t isInitalised = 0;
 
 static int isCommandIndexValid(uint32_t commandIndex);
@@ -58,7 +59,7 @@ int CommandExecute(const char*input)
 {
     if(input == NULL)
         return CMD_FAIL;
-        
+
     char buffer[COMMAND_BUFFER_SIZE];
     strncpy(buffer,input,COMMAND_BUFFER_SIZE);
     buffer[COMMAND_BUFFER_SIZE - 1] = '\0';
@@ -107,5 +108,5 @@ void CommandExecute_Destroy()
 
 static int isCommandIndexValid(uint32_t commandIndex)
 {
-    return (commandIndex != 0 && commandIndex < MAX_COMMANDS);
+    return (commandIndex != 0 && commandIndex <= MAX_COMMANDS);
 }

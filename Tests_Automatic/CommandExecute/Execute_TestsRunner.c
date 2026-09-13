@@ -14,6 +14,8 @@ TEST_GROUP_RUNNER(CommandExecute)
     RUN_TEST_CASE(CommandExecute, Execute_WhenIndexIsNegative_ThrowsError);
     RUN_TEST_CASE(CommandExecute, Execute_WhenIndexIsLetters_ThrowsError);
     RUN_TEST_CASE(CommandExecute, Execute_WhenIndexContainsLetters_ThrowsError);
+    RUN_TEST_CASE(CommandExecute, Execute_WhenIndexContainsPlus_ThrowsSuccess);
+    RUN_TEST_CASE(CommandExecute, Execute_WhenIndexIsLeadByZero_ThrowsSuccess);
 
     RUN_TEST_CASE(CommandExecute, Execute_WhenInputStringIsEmpty_ThrowsError);
     RUN_TEST_CASE(CommandExecute, Execute_WhenCMDkeywordIsUppercase_ThrowsError);
@@ -26,4 +28,8 @@ TEST_GROUP_RUNNER(CommandExecute)
     RUN_TEST_CASE(CommandExecute, Execute_WhenInputEndsWithCR_ThrowsSuccess);
     RUN_TEST_CASE(CommandExecute, Execute_WhenInputEndsWithCRLF);
     RUN_TEST_CASE(CommandExecute, Execute_WhenInputIsNULL_ThrowsError);
+
+
+    RUN_TEST_CASE(CommandExecute, Execute_WhenCommandIsNotRegistered_ThrowsError);
+    RUN_TEST_CASE(CommandExecute, Execute_MultipleExecutions);
 }
