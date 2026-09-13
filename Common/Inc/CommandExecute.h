@@ -1,6 +1,8 @@
 #ifndef COMMAND_EXECUTE_H
 #define COMMAND_EXECUTE_H
 
+#include "stdint.h"
+
 enum {
     CMD_FAIL = 0,
     CMD_SUCCESS = 1

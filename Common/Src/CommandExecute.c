@@ -1,5 +1,4 @@
 #include "CommandExecute.h"
-#include "stdint.h"
 #include "string.h"
 #include <stdlib.h>
 
@@ -41,15 +40,16 @@ void CommandExecute_Init()
 int CommandExecute_Register(uint32_t commandIndex,CommandFunc command)
 {
     if(!isInitalised)
-        return;
+        return CMD_FAIL;
 
     if(!isCommandIndexValid)
-        return;
+        return CMD_FAIL;
 
     if(CommandList[commandIndex].func != NULL)
-        return;
+        return CMD_FAIL;
 
     CommandList[commandIndex].func = command;
+    return CMD_SUCCESS;
 }
 
 int CommandExecute(const char*input)
@@ -71,23 +71,25 @@ int CommandExecute(const char*input)
     }
 
     if(argc < 2)
-        return;
+        return CMD_FAIL;
 
     if(strcmp("cmd",argv[0]) != 0)
-        return;
+        return CMD_FAIL;
 
     char *end;
     long commandIndex = strtol(argv[1], &end, 10);
 
     if(*end != '\0')
-        return;
+        return CMD_FAIL;
+
     if(commandIndex < 1 || commandIndex >= MAX_COMMANDS)
-        return;
+        return CMD_FAIL;
 
     if(CommandList[commandIndex].func == NULL)
-        return;
+        return CMD_FAIL;
 
     CommandList[commandIndex].func(argc - 2,&argv[2]);
+    return CMD_SUCCESS;
 }
 
 void CommandExecute_Destroy()
@@ -100,5 +102,5 @@ void CommandExecute_Destroy()
 
 static int isCommandIndexValid(uint32_t commandIndex)
 {
-    return commandIndex == 0 || commandIndex >= MAX_COMMANDS;
+    return (commandIndex == 0 || commandIndex >= MAX_COMMANDS);
 }
