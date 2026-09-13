@@ -18,9 +18,17 @@
 #define ADC_OFFSET_SAMPLES_COUNT 5U
 #define FILTER_KERNEL 3
 
-static uint16_t Bus_Measurement;
+static uint16_t bus_Measurement;
 static uint16_t NTC_Measurement;
-static uint16_t Phase_A_Measurement;
+static uint16_t phase_A_Measurement;
+static uint16_t phase_B_Measurement;
+static uint16_t phase_C_Measurement;
+
+static uint16_t bus_rawMeasurement;
+static uint16_t NTC_rawMeasurement;
+static uint16_t phase_A_rawMeasurement;
+static uint16_t phase_B_rawMeasurement;
+static uint16_t phase_C_rawMeasurement;
 
 static uint16_t phase_a_offset_adc;
 static uint16_t phase_b_offset_adc;
@@ -49,6 +57,7 @@ static void ADC_CalibratePhaseOffsets(void);
 static void ADC_PrepareForPhaseOffsetMeasurement(void);
 static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t * c_data);
 static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data);
+static void ADC_Calibrate();
 
 void ADC_Init()
 {
@@ -58,6 +67,7 @@ void ADC_Init()
     Phase_B_Filter = MovingAvarage_Init(FILTER_KERNEL);
     Phase_C_Filter = MovingAvarage_Init(FILTER_KERNEL);
 
+    ADC_Calibrate();
     ADC_CalibratePhaseOffsets();
 }
 
@@ -73,6 +83,15 @@ static uint16_t ADC_ReadSingleChannelRaw(uint32_t channel)
 
     return LL_ADC_REG_ReadConversionData12(ADC1);
 }
+
+static void ADC_Calibrate()
+{
+  LL_ADC_StartCalibration(ADC1, LL_ADC_SINGLE_ENDED);
+
+  while(LL_ADC_IsCalibrationOnGoing(ADC1))
+	  ;
+}
+
 
 uint32_t GetDcLinkVoltage(uint16_t adcMeasurement)
 {

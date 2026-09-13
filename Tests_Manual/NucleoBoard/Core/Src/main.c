@@ -327,10 +327,7 @@ int main(void)
 
   LOG_Init(UART_PrintPolling, 10);
 
-  LL_ADC_StartCalibration(ADC1, LL_ADC_SINGLE_ENDED);
 
-  while(LL_ADC_IsCalibrationOnGoing(ADC1))
-	  ;
 
   Calculate_MIDpoints();
 
