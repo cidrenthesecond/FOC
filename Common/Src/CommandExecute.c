@@ -2,7 +2,6 @@
 #include "string.h"
 #include <stdlib.h>
 
-#define MAX_COMMANDS        20
 #define MAX_ARGS            5 
 #define COMMAND_BUFFER_SIZE 64
 
@@ -42,7 +41,10 @@ int CommandExecute_Register(uint32_t commandIndex,CommandFunc command)
     if(!isInitalised)
         return CMD_FAIL;
 
-    if(!isCommandIndexValid)
+    if(!isCommandIndexValid(commandIndex))
+        return CMD_FAIL;
+
+    if(command == NULL)
         return CMD_FAIL;
 
     if(CommandList[commandIndex].func != NULL)
@@ -54,6 +56,9 @@ int CommandExecute_Register(uint32_t commandIndex,CommandFunc command)
 
 int CommandExecute(const char*input)
 {
+    if(input == NULL)
+        return CMD_FAIL;
+        
     char buffer[COMMAND_BUFFER_SIZE];
     strncpy(buffer,input,COMMAND_BUFFER_SIZE);
     buffer[COMMAND_BUFFER_SIZE - 1] = '\0';
@@ -64,7 +69,7 @@ int CommandExecute(const char*input)
     int argc = 0;
     
     char *token = strtok(buffer, " ");
-    while(token != NULL && argc < MAX_ARGS)
+    while(token != NULL && argc < (MAX_ARGS + 2))
     {
         argv[argc++] = token;
         token = strtok(NULL, " ");
@@ -102,5 +107,5 @@ void CommandExecute_Destroy()
 
 static int isCommandIndexValid(uint32_t commandIndex)
 {
-    return (commandIndex == 0 || commandIndex >= MAX_COMMANDS);
+    return (commandIndex != 0 && commandIndex < MAX_COMMANDS);
 }

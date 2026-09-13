@@ -3,6 +3,8 @@
 
 #include "stdint.h"
 
+#define MAX_COMMANDS 20
+
 enum {
     CMD_FAIL = 0,
     CMD_SUCCESS = 1

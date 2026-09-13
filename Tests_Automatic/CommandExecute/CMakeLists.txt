@@ -1,9 +1,13 @@
 add_executable(CommandExecute_test)
 
+add_compile_options(-v)
+
 target_sources(CommandExecute_test PRIVATE
     AllTests.c
-    CommandExecute_TestsRunner.c
-    CommandExecute_Test.c
+    InitAndRegister_Test.c
+    InitAndRegister_TestsRunner.c
+    Execute_TestsRunner.c
+    Execute_Test.c
 
     ${MAIN_DIR}/Common/Src/CommandExecute.c
 )
