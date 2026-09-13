@@ -32,7 +32,6 @@
 #include "Relay.h"
 #include <stdint.h>
 #include <stdio.h>
-#include "SIN_LUT.h"
 #include "Thermistor.h"
 #include "FPU.h"
 /* USER CODE END Includes */

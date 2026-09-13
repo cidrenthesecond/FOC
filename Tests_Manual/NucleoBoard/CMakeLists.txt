@@ -47,6 +47,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/GPIO_Driver.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/FPU/FPU.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/ADC_Service.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/Moving_Avarage_Filter.c
 )
 
 # Add include paths

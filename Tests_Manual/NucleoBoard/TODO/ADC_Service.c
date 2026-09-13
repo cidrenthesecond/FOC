@@ -24,12 +24,6 @@ static uint16_t phase_A_Measurement;
 static uint16_t phase_B_Measurement;
 static uint16_t phase_C_Measurement;
 
-// static uint16_t bus_rawMeasurement;
-// static uint16_t NTC_rawMeasurement;
-// static uint16_t phase_A_rawMeasurement;
-// static uint16_t phase_B_rawMeasurement;
-// static uint16_t phase_C_rawMeasurement;
-
 static uint16_t phase_a_offset_adc;
 static uint16_t phase_b_offset_adc;
 static uint16_t phase_c_offset_adc;
@@ -72,6 +66,7 @@ void ADC_Init()
   ADC_Calibrate();
   ADC_CalibratePhaseOffsets();
 
+  //LL_ADC_EnableIT_JEOS(ADC1); NOT ADDED IN EXTI FOR NOW
   LL_ADC_Enable(ADC1);
   LL_ADC_INJ_StartConversion(ADC1);
 }
@@ -114,6 +109,21 @@ uint16_t ADC_GetNtcVoltage()
   uint16_t measurement = ADC_ReadSingleChannelRaw(NTC_CHANNEL);
   NTC_Measurement      = MovingAvarage_Filter(NTC_Filter, measurement);
   return NTC_Measurement*ADC_VREF_MV / ADC_FULL_SCALE;
+}
+
+uint16_t ADC_GetPhaseARawCurrentMeasurement()
+{
+  return ADC_ReadSingleChannelRaw(PHASE_A_CHANNEL);
+}
+
+uint16_t ADC_GetPhaseBRawCurrentMeasurement()
+{
+  return ADC_ReadSingleChannelRaw(PHASE_B_CHANNEL);
+}
+
+uint16_t ADC_GetPhaseCRawCurrentMeasurement()
+{
+  return ADC_ReadSingleChannelRaw(PHASE_C_CHANNEL);
 }
 
 static void ADC_CalibratePhaseOffsets(void)
