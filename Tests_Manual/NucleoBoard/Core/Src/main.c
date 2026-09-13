@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "ADC_Service.h"
 #include "adc.h"
 #include "icache.h"
 #include "tim.h"
@@ -100,49 +101,8 @@ void UART_PrintPolling(const char *pData,uint8_t length)
 	  }
 }
 
-
-void ADC_Start();
-
-static uint16_t DcLinkMeasurement;
-static uint16_t NtcMeasurement;
-
 #define ADC_MAX              4095
-#define DIVIDER_CONSTANT     126
 #define REFERENCE_VOLTAGE_mV 3300
-
-
-void ADC_Start()
-{
-	LL_ADC_REG_StartConversion(ADC1);
-
-	while(!LL_ADC_IsActiveFlag_EOC(ADC1))
-		  ;
-
-	DcLinkMeasurement = LL_ADC_REG_ReadConversionData12(ADC1); // result A0
-
-	while(!LL_ADC_IsActiveFlag_EOC(ADC1))
-		;
-
-	NtcMeasurement = LL_ADC_REG_ReadConversionData12(ADC1); // result A1
-	//LL_ADC_ClearFlag_EOC(ADC1);
-
-}
-
-uint32_t GetDcLinkVoltage(uint16_t adcMeasurement)
-{
-	// ADC_Start();
-
-	uint32_t result;
-	result = DIVIDER_CONSTANT * REFERENCE_VOLTAGE_mV * adcMeasurement / ADC_MAX;
-	return result;
-}
-
-uint16_t GetNtcVoltage()
-{
-	ADC_Start();
-	return NtcMeasurement*REFERENCE_VOLTAGE_mV / ADC_MAX;
-}
-
 #define V_BIAS 1700
 
 int32_t GetCurrent(uint16_t adcMeasurement)
@@ -326,13 +286,7 @@ int main(void)
 
 
   LOG_Init(UART_PrintPolling, 10);
-
-
-
-  Calculate_MIDpoints();
-
-  LL_ADC_Enable(ADC1);
-  LL_ADC_INJ_StartConversion(ADC1);
+  ADC_Init();
 
   LL_TIM_EnableAllOutputs(TIM1);
   LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH1);
@@ -363,19 +317,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    sprintf(buffer, "DC link voltage: %lu V",GetDcLinkVoltage(LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_1)));
-    LOG(buffer);
-
-    // float current = GetCurrent(LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2));
-
-    // // Wyciągamy część całkowitą i ułamkową (np. dla 2 miejsc po przecinku)
-    // int32_t integral = (int32_t)current;
-    // int32_t fractional = (int32_t)((current - integral) * 100);
-
-    // // Obsługa wartości ujemnych dla części ułamkowej
-    // if (fractional < 0) {
-    //   fractional = -fractional;
-    // }
+    // sprintf(buffer, "DC link voltage: %lu V",GetDcLinkVoltage(LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_1)));
+    // LOG(buffer);
 
     // sprintf(buffer, "%ld.%02ld A", integral, fractional);
     // LOG(buffer);
@@ -384,17 +327,19 @@ int main(void)
     // PrintCurrent_B();
     // PrintCurrent_C();
 
-    while(!LL_ADC_IsActiveFlag_JEOS(ADC1))
-      ;
+    // while(!LL_ADC_IsActiveFlag_JEOS(ADC1))
+    //   ;
 
-    //Print_ADC_CurrentValues();
-    PrintCurrent_A();
-    PrintCurrent_B();
-    PrintCurrent_C();
-    LL_ADC_ClearFlag_JEOS(ADC1);
+    // //Print_ADC_CurrentValues();
+    // PrintCurrent_A();
+    // PrintCurrent_B();
+    // PrintCurrent_C();
+    // LL_ADC_ClearFlag_JEOS(ADC1);
 
     for(uint32_t delay = 0; delay < 9000000; delay++)
 	    ;
+
+    LOG("Alive");
 
     
 //	  int16_t Temp = Thermistor_GetHeatsinkTemp();

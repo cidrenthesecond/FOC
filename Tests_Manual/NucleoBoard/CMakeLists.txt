@@ -46,7 +46,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${MAIN_DIR}/Common/Src/Thermistor.c
 
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/GPIO_Driver.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/FunctionGenerator.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/FPU/FPU.c
 )
 

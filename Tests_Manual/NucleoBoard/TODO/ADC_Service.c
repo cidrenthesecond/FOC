@@ -24,11 +24,11 @@ static uint16_t phase_A_Measurement;
 static uint16_t phase_B_Measurement;
 static uint16_t phase_C_Measurement;
 
-static uint16_t bus_rawMeasurement;
-static uint16_t NTC_rawMeasurement;
-static uint16_t phase_A_rawMeasurement;
-static uint16_t phase_B_rawMeasurement;
-static uint16_t phase_C_rawMeasurement;
+// static uint16_t bus_rawMeasurement;
+// static uint16_t NTC_rawMeasurement;
+// static uint16_t phase_A_rawMeasurement;
+// static uint16_t phase_B_rawMeasurement;
+// static uint16_t phase_C_rawMeasurement;
 
 static uint16_t phase_a_offset_adc;
 static uint16_t phase_b_offset_adc;
@@ -51,7 +51,7 @@ typedef union {
     } bits;
 } StatusRegister_t;
 
-StatusRegister_t status = {0};
+static volatile StatusRegister_t status = {0};
 
 static void ADC_CalibratePhaseOffsets(void);
 static void ADC_PrepareForPhaseOffsetMeasurement(void);
@@ -59,16 +59,21 @@ static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t *
 static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data);
 static void ADC_Calibrate();
 
+static uint32_t ADC_CalculateDcLinkVoltage(uint16_t adcMeasurement);
+
 void ADC_Init()
 {
-    NTC_Filter     = MovingAvarage_Init(FILTER_KERNEL);
-    DcBus_Filter   = MovingAvarage_Init(FILTER_KERNEL);
-    Phase_A_Filter = MovingAvarage_Init(FILTER_KERNEL);
-    Phase_B_Filter = MovingAvarage_Init(FILTER_KERNEL);
-    Phase_C_Filter = MovingAvarage_Init(FILTER_KERNEL);
+  NTC_Filter     = MovingAvarage_Init(FILTER_KERNEL);
+  DcBus_Filter   = MovingAvarage_Init(FILTER_KERNEL);
+  Phase_A_Filter = MovingAvarage_Init(FILTER_KERNEL);
+  Phase_B_Filter = MovingAvarage_Init(FILTER_KERNEL);
+  Phase_C_Filter = MovingAvarage_Init(FILTER_KERNEL);
 
-    ADC_Calibrate();
-    ADC_CalibratePhaseOffsets();
+  ADC_Calibrate();
+  ADC_CalibratePhaseOffsets();
+
+  LL_ADC_Enable(ADC1);
+  LL_ADC_INJ_StartConversion(ADC1);
 }
 
 static uint16_t ADC_ReadSingleChannelRaw(uint32_t channel)
@@ -92,18 +97,23 @@ static void ADC_Calibrate()
 	  ;
 }
 
-
-uint32_t GetDcLinkVoltage(uint16_t adcMeasurement)
+uint32_t ADC_GetDcLinkVoltage()
 {
-	uint32_t result;
-	result = DIVIDER_CONSTANT * ADC_VREF_MV * adcMeasurement / ADC_FULL_SCALE;
-	return result;
+  uint16_t measurement = ADC_ReadSingleChannelRaw(DC_LINK_CHANNEL);
+  bus_Measurement      = MovingAvarage_Filter(DcBus_Filter, measurement);
+  return ADC_CalculateDcLinkVoltage(bus_Measurement);
 }
 
-uint16_t GetNtcVoltage()
+uint32_t ADC_CalculateDcLinkVoltage(uint16_t adcMeasurement)
 {
-	ADC_Start();
-	return NTC_Measurement*ADC_VREF_MV / ADC_FULL_SCALE;
+	return DIVIDER_CONSTANT * ADC_VREF_MV * adcMeasurement / ADC_FULL_SCALE;
+}
+
+uint16_t ADC_GetNtcVoltage()
+{
+  uint16_t measurement = ADC_ReadSingleChannelRaw(NTC_CHANNEL);
+  NTC_Measurement      = MovingAvarage_Filter(NTC_Filter, measurement);
+  return NTC_Measurement*ADC_VREF_MV / ADC_FULL_SCALE;
 }
 
 static void ADC_CalibratePhaseOffsets(void)
