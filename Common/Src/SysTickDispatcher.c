@@ -67,6 +67,7 @@ int SysTickDispatcher_Subscribe(void (*Task)(void),uint32_t period_ms)
     }
 
     return SYSTICKDISPATCHER_SUCCESS;
+    
 }
 
 int SysTickDispatcher_UnSubscribe(void (*Task)(void),uint32_t period_ms)
