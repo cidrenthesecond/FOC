@@ -4,6 +4,7 @@
 #include "stdint.h"
 
 #define MAX_COMMANDS 20
+#define MAX_ARGS     5
 
 enum {
     CMD_FAIL = 0,

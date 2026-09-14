@@ -8,6 +8,8 @@ target_sources(CommandExecute_test PRIVATE
     InitAndRegister_TestsRunner.c
     Execute_TestsRunner.c
     Execute_Test.c
+    ArgumentParsing_Test.c
+    ArgumentParsing_TestRunner.c
 
     ${MAIN_DIR}/Common/Src/CommandExecute.c
 )

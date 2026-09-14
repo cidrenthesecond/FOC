@@ -32,4 +32,6 @@ TEST_GROUP_RUNNER(CommandExecute)
 
     RUN_TEST_CASE(CommandExecute, Execute_WhenCommandIsNotRegistered_ThrowsError);
     RUN_TEST_CASE(CommandExecute, Execute_MultipleExecutions);
+
+    RUN_TEST_CASE(CommandExecute, Execute_AllIndexesWork);
 }

@@ -12,7 +12,7 @@ TEST_GROUP(InitAndRegister);
 
 static void FILL_COMMAND_LIST()
 {
-    for(int index = 1; index < MAX_COMMANDS; index++)
+    for(int index = 1; index <= MAX_COMMANDS; index++)
         CommandExecute_Register(index,FakeCommand1);
 }
 
@@ -40,9 +40,9 @@ TEST(InitAndRegister, Register_WhenIndexEqualToZero_ThrowsFail)
 }
 
 //ZMIANA NAZWY
-TEST(InitAndRegister, Register_WhenIndexIsHigherThanMaxCommands_ThrowsFail)
+TEST(InitAndRegister, Register_WhenIndexIsEqualMaxCommands_ThrowsSuccess)
 {
-    TEST_ASSERT_EQUAL(CMD_FAIL, CommandExecute_Register(MAX_COMMANDS+1,FakeCommand1));
+    TEST_ASSERT_EQUAL(CMD_SUCCESS, CommandExecute_Register(MAX_COMMANDS,FakeCommand1));
 }
 
 TEST(InitAndRegister, Register_WhenIndexBiggerThanMaxCommands_ThrowsFail)
@@ -73,7 +73,8 @@ TEST(InitAndRegister, Destroy_ClearsCommandsList)
     CommandExecute_Init();
 
     TEST_ASSERT_EQUAL(CMD_SUCCESS,CommandExecute_Register(3,FakeCommand1));
-    TEST_ASSERT_EQUAL(CMD_SUCCESS,CommandExecute_Register(15,FakeCommand1));
+    TEST_ASSERT_EQUAL(CMD_SUCCESS,CommandExecute_Register(1,FakeCommand1));
+    TEST_ASSERT_EQUAL(CMD_SUCCESS,CommandExecute_Register(20,FakeCommand1));
     TEST_ASSERT_EQUAL(CMD_SUCCESS,CommandExecute_Register(5,FakeCommand1));
 }
 

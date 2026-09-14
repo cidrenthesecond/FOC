@@ -64,7 +64,10 @@ TEST(CommandExecute, Execute_WhenIndexEqualToZero_ThrowsError)
 
 TEST(CommandExecute, Execute_WhenIndexIsHigherThanMaxIndex_ThrowsError)
 {
-    TEST_ASSERT_EQUAL(CMD_FAIL,CommandExecute("cmd 125"));
+    char command[60];
+    sprintf(command,"cmd %u",MAX_COMMANDS+1);
+
+    TEST_ASSERT_EQUAL(CMD_FAIL,CommandExecute(command));
 }
 
 TEST(CommandExecute, Execute_WhenIndexIsNegative_ThrowsError)
@@ -164,6 +167,21 @@ TEST(CommandExecute, Execute_MultipleExecutions)
 
     TEST_ASSERT_EQUAL(3,FakeCommand_fake.call_count);
 }
+
+//Boundary conditions
+TEST(CommandExecute, Execute_AllIndexesWork)
+{
+    for(uint32_t i = 1; i <= MAX_COMMANDS; i++)
+    {
+        CommandExecute_Register(i,FakeCommand);
+        char command[60] = {0};
+        sprintf(command,"cmd %u",i);
+        CommandExecute(command);
+    }
+    
+    TEST_ASSERT_EQUAL(MAX_COMMANDS,FakeCommand_fake.call_count);
+}
+
 
 
 

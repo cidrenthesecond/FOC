@@ -2,7 +2,6 @@
 #include "string.h"
 #include <stdlib.h>
 
-#define MAX_ARGS            5 
 #define COMMAND_BUFFER_SIZE 64
 #define MAX_LIST_INDEX      MAX_COMMANDS+1
 
@@ -15,9 +14,6 @@
 //<argX> - arguments
 //example:
 //cmd 16 1
-
-
-typedef void (*CommandFunc)(int argc, char *argv[]);
 
 typedef struct {
     CommandFunc func;
@@ -88,7 +84,7 @@ int CommandExecute(const char*input)
     if(*end != '\0')
         return CMD_FAIL;
 
-    if(commandIndex < 1 || commandIndex >= MAX_COMMANDS)
+    if(commandIndex < 1 || commandIndex > MAX_COMMANDS)
         return CMD_FAIL;
 
     if(CommandList[commandIndex].func == NULL)
@@ -100,7 +96,7 @@ int CommandExecute(const char*input)
 
 void CommandExecute_Destroy()
 {
-    for(uint8_t index = 0; index < MAX_COMMANDS; index++)
+    for(uint8_t index = 0; index <= MAX_COMMANDS; index++)
         CommandList[index].func = NULL;
 
     isInitalised = 0;
