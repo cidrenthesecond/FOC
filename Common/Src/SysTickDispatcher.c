@@ -55,7 +55,17 @@ int SysTickDispatcher_Subscribe(void (*Task)(void),uint32_t period_ms)
     if(period_ms == 0)
         return SYSTICKDISPATCHER_FAIL;
 
-    
+    if(isInitialised == 0)
+        return SYSTICKDISPATCHER_FAIL;
+
+    if(Task == NULL)
+        return SYSTICKDISPATCHER_FAIL;
+
+    for(uint8_t index = 0; index < SYS_TICK_DISPATCHER_MAX_TASKS; index++)
+    {
+        if(tasksList[index].taskToDispatch == Task)
+            return SYSTICKDISPATCHER_FAIL;
+    }
 
     for(uint8_t index = 0; index < SYS_TICK_DISPATCHER_MAX_TASKS; index++)
     {
@@ -66,7 +76,8 @@ int SysTickDispatcher_Subscribe(void (*Task)(void),uint32_t period_ms)
         }
     }
 
-    return SYSTICKDISPATCHER_SUCCESS;
+    return SYSTICKDISPATCHER_FAIL;
+    
 }
 
 int SysTickDispatcher_UnSubscribe(void (*Task)(void),uint32_t period_ms)
@@ -76,6 +87,9 @@ int SysTickDispatcher_UnSubscribe(void (*Task)(void),uint32_t period_ms)
 
     if(tasksNum == 0)
         return SYSTICKDISPATCHER_NO_TASKS;
+
+    if(Task == NULL || period_ms == 0)
+        return SYSTICKDISPATCHER_FAIL;
 
     for(uint8_t index = 0; index < SYS_TICK_DISPATCHER_MAX_TASKS; index++)
     {
