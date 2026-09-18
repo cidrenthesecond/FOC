@@ -44,11 +44,13 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${MAIN_DIR}/Common/Src/PID.c
     ${MAIN_DIR}/Common/Src/Relay.c
     ${MAIN_DIR}/Common/Src/Thermistor.c
+    ${MAIN_DIR}/Common/Src/CommandExecute.c
 
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/GPIO_Driver.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/FPU/FPU.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/ADC_Service.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/Moving_Avarage_Filter.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/CMD_Manager.c
 )
 
 # Add include paths

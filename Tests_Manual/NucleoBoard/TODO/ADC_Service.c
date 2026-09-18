@@ -5,12 +5,6 @@
 #include "Logger.h"
 #include "stdio.h"
 
-#define NTC_CHANNEL     LL_ADC_CHANNEL_0
-#define DC_LINK_CHANNEL LL_ADC_CHANNEL_1
-#define PHASE_A_CHANNEL LL_ADC_CHANNEL_3
-#define PHASE_B_CHANNEL LL_ADC_CHANNEL_4
-#define PHASE_C_CHANNEL LL_ADC_CHANNEL_7
-
 #define ADC_FULL_SCALE           4095
 #define ADC_VREF_MV              3300
 #define DIVIDER_CONSTANT         126  // do przeliczenia jeszcze raz i zmiana nazwy
@@ -18,14 +12,24 @@
 #define ADC_OFFSET_SAMPLES_COUNT 5U
 #define FILTER_KERNEL 3
 
+static const uint32_t adc_channel_map[5] =
+{
+    [PHASE_A_CHANNEL]     = LL_ADC_CHANNEL_3,
+    [PHASE_B_CHANNEL]     = LL_ADC_CHANNEL_4,
+    [PHASE_C_CHANNEL]     = LL_ADC_CHANNEL_7,
+    [BUS_VOLTAGE_CHANNEL] = LL_ADC_CHANNEL_1,
+    [NTC_VOLTAGE_CHANNEL] = LL_ADC_CHANNEL_0
+};
+
 typedef struct{
   uint16_t raw;
   uint16_t filtered;
 } VoltageMeasurement_t;
 
 typedef struct{
-  int16_t raw_delta;
-  int16_t filtered_delta;
+  uint16_t raw;
+  uint16_t filtered;
+  int16_t delta;
 } CurrentMeasurement_t;
 
 VoltageMeasurement_t Bus_Voltage;
@@ -69,9 +73,7 @@ static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t *
 static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data);
 static void ADC_Calibrate();
 
-static float CalculatePhaseCurrent(int16_t measurement);
-
-static uint32_t ADC_CalculateDcLinkVoltage(uint16_t adcMeasurement);
+static int32_t CalculatePhaseCurrent(int16_t measurement);
 
 void ADC_Init()
 {
@@ -89,27 +91,28 @@ void ADC_Init()
   LL_ADC_INJ_StartConversion(ADC1);
 }
 
-static uint16_t ADC_ReadSingleChannelRaw(uint32_t channel)
+uint16_t ADC_ReadSingleChannelRaw(ADC_Channel_t channel)
 {
-    //TO DO: Czy tutaj nie musze zamienic kanalow miejscami?
-    LL_ADC_REG_SetSequencerRanks(ADC1, LL_ADC_REG_RANK_1, channel);
+  uint32_t ll_channel = adc_channel_map[channel];
 
-    LL_ADC_REG_StartConversion(ADC1);
-    while (!LL_ADC_IsActiveFlag_EOC(ADC1))
-        ;
-    LL_ADC_ClearFlag_EOC(ADC1);
+  LL_ADC_REG_SetSequencerRanks(ADC1, LL_ADC_REG_RANK_1, ll_channel);
+  LL_ADC_REG_StartConversion(ADC1);
 
-    return LL_ADC_REG_ReadConversionData12(ADC1);
+  while (!LL_ADC_IsActiveFlag_EOC(ADC1))
+      ;
+
+  LL_ADC_ClearFlag_EOC(ADC1);
+
+  return LL_ADC_REG_ReadConversionData12(ADC1);
 }
 
-static void ADC_Calibrate()
+
+//______________DC Link_____________
+
+uint32_t ADC_CalculateDcLinkVoltage(uint16_t adcMeasurement)
 {
-  LL_ADC_StartCalibration(ADC1, LL_ADC_SINGLE_ENDED);
-
-  while(LL_ADC_IsCalibrationOnGoing(ADC1))
-	  ;
+	return DIVIDER_CONSTANT * ADC_VREF_MV * adcMeasurement / ADC_FULL_SCALE;
 }
-
 uint32_t ADC_GetDcLinkVoltage()
 {
   // uint16_t measurement = ADC_ReadSingleChannelRaw(DC_LINK_CHANNEL);
@@ -117,31 +120,38 @@ uint32_t ADC_GetDcLinkVoltage()
   return ADC_CalculateDcLinkVoltage(Bus_Voltage.filtered);
 }
 
-uint32_t ADC_CalculateDcLinkVoltage(uint16_t adcMeasurement)
-{
-	return DIVIDER_CONSTANT * ADC_VREF_MV * adcMeasurement / ADC_FULL_SCALE;
-}
+//_____________NTC______________
 
+//TO DO
 uint16_t ADC_GetNtcVoltage()
 {
-  uint16_t measurement = ADC_ReadSingleChannelRaw(NTC_CHANNEL);
+  uint16_t measurement = ADC_ReadSingleChannelRaw(NTC_VOLTAGE_CHANNEL);
   NTC_Measurement      = MovingAvarage_Filter(NTC_Filter, measurement);
-  return NTC_Measurement*ADC_VREF_MV / ADC_FULL_SCALE;
+  return ADC_CalculateNtcVoltage(NTC_Measurement);
 }
 
-uint16_t ADC_GetPhaseARawCurrentMeasurement()
+uint16_t ADC_CalculateNtcVoltage(uint16_t adcMeasurement)
 {
-  return ADC_ReadSingleChannelRaw(PHASE_A_CHANNEL);
+  return adcMeasurement*ADC_VREF_MV / ADC_FULL_SCALE;
 }
 
-uint16_t ADC_GetPhaseBRawCurrentMeasurement()
+//____________Phase Currents______________
+
+
+
+int32_t ADC_CalculatePhaseCurrent(int16_t delta)
 {
-  return ADC_ReadSingleChannelRaw(PHASE_B_CHANNEL);
+  return delta*3128/1000;
+  //return (float)delta*3.128f;
 }
 
-uint16_t ADC_GetPhaseCRawCurrentMeasurement()
+
+static void ADC_Calibrate()
 {
-  return ADC_ReadSingleChannelRaw(PHASE_C_CHANNEL);
+  LL_ADC_StartCalibration(ADC1, LL_ADC_SINGLE_ENDED);
+
+  while(LL_ADC_IsCalibrationOnGoing(ADC1))
+	  ;
 }
 
 static void ADC_CalibratePhaseOffsets(void)
@@ -212,10 +222,9 @@ static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16
   phase_c_offset_adc = c_sum /ADC_OFFSET_SAMPLES_COUNT;
 }
 
-static float CalculatePhaseCurrent(int16_t delta)
-{
-  return (float)delta*3.128f;
-}
+
+
+
 
 void PrintCurrent_B()
 {
@@ -237,15 +246,6 @@ void PrintCurrent_B_ma()
   char buffer1[30] = {0};
   sprintf(buffer1,"B : %d",value);
   LOG(buffer1);
-}
-void PrintFloat(float x);
-
-void PrintCurrent_B_float()
-{
-  uint16_t measurement = ADC_ReadSingleChannelRaw(LL_ADC_CHANNEL_4);
-  int16_t delta = (int16_t)measurement - phase_b_offset_adc;
-  float current = CalculatePhaseCurrent(delta);
-  PrintFloat(current);
 }
 
 void PrintFloat(float x)

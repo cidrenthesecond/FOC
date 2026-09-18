@@ -35,6 +35,8 @@
 #include "Thermistor.h"
 #include "FPU.h"
 #include "ADC_Service.h"
+#include "CommandExecute.h"
+#include "CMD_Manager.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -180,7 +182,6 @@ void Print_ADC_CurrentValues()
 
 extern void PrintCurrent_B();
 extern void PrintCurrent_B_ma();
-extern void PrintCurrent_B_float();
 
 /* USER CODE END 0 */
 
@@ -248,6 +249,9 @@ int main(void)
   LL_USART_EnableDirectionRx(USART2);
   Start_USART_RX_DMA();
   LL_USART_Enable(USART2);
+
+  CommandExecute_Init();
+  CommandExecute_Register(10, ADC_Measure);
   
 
   
@@ -290,7 +294,8 @@ int main(void)
 
     if(data_ready_flag)
     {
-      LOG(rx_buffer);
+      CommandExecute(rx_buffer);
+      //LOG(rx_buffer);
       memset(rx_buffer,0,sizeof(rx_buffer));
       data_ready_flag = 0;
       Start_USART_RX_DMA();
@@ -302,7 +307,6 @@ int main(void)
     // LOG(buffer);
     PrintCurrent_B();
     PrintCurrent_B_ma();
-    PrintCurrent_B_float();
 
     for(uint32_t delay = 0; delay < 9000000; delay++)
 	    ;
