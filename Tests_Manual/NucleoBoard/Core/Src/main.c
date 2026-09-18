@@ -239,6 +239,7 @@ int main(void)
 
   CommandExecute_Init();
   CommandExecute_Register(10, ADC_Measure);
+  CommandExecute_Register(11, NTC_Measure);
   
 
   
@@ -254,31 +255,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // sprintf(buffer, "DC link voltage: %lu V",GetDcLinkVoltage(LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_1)));
-    // LOG(buffer);
-
-    // sprintf(buffer, "%ld.%02ld A", integral, fractional);
-    // LOG(buffer);
-    // Print_Current();
-    // PrintCurrent_A();
-    // PrintCurrent_B();
-    // PrintCurrent_C();
-
-    // while(!LL_ADC_IsActiveFlag_JEOS(ADC1))
-    //   ;
-
-    // //Print_ADC_CurrentValues();
-    // PrintCurrent_A();
-    // PrintCurrent_B();
-    // PrintCurrent_C();
-    // LL_ADC_ClearFlag_JEOS(ADC1);
-
     if(LL_ADC_IsActiveFlag_JEOS(ADC1))
     {
       Print_ADC_CurrentValues();
     }
       
-
     if(data_ready_flag)
     {
       CommandExecute(rx_buffer);
@@ -287,9 +268,6 @@ int main(void)
       Start_USART_RX_DMA();
     }
       
-    PrintCurrent_B();
-    PrintCurrent_B_ma();
-
     for(uint32_t delay = 0; delay < 9000000; delay++)
 	    ;
 

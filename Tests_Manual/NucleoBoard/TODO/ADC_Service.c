@@ -144,8 +144,6 @@ Phase_Currents_t ADC_CalculatePhaseCurrents(uint16_t ADC_Phase_A, uint16_t ADC_P
   result.Current_B = ((int32_t)ADC_Phase_B - (int32_t)phase_b_offset_adc) *3128/1000;
   result.Current_C = ((int32_t)ADC_Phase_C - (int32_t)phase_c_offset_adc) *3128/1000;
   return result;
-  //return adc_measurement*3128/1000;
-  //return (float)delta*3.128f;
 }
 
 

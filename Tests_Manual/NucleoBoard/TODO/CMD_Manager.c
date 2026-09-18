@@ -1,6 +1,7 @@
 #include "stdint.h"
 #include "stdint.h"
 #include "ADC_Service.h"
+#include "Thermistor.h"
 #include "Logger.h"
 #include "stdlib.h"
 #include <stdio.h>
@@ -69,4 +70,13 @@ void ADC_Measure(int argc, char *argv[])
         default:
             break;
     }
+}
+
+void NTC_Measure(int argc, char *argv[])
+{
+    int16_t Temp = Thermistor_GetHeatsinkTemp();
+
+    char message[32];
+    sprintf(message, "[NTC] : HT Temp : %d",Temp);
+    LOG(message);
 }
