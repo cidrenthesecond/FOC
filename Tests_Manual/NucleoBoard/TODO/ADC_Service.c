@@ -18,6 +18,22 @@
 #define ADC_OFFSET_SAMPLES_COUNT 5U
 #define FILTER_KERNEL 3
 
+typedef struct{
+  uint16_t raw;
+  uint16_t filtered;
+} VoltageMeasurement_t;
+
+typedef struct{
+  int16_t raw_delta;
+  int16_t filtered_delta;
+} CurrentMeasurement_t;
+
+VoltageMeasurement_t Bus_Voltage;
+VoltageMeasurement_t NTC_Voltage;
+CurrentMeasurement_t A_Current;
+CurrentMeasurement_t B_Current;
+CurrentMeasurement_t C_Current;  
+
 static uint16_t bus_Measurement;
 static uint16_t NTC_Measurement;
 static uint16_t phase_A_Measurement;
@@ -52,6 +68,8 @@ static void ADC_PrepareForPhaseOffsetMeasurement(void);
 static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t * c_data);
 static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data);
 static void ADC_Calibrate();
+
+static float CalculatePhaseCurrent(int16_t measurement);
 
 static uint32_t ADC_CalculateDcLinkVoltage(uint16_t adcMeasurement);
 
@@ -94,9 +112,9 @@ static void ADC_Calibrate()
 
 uint32_t ADC_GetDcLinkVoltage()
 {
-  uint16_t measurement = ADC_ReadSingleChannelRaw(DC_LINK_CHANNEL);
-  bus_Measurement      = MovingAvarage_Filter(DcBus_Filter, measurement);
-  return ADC_CalculateDcLinkVoltage(bus_Measurement);
+  // uint16_t measurement = ADC_ReadSingleChannelRaw(DC_LINK_CHANNEL);
+  // bus_Measurement      = MovingAvarage_Filter(DcBus_Filter, measurement);
+  return ADC_CalculateDcLinkVoltage(Bus_Voltage.filtered);
 }
 
 uint32_t ADC_CalculateDcLinkVoltage(uint16_t adcMeasurement)
@@ -194,6 +212,50 @@ static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16
   phase_c_offset_adc = c_sum /ADC_OFFSET_SAMPLES_COUNT;
 }
 
+static float CalculatePhaseCurrent(int16_t delta)
+{
+  return (float)delta*3.128f;
+}
+
+void PrintCurrent_B()
+{
+  uint16_t adc_measurement = ADC_ReadSingleChannelRaw(LL_ADC_CHANNEL_4);//LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
+  int16_t delta = (int16_t)adc_measurement - phase_b_offset_adc;
+  int16_t value = delta *3;
+
+  char buffer1[30] = {0};
+  sprintf(buffer1,"B : %d",value);
+  LOG(buffer1);
+}
+
+void PrintCurrent_B_ma()
+{
+  uint16_t adc_measurement = ADC_ReadSingleChannelRaw(LL_ADC_CHANNEL_4);//LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
+  int16_t delta = (int16_t)adc_measurement - phase_b_offset_adc;
+  int16_t value = delta *3128/1000;
+
+  char buffer1[30] = {0};
+  sprintf(buffer1,"B : %d",value);
+  LOG(buffer1);
+}
+void PrintFloat(float x);
+
+void PrintCurrent_B_float()
+{
+  uint16_t measurement = ADC_ReadSingleChannelRaw(LL_ADC_CHANNEL_4);
+  int16_t delta = (int16_t)measurement - phase_b_offset_adc;
+  float current = CalculatePhaseCurrent(delta);
+  PrintFloat(current);
+}
+
+void PrintFloat(float x)
+{
+  int decimal    = (int)x;
+  int fractional = (int)((x - decimal)*100);
+  char buffer[30];
+  sprintf(buffer, "B: %d.%02d", decimal,fractional);
+  LOG(buffer);
+}
 
 
 //PRZERWANIE KTORE LICZY prady

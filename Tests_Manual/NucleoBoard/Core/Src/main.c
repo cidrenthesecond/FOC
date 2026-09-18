@@ -18,8 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "ADC_Service.h"
 #include "adc.h"
+#include "gpdma.h"
 #include "icache.h"
 #include "tim.h"
 #include "usart.h"
@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include "Thermistor.h"
 #include "FPU.h"
+#include "ADC_Service.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -100,6 +101,57 @@ void UART_PrintPolling(const char *pData,uint8_t length)
 	  }
 }
 
+void Send_USART_DMA_LL(const char *pData, uint8_t Size)
+{
+    // 1. Wyłącz kanał DMA przed konfiguracją
+    LL_DMA_DisableChannel(GPDMA1, LL_DMA_CHANNEL_0);
+
+    // 2. Ustaw adres źródłowy (pamięć RAM)
+    LL_DMA_SetSrcAddress(GPDMA1, LL_DMA_CHANNEL_0, (uint32_t)pData);
+
+    // 3. Ustaw adres docelowy (rejestr nadawczy USART TDR)
+    LL_DMA_SetDestAddress(GPDMA1, LL_DMA_CHANNEL_0, LL_USART_DMA_GetRegAddr(USART2, LL_USART_DMA_REG_DATA_TRANSMIT));
+
+    // 4. Ustaw liczbę bajtów do przesłania
+    LL_DMA_SetBlkDataLength(GPDMA1, LL_DMA_CHANNEL_0, Size);
+
+    // 5. Wyczyść flagę zakończenia transferu (Transfer Complete) na kanale 0
+    LL_DMA_ClearFlag_TC(GPDMA1, LL_DMA_CHANNEL_0);
+
+    // 6. Włącz kanał GPDMA
+    LL_DMA_EnableChannel(GPDMA1, LL_DMA_CHANNEL_0);
+
+    // 7. Włącz żądanie transmisji DMA w peryferium USART
+    LL_USART_EnableDMAReq_TX(USART2);
+}
+
+char rx_buffer[64];
+volatile uint16_t rx_bytes_received = 0;
+volatile uint8_t data_ready_flag = 0;
+
+void Start_USART_RX_DMA(void)
+{
+    // 1. Wyłącz kanał DMA przed konfiguracją
+    LL_DMA_DisableChannel(GPDMA1, LL_DMA_CHANNEL_1);
+
+    // 2. Adres źródłowy (rejestr odbiorczy USART RDR)
+    LL_DMA_SetSrcAddress(GPDMA1, LL_DMA_CHANNEL_1, LL_USART_DMA_GetRegAddr(USART2, LL_USART_DMA_REG_DATA_RECEIVE));
+
+    // 3. Adres docelowy (bufor w RAM)
+    LL_DMA_SetDestAddress(GPDMA1, LL_DMA_CHANNEL_1, (uint32_t)rx_buffer);
+
+    // 4. Maksymalny rozmiar oczekiwanego bufora
+    LL_DMA_SetBlkDataLength(GPDMA1, LL_DMA_CHANNEL_1, 64);
+
+    // 5. Włącz kanał DMA i zgłoszenie DMA w USART
+    LL_DMA_EnableChannel(GPDMA1, LL_DMA_CHANNEL_1);
+    LL_USART_EnableDMAReq_RX(USART2);
+
+    // 6. Wyczyść i włącz przerwanie IDLE Line w USART
+    LL_USART_ClearFlag_IDLE(USART2);
+    LL_USART_EnableIT_IDLE(USART2);
+}
+
 #define ADC_MAX              4095
 #define REFERENCE_VOLTAGE_mV 3300
 #define V_BIAS 1700
@@ -115,127 +167,21 @@ int32_t GetCurrent(uint16_t adcMeasurement)
 
 void Print_ADC_CurrentValues()
 {
-  char buffer1[30] = {0};
+  char buffer1[60] = {0};
 
-  sprintf(buffer1, "%u",LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2));
+  uint16_t a = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
+  uint16_t b = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
+  uint16_t c = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_4);
+
+  sprintf(buffer1, "A:%u B:%u C:%u",a,b,c);
   LOG(buffer1);
 
-  sprintf(buffer1, "%u",LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3));
-  LOG(buffer1);
-
-  sprintf(buffer1, "%u",LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_4));
-  LOG(buffer1);
 }
 
-void Print_Current()
-{
-  char buffer1[30] = {0};
+extern void PrintCurrent_B();
+extern void PrintCurrent_B_ma();
+extern void PrintCurrent_B_float();
 
-  sprintf(buffer1, "%ld",GetCurrent(LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2)));
-  LOG(buffer1);
-
-  sprintf(buffer1, "%ld",GetCurrent(LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3)));
-  LOG(buffer1);
-
-  sprintf(buffer1, "%ld",GetCurrent(LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_4)));
-  LOG(buffer1);
-}
-
-uint16_t a_mid,b_mid,c_mid;
-
-void Calculate_MIDpoints()
-{
-  LL_ADC_INJ_SetTriggerSource(ADC1, LL_ADC_INJ_TRIG_SOFTWARE);
-  LL_ADC_Enable(ADC1);
-  while (!LL_ADC_IsActiveFlag_ADRDY(ADC1))
-      ; // Czekamy aż przetwornik będzie gotowy
-
-  LL_ADC_ClearFlag_JEOS(ADC1);
-  LL_ADC_INJ_StartConversion(ADC1);
-  while (!LL_ADC_IsActiveFlag_JEOS(ADC1))
-    ;
-  LL_ADC_ClearFlag_JEOS(ADC1);
-
-  uint16_t a_data[5];
-  uint16_t b_data[5];
-  uint16_t c_data[5];
-
-  for(uint8_t i = 0; i < 5; i++)
-  {
-    LL_ADC_INJ_StartConversion(ADC1);
-
-    while(!LL_ADC_IsActiveFlag_JEOS(ADC1))
-      ;
-
-    a_data[i] = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
-    b_data[i] = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
-    c_data[i] = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_4);
-
-    LL_ADC_ClearFlag_JEOS(ADC1);
-  }
-
-  uint16_t a_sum = 0, b_sum = 0, c_sum = 0;
-
-
-  for(uint8_t i = 0 ; i < 5; i++)
-  {
-    a_sum += a_data[i];
-    b_sum += b_data[i];
-    c_sum += c_data[i];
-  }
-
-  a_mid = a_sum /5;
-  b_mid = b_sum /5;
-  c_mid = c_sum /5;
-
-  char buffer1[30] = {0};
-
-  sprintf(buffer1, "A : %u",a_mid);
-  LOG(buffer1);
-  sprintf(buffer1, "B : %u",b_mid);
-  LOG(buffer1);
-  sprintf(buffer1, "C : %u",c_mid);
-  LOG(buffer1);
-
-  LL_ADC_Disable(ADC1);
-  LL_ADC_INJ_SetTriggerSource(ADC1, LL_ADC_INJ_TRIG_EXT_TIM1_TRGO);
-  
-}
-
-void PrintCurrent_A()
-{
-  uint16_t adc_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
-  int16_t delta = (int16_t)adc_measurement - (int16_t)a_mid;
-  int16_t value = delta * 3;
-
-  char buffer1[30] = {0};
-  sprintf(buffer1,"A : %d",value);
-  LOG(buffer1);
-}
-
-void PrintCurrent_B()
-{
-  uint16_t adc_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
-  int16_t delta = (int16_t)adc_measurement - (int16_t)b_mid;
-  int16_t value = delta *3;
-
-  char buffer1[30] = {0};
-  sprintf(buffer1,"B : %d",value);
-  LOG(buffer1);
-}
-
-void PrintCurrent_C()
-{
-  uint16_t adc_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
-  int16_t delta = (int16_t)adc_measurement - (int16_t)c_mid;
-  int16_t value = delta *3;
-
-  char buffer1[30] = {0};
-  sprintf(buffer1,"C : %d",value);
-  LOG(buffer1);
-}
-
-int test;
 /* USER CODE END 0 */
 
 /**
@@ -276,15 +222,17 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_GPDMA1_Init();
   MX_ICACHE_Init();
   MX_TIM1_Init();
-  MX_USART2_UART_Init();
   MX_ADC1_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   FPU_enable();
 
 
-  LOG_Init(UART_PrintPolling, 10);
+  LOG_Init(Send_USART_DMA_LL, 10);
+  LL_DMA_EnableIT_TC(GPDMA1, LL_DMA_CHANNEL_0);
   ADC_Init();
 
   LL_TIM_EnableAllOutputs(TIM1);
@@ -297,19 +245,18 @@ int main(void)
   LL_TIM_EnableCounter(TIM1);
 
   LL_USART_EnableDirectionTx(USART2);
+  LL_USART_EnableDirectionRx(USART2);
+  Start_USART_RX_DMA();
   LL_USART_Enable(USART2);
   
 
-
-
-
+  
   Relay_Init();
   Relay_SetThreshold(8000);
   TIM1->CCR1 = UINT16_MAX/2;//- 2000;
   TIM1->CCR2 = 0;
   TIM1->CCR3 = 0;
 
-  char buffer[30] = {0};
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -335,10 +282,32 @@ int main(void)
     // PrintCurrent_C();
     // LL_ADC_ClearFlag_JEOS(ADC1);
 
+    if(LL_ADC_IsActiveFlag_JEOS(ADC1))
+    {
+      Print_ADC_CurrentValues();
+    }
+      
+
+    if(data_ready_flag)
+    {
+      LOG(rx_buffer);
+      memset(rx_buffer,0,sizeof(rx_buffer));
+      data_ready_flag = 0;
+      Start_USART_RX_DMA();
+    }
+      
+
+    // stash = ADC_ReadSingleChannelRaw(LL_ADC_CHANNEL_4);
+    // sprintf(buffer, "B: %u",stash);
+    // LOG(buffer);
+    PrintCurrent_B();
+    PrintCurrent_B_ma();
+    PrintCurrent_B_float();
+
     for(uint32_t delay = 0; delay < 9000000; delay++)
 	    ;
 
-    LOG("Alive");
+    // LOG("Alive");
 
     
 //	  int16_t Temp = Thermistor_GetHeatsinkTemp();

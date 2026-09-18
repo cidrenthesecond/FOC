@@ -22,11 +22,13 @@
 #include "stm32h5xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "Logger.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
-
+extern volatile uint16_t rx_bytes_received;
+extern volatile uint8_t data_ready_flag;
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -197,6 +199,69 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32h5xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles GPDMA1 Channel 0 global interrupt.
+  */
+void GPDMA1_Channel0_IRQHandler(void)
+{
+  /* USER CODE BEGIN GPDMA1_Channel0_IRQn 0 */
+  if (LL_DMA_IsActiveFlag_TC(GPDMA1, LL_DMA_CHANNEL_0))
+    {
+        LL_DMA_ClearFlag_TC(GPDMA1, LL_DMA_CHANNEL_0);
+        
+        // Wyłącz żądanie DMA z USART1
+        LL_USART_DisableDMAReq_TX(USART1);
+        LOG_WakeUp();
+
+        // Tutaj kod po zakończeniu nadawania (np. ustawienie flagi w aplikacji)
+    }
+  /* USER CODE END GPDMA1_Channel0_IRQn 0 */
+  /* USER CODE BEGIN GPDMA1_Channel0_IRQn 1 */
+
+  /* USER CODE END GPDMA1_Channel0_IRQn 1 */
+}
+
+/**
+  * @brief This function handles GPDMA1 Channel 1 global interrupt.
+  */
+void GPDMA1_Channel1_IRQHandler(void)
+{
+  /* USER CODE BEGIN GPDMA1_Channel1_IRQn 0 */
+
+  /* USER CODE END GPDMA1_Channel1_IRQn 0 */
+  /* USER CODE BEGIN GPDMA1_Channel1_IRQn 1 */
+
+  /* USER CODE END GPDMA1_Channel1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART2 global interrupt.
+  */
+void USART2_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART2_IRQn 0 */
+  if (LL_USART_IsActiveFlag_IDLE(USART2) && LL_USART_IsEnabledIT_IDLE(USART2))
+    {
+        // 1. Wyczyść flagę IDLE
+        LL_USART_ClearFlag_IDLE(USART2);
+
+        // 2. Tymczasowo zatrzymaj strumień DMA
+        LL_DMA_DisableChannel(GPDMA1, LL_DMA_CHANNEL_1);
+
+        // 3. Oblicz, ile bajtów odebrano (Rozmiar początkowy - Pozostały do odebrania counter)
+        // W STM32H5 czytamy rejestr CBR1 (Block Data Length) dla wskazanego kanału
+        uint32_t remaining_bytes = LL_DMA_GetBlkDataLength(GPDMA1, LL_DMA_CHANNEL_1);
+        rx_bytes_received = 64 - remaining_bytes;
+
+        // 4. Ustaw flagę dla pętli głównej, że dane są gotowe do obróbki
+        data_ready_flag = 1;
+    }
+  /* USER CODE END USART2_IRQn 0 */
+  /* USER CODE BEGIN USART2_IRQn 1 */
+
+  /* USER CODE END USART2_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 
