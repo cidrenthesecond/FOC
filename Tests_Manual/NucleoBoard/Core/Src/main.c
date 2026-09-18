@@ -154,22 +154,6 @@ void Start_USART_RX_DMA(void)
     LL_USART_EnableIT_IDLE(USART2);
 }
 
-void Print_ADC_CurrentValues()
-{
-  char buffer1[60] = {0};
-
-  uint16_t a = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
-  uint16_t b = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
-  uint16_t c = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_4);
-
-  sprintf(buffer1, "A:%u B:%u C:%u",a,b,c);
-  LOG(buffer1);
-
-}
-
-extern void PrintCurrent_B();
-extern void PrintCurrent_B_ma();
-
 /* USER CODE END 0 */
 
 /**
@@ -254,12 +238,7 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {
-    if(LL_ADC_IsActiveFlag_JEOS(ADC1))
-    {
-      Print_ADC_CurrentValues();
-    }
-      
+  {    
     if(data_ready_flag)
     {
       CommandExecute(rx_buffer);
@@ -267,27 +246,8 @@ int main(void)
       data_ready_flag = 0;
       Start_USART_RX_DMA();
     }
-      
-    for(uint32_t delay = 0; delay < 9000000; delay++)
-	    ;
 
-//	  int16_t Temp = Thermistor_GetHeatsinkTemp();
-//	  char buff[20];
-//	  sprintf(buff, "HT : %d\n",Temp);
-//	  LOG(buff);
-
-//	  uint32_t DC = GetDcLinkVoltage();
-//	  char buff[30];
-//	  sprintf(buff, "DC : %lu\n",DC);
-//	  LOG(buff);
-
-//	  ADC_Start();
-//
-//	  char buff[40];
-//	  sprintf(buff, "DC : %u HT : %u\n",DcLinkMeasurement,NtcMeasurement);
-//	  LOG(buff);
-
-//	  while(!Relay_IsOn())
+//	while(!Relay_IsOn())
 //		  Relay_SM();
 //
 //	  for(uint32_t delay = 0; delay < 100000; delay++)
