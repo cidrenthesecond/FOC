@@ -7,9 +7,9 @@
 
 #define ADC_FULL_SCALE           4095
 #define ADC_VREF_MV              3300
-#define DIVIDER_CONSTANT         126  // do przeliczenia jeszcze raz i zmiana nazwy
+#define DIVIDER_CONSTANT         126  //zmiana nazwy
 
-#define ADC_OFFSET_SAMPLES_COUNT 5U
+#define ADC_OFFSET_SAMPLES_COUNT 50U
 #define FILTER_KERNEL 3
 
 static const uint32_t adc_channel_map[5] =
@@ -72,8 +72,6 @@ static void ADC_PrepareForPhaseOffsetMeasurement(void);
 static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t * c_data);
 static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data);
 static void ADC_Calibrate();
-
-static int32_t CalculatePhaseCurrent(int16_t measurement);
 
 void ADC_Init()
 {
@@ -139,9 +137,14 @@ uint16_t ADC_CalculateNtcVoltage(uint16_t adcMeasurement)
 
 
 
-int32_t ADC_CalculatePhaseCurrent(int16_t delta)
+Phase_Currents_t ADC_CalculatePhaseCurrents(uint16_t ADC_Phase_A, uint16_t ADC_Phase_B, uint16_t ADC_Phase_C)
 {
-  return delta*3128/1000;
+  Phase_Currents_t result;
+  result.Current_A = ((int32_t)ADC_Phase_A - (int32_t)phase_a_offset_adc) *3128/1000;
+  result.Current_B = ((int32_t)ADC_Phase_B - (int32_t)phase_b_offset_adc) *3128/1000;
+  result.Current_C = ((int32_t)ADC_Phase_C - (int32_t)phase_c_offset_adc) *3128/1000;
+  return result;
+  //return adc_measurement*3128/1000;
   //return (float)delta*3.128f;
 }
 
@@ -220,32 +223,6 @@ static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16
   phase_a_offset_adc = a_sum /ADC_OFFSET_SAMPLES_COUNT;
   phase_b_offset_adc = b_sum /ADC_OFFSET_SAMPLES_COUNT;
   phase_c_offset_adc = c_sum /ADC_OFFSET_SAMPLES_COUNT;
-}
-
-
-
-
-
-void PrintCurrent_B()
-{
-  uint16_t adc_measurement = ADC_ReadSingleChannelRaw(LL_ADC_CHANNEL_4);//LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
-  int16_t delta = (int16_t)adc_measurement - phase_b_offset_adc;
-  int16_t value = delta *3;
-
-  char buffer1[30] = {0};
-  sprintf(buffer1,"B : %d",value);
-  LOG(buffer1);
-}
-
-void PrintCurrent_B_ma()
-{
-  uint16_t adc_measurement = ADC_ReadSingleChannelRaw(LL_ADC_CHANNEL_4);//LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
-  int16_t delta = (int16_t)adc_measurement - phase_b_offset_adc;
-  int16_t value = delta *3128/1000;
-
-  char buffer1[30] = {0};
-  sprintf(buffer1,"B : %d",value);
-  LOG(buffer1);
 }
 
 void PrintFloat(float x)

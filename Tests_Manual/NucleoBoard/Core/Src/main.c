@@ -154,19 +154,6 @@ void Start_USART_RX_DMA(void)
     LL_USART_EnableIT_IDLE(USART2);
 }
 
-#define ADC_MAX              4095
-#define REFERENCE_VOLTAGE_mV 3300
-#define V_BIAS 1700
-
-int32_t GetCurrent(uint16_t adcMeasurement)
-{
-  int32_t Vmeasured = REFERENCE_VOLTAGE_mV * adcMeasurement /ADC_MAX;
-  int32_t Vsign = Vmeasured - V_BIAS;
-  return Vsign*3;
-  return Vsign * 3910;
-  //return (float)Vsign * 3.91f / 1000.0f;
-}
-
 void Print_ADC_CurrentValues()
 {
   char buffer1[60] = {0};
@@ -295,25 +282,17 @@ int main(void)
     if(data_ready_flag)
     {
       CommandExecute(rx_buffer);
-      //LOG(rx_buffer);
       memset(rx_buffer,0,sizeof(rx_buffer));
       data_ready_flag = 0;
       Start_USART_RX_DMA();
     }
       
-
-    // stash = ADC_ReadSingleChannelRaw(LL_ADC_CHANNEL_4);
-    // sprintf(buffer, "B: %u",stash);
-    // LOG(buffer);
     PrintCurrent_B();
     PrintCurrent_B_ma();
 
     for(uint32_t delay = 0; delay < 9000000; delay++)
 	    ;
 
-    // LOG("Alive");
-
-    
 //	  int16_t Temp = Thermistor_GetHeatsinkTemp();
 //	  char buff[20];
 //	  sprintf(buff, "HT : %d\n",Temp);
