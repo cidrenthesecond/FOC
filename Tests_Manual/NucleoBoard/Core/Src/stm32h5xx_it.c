@@ -268,8 +268,6 @@ void USART2_IRQHandler(void)
         // 2. Tymczasowo zatrzymaj strumień DMA
         LL_DMA_DisableChannel(GPDMA1, LL_DMA_CHANNEL_1);
 
-        // 3. Oblicz, ile bajtów odebrano (Rozmiar początkowy - Pozostały do odebrania counter)
-        // W STM32H5 czytamy rejestr CBR1 (Block Data Length) dla wskazanego kanału
         uint32_t remaining_bytes = LL_DMA_GetBlkDataLength(GPDMA1, LL_DMA_CHANNEL_1);
         rx_bytes_received = 64 - remaining_bytes;
 

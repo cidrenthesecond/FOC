@@ -38,6 +38,7 @@
 #include "ADC_Service.h"
 #include "CommandExecute.h"
 #include "CMD_Manager.h"
+#include "System_Config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,43 +91,6 @@ float target = 1.0f;
 // 	phaseAccumulator += increment;
 // }
 
-
-
-void UART_PrintPolling(const char *pData,uint8_t length)
-{
-	  for(uint8_t index = 0; index < length; index++)
-	  {
-		  while(!LL_USART_IsActiveFlag_TXE(USART2))
-			  ;
-
-		  LL_USART_TransmitData8(USART2, pData[index]);
-		  LOG_WakeUp();
-	  }
-}
-
-void Send_USART_DMA_LL(const char *pData, uint8_t Size)
-{
-    // 1. Wyłącz kanał DMA przed konfiguracją
-    LL_DMA_DisableChannel(GPDMA1, LL_DMA_CHANNEL_0);
-
-    // 2. Ustaw adres źródłowy (pamięć RAM)
-    LL_DMA_SetSrcAddress(GPDMA1, LL_DMA_CHANNEL_0, (uint32_t)pData);
-
-    // 3. Ustaw adres docelowy (rejestr nadawczy USART TDR)
-    LL_DMA_SetDestAddress(GPDMA1, LL_DMA_CHANNEL_0, LL_USART_DMA_GetRegAddr(USART2, LL_USART_DMA_REG_DATA_TRANSMIT));
-
-    // 4. Ustaw liczbę bajtów do przesłania
-    LL_DMA_SetBlkDataLength(GPDMA1, LL_DMA_CHANNEL_0, Size);
-
-    // 5. Wyczyść flagę zakończenia transferu (Transfer Complete) na kanale 0
-    LL_DMA_ClearFlag_TC(GPDMA1, LL_DMA_CHANNEL_0);
-
-    // 6. Włącz kanał GPDMA
-    LL_DMA_EnableChannel(GPDMA1, LL_DMA_CHANNEL_0);
-
-    // 7. Włącz żądanie transmisji DMA w peryferium USART
-    LL_USART_EnableDMAReq_TX(USART2);
-}
 
 char rx_buffer[64];
 volatile uint16_t rx_bytes_received = 0;
@@ -204,8 +168,9 @@ int main(void)
   FPU_enable();
 
 
-  LOG_Init(Send_USART_DMA_LL, 10);
+  System_Init();
   LL_DMA_EnableIT_TC(GPDMA1, LL_DMA_CHANNEL_0);
+
   ADC_Init();
   LL_ADC_EnableIT_AWD2(ADC1);
 
@@ -234,7 +199,6 @@ int main(void)
   TIM1->CCR1 = UINT16_MAX/2;//- 2000;
   TIM1->CCR2 = 0;
   TIM1->CCR3 = 0;
-  LL_ADC_ConfigAnalogWDThresholds(ADC1, LL_ADC_AWD2, (2200 >> 4), 0);
   /* USER CODE END 2 */
 
   /* Infinite loop */

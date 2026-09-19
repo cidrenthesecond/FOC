@@ -51,6 +51,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/ADC_Service.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/Moving_Avarage_Filter.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/CMD_Manager.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/Log_Transport.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/System_Config.c
 )
 
 # Add include paths
