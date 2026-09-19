@@ -53,7 +53,7 @@ void MX_ADC1_Init(void)
   PA7   ------> ADC1_INP7
   PC4   ------> ADC1_INP4
   */
-  GPIO_InitStruct.Pin = HT_Pin|DC_bus_Pin|Current_A_Pin|LL_GPIO_PIN_7;
+  GPIO_InitStruct.Pin = HT_Pin|DC_bus_Pin|Current_A_Pin|Current_C_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -62,6 +62,10 @@ void MX_ADC1_Init(void)
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(Current_B_GPIO_Port, &GPIO_InitStruct);
+
+  /* ADC1 interrupt Init */
+  NVIC_SetPriority(ADC1_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),0, 0));
+  NVIC_EnableIRQ(ADC1_IRQn);
 
   /* USER CODE BEGIN ADC1_Init 1 */
 
@@ -133,6 +137,12 @@ void MX_ADC1_Init(void)
   LL_ADC_SetChannelSingleDiff(ADC1, LL_ADC_CHANNEL_3, LL_ADC_SINGLE_ENDED);
   LL_ADC_EnableChannel0_GPIO(ADC1);
 
+  /** Configure the injected channel to be monitored by WatchDog 2 or 3
+  */
+  LL_ADC_SetAnalogWDMonitChannels(ADC1, LL_ADC_AWD2, LL_ADC_AWD_CHANNEL_3_INJ|LL_ADC_AWD_CHANNEL_4_INJ|LL_ADC_AWD_CHANNEL_7_INJ);
+  LL_ADC_SetAnalogWDThresholds(ADC1, LL_ADC_AWD2, 4194303, 0);
+  LL_ADC_EnableIT_AWD2(ADC1);
+
   /** Configure Injected Channel
   */
   LL_ADC_INJ_SetSequencerRanks(ADC1, LL_ADC_INJ_RANK_3, LL_ADC_CHANNEL_4);
@@ -140,12 +150,22 @@ void MX_ADC1_Init(void)
   LL_ADC_SetChannelSingleDiff(ADC1, LL_ADC_CHANNEL_4, LL_ADC_SINGLE_ENDED);
   LL_ADC_EnableChannel0_GPIO(ADC1);
 
+  /** Configure the injected channel to be monitored by WatchDog 2 or 3
+  */
+  LL_ADC_SetAnalogWDThresholds(ADC1, LL_ADC_AWD2, 4194303, 0);
+  LL_ADC_EnableIT_AWD2(ADC1);
+
   /** Configure Injected Channel
   */
   LL_ADC_INJ_SetSequencerRanks(ADC1, LL_ADC_INJ_RANK_4, LL_ADC_CHANNEL_7);
   LL_ADC_SetChannelSamplingTime(ADC1, LL_ADC_CHANNEL_7, LL_ADC_SAMPLINGTIME_47CYCLES_5);
   LL_ADC_SetChannelSingleDiff(ADC1, LL_ADC_CHANNEL_7, LL_ADC_SINGLE_ENDED);
   LL_ADC_EnableChannel0_GPIO(ADC1);
+
+  /** Configure the injected channel to be monitored by WatchDog 2 or 3
+  */
+  LL_ADC_SetAnalogWDThresholds(ADC1, LL_ADC_AWD2, 4194303, 0);
+  LL_ADC_EnableIT_AWD2(ADC1);
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */

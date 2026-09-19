@@ -21,6 +21,9 @@
 #include "adc.h"
 #include "gpdma.h"
 #include "icache.h"
+#include "stm32h533xx.h"
+#include "stm32h5xx_ll_adc.h"
+#include "stm32h5xx_ll_gpio.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -31,8 +34,6 @@
 #include "Logger.h"
 #include "Relay.h"
 #include <stdint.h>
-#include <stdio.h>
-#include "Thermistor.h"
 #include "FPU.h"
 #include "ADC_Service.h"
 #include "CommandExecute.h"
@@ -206,6 +207,7 @@ int main(void)
   LOG_Init(Send_USART_DMA_LL, 10);
   LL_DMA_EnableIT_TC(GPDMA1, LL_DMA_CHANNEL_0);
   ADC_Init();
+  LL_ADC_EnableIT_AWD2(ADC1);
 
   LL_TIM_EnableAllOutputs(TIM1);
   LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH1);
@@ -232,7 +234,7 @@ int main(void)
   TIM1->CCR1 = UINT16_MAX/2;//- 2000;
   TIM1->CCR2 = 0;
   TIM1->CCR3 = 0;
-
+  LL_ADC_ConfigAnalogWDThresholds(ADC1, LL_ADC_AWD2, (2200 >> 4), 0);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -246,6 +248,7 @@ int main(void)
       data_ready_flag = 0;
       Start_USART_RX_DMA();
     }
+    LL_GPIO_ResetOutputPin(LD2_GPIO_Port, LD2_Pin);
 
 //	while(!Relay_IsOn())
 //		  Relay_SM();

@@ -57,11 +57,11 @@ static MovingAvarage Phase_C_Filter;
 typedef union {
     uint8_t raw;
     struct {
-        uint8_t ready     : 1; // Bit 0
-        uint8_t error     : 1; // Bit 1
-        uint8_t busy      : 1; // Bit 2
-        uint8_t tx_active : 1; // Bit 3
-        uint8_t reserved  : 4; // Bity 4-7
+        uint8_t ready                   : 1; // Bit 0
+        uint8_t error                   : 1; // Bit 1
+        uint8_t busy                    : 1; // Bit 2
+        uint8_t phase_offset_configured : 1; // Bit 3
+        uint8_t reserved                : 4; // Bity 4-7
     } bits;
 } StatusRegister_t;
 
@@ -83,7 +83,7 @@ void ADC_Init()
 
   ADC_Calibrate();
   ADC_CalibratePhaseOffsets();
-
+  ADC_SetOCP(6000);
   //LL_ADC_EnableIT_JEOS(ADC1); NOT ADDED IN EXTI FOR NOW
   LL_ADC_Enable(ADC1);
   LL_ADC_INJ_StartConversion(ADC1);
@@ -155,6 +155,23 @@ static void ADC_Calibrate()
 	  ;
 }
 
+//_______________OCP__________________
+
+void ADC_SetOCP(uint16_t thresholdCurrent_ma)
+{
+  if(status.bits.phase_offset_configured == 0)
+    return;
+
+  uint16_t thresholdOffset = thresholdCurrent_ma*1000/3128;
+  uint16_t midpointAvgg    = (phase_a_offset_adc+phase_b_offset_adc+phase_c_offset_adc)/3;
+  uint16_t thresholdHigh   = midpointAvgg + thresholdOffset;
+  uint16_t thresholdLow    = midpointAvgg - thresholdOffset;
+
+  LL_ADC_ConfigAnalogWDThresholds(ADC1, LL_ADC_AWD2, (thresholdHigh>>4), (thresholdLow>>4));
+}
+
+//________________Helper functions________________
+
 static void ADC_CalibratePhaseOffsets(void)
 {
   ADC_PrepareForPhaseOffsetMeasurement();
@@ -165,6 +182,7 @@ static void ADC_CalibratePhaseOffsets(void)
 
   ADC_GatherOffsetData(a_data,b_data,c_data);
   ADC_CalculatePhaseOffsets(a_data, b_data, c_data);
+  status.bits.phase_offset_configured = 1;
 
   char buffer[64] = {0};
   sprintf(buffer, "ADC: offsets: A %u, B %u, C %u",
