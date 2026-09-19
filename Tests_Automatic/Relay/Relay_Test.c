@@ -8,14 +8,14 @@
 #include "Relay.h"
 
 DEFINE_FFF_GLOBALS;
-FAKE_VALUE_FUNC(uint16_t, GetDcLinkVoltage);
+FAKE_VALUE_FUNC(uint32_t, ADC_GetDcLinkVoltage);
 
 TEST_GROUP(Relay);
 
 TEST_SETUP(Relay)
 {   
     LOG_Spy_Init();
-    RESET_FAKE(GetDcLinkVoltage);
+    RESET_FAKE(ADC_GetDcLinkVoltage);
     FFF_RESET_HISTORY();
 
     Relay_Init();
@@ -46,15 +46,23 @@ TEST(Relay, AfterTurningOffRelayIsOff)
 
 TEST(Relay, VoltageWrongRelayOff)
 {
-    GetDcLinkVoltage_fake.return_val = 12;
+    ADC_GetDcLinkVoltage_fake.return_val = 30000;
     Relay_SM();
 
     TEST_ASSERT_EQUAL(RELAY_OFF, Relay_IsOn());
 }
 
+TEST(Relay, VoltageWrongNoLog)
+{
+    ADC_GetDcLinkVoltage_fake.return_val = 30000;
+    Relay_SM();
+
+    TEST_ASSERT_EQUAL(0,LOG_Spy_GetCallCount());
+}
+
 TEST(Relay, VoltageCorrectRelayOn)
 {
-    GetDcLinkVoltage_fake.return_val = 230;
+    ADC_GetDcLinkVoltage_fake.return_val = 230000;
 
     Relay_SM();
 
@@ -63,7 +71,7 @@ TEST(Relay, VoltageCorrectRelayOn)
 
 TEST(Relay, ChangeThresholdWrongVoltage)
 {
-    GetDcLinkVoltage_fake.return_val = 22;
+    ADC_GetDcLinkVoltage_fake.return_val = 22;
     Relay_SetThreshold(150);
 
     Relay_SM();
@@ -73,7 +81,7 @@ TEST(Relay, ChangeThresholdWrongVoltage)
 
 TEST(Relay, ChangeThresholdCorrectVoltage)
 {
-    GetDcLinkVoltage_fake.return_val = 22;
+    ADC_GetDcLinkVoltage_fake.return_val = 22;
     Relay_SetThreshold(12);
 
     Relay_SM();
@@ -83,7 +91,7 @@ TEST(Relay, ChangeThresholdCorrectVoltage)
 
 TEST(Relay, RelayTurnOnProducesLog)
 {
-    GetDcLinkVoltage_fake.return_val = 240;
+    ADC_GetDcLinkVoltage_fake.return_val = 240000;
 
     Relay_SM();
 
@@ -92,10 +100,10 @@ TEST(Relay, RelayTurnOnProducesLog)
 
 TEST(Relay, LogFormatting)
 {
-    GetDcLinkVoltage_fake.return_val = 240;
+    ADC_GetDcLinkVoltage_fake.return_val = 240000;
     
     Relay_SM();
 
     TEST_ASSERT_EQUAL(1,LOG_Spy_GetCallCount());
-    TEST_ASSERT_EQUAL_CHAR_ARRAY("RELAY : ON : 240V\n",LOG_Spy_GetMessage(),19);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("RELAY : ON : 240000 mV\n",LOG_Spy_GetMessage(),19);
 }

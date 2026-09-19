@@ -21,7 +21,7 @@ void Relay_SM()
     {
         Relay_TurnOn();
         char log[30];
-        sprintf(log,"RELAY : ON : %luV\n",DcLinkVoltage);
+        sprintf(log,"RELAY : ON : %u mV\n",DcLinkVoltage);
         LOG(log);
     }
 
