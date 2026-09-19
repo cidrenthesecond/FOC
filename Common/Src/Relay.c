@@ -1,34 +1,35 @@
 #include "Relay.h"
 #include "GPIO_Driver.h"
-
 #include "ADC_Service.h"
 #include "Logger.h"
 #include "stdio.h"
 
 static uint8_t relayState;
-static uint8_t relayThresholdVoltage = 230;
+static uint32_t relayThresholdVoltage = 230;
 
 void Relay_Init()
 {
     Relay_TurnOff();
-    relayThresholdVoltage = 230;
+    relayThresholdVoltage = 230000;
 }
 
 void Relay_SM()
 {
-    uint16_t DcLinkVoltage = GetDcLinkVoltage();
+    uint32_t DcLinkVoltage = ADC_GetDcLinkVoltage();
     
     if(DcLinkVoltage >= relayThresholdVoltage)
+    {
         Relay_TurnOn();
+        char log[30];
+        sprintf(log,"RELAY : ON : %luV\n",DcLinkVoltage);
+        LOG(log);
+    }
 
-    char log[30];
-    sprintf(log,"RELAY : ON : %uV\n",DcLinkVoltage);
-    LOG(log);
 }
 
-void Relay_SetThreshold(uint16_t threshold)
+void Relay_SetThreshold(uint32_t threshold)
 {
-    if(threshold > 500)
+    if(threshold > 300000)
     {
         //LOG(RELAY SET VALUE INCORRECT)
     }

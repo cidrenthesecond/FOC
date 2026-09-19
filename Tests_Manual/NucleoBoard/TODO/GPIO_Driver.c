@@ -1,8 +1,9 @@
 #include "GPIO_Driver.h"
-#include "gpio.h"
+#include "stm32h533xx.h"
+#include "stm32h5xx_ll_gpio.h"
 
-#define GPIO_RELAY_PORT RELAY_GPIO_Port
-#define GPIO_RELAY_PIN  RELAY_Pin
+#define GPIO_RELAY_PORT GPIOB
+#define GPIO_RELAY_PIN  LL_GPIO_PIN_6
 
 void GPIO_Relay_TurnOn()
 {
