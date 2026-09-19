@@ -21,9 +21,7 @@
 #include "adc.h"
 #include "gpdma.h"
 #include "icache.h"
-#include "stm32h533xx.h"
-#include "stm32h5xx_ll_adc.h"
-#include "stm32h5xx_ll_gpio.h"
+#include "stm32h5xx_ll_cortex.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -36,8 +34,7 @@
 #include <stdint.h>
 #include "FPU.h"
 #include "ADC_Service.h"
-#include "CommandExecute.h"
-#include "CMD_Manager.h"
+#include "CMD_Task.h"
 #include "System_Config.h"
 /* USER CODE END Includes */
 
@@ -91,33 +88,6 @@ float target = 1.0f;
 // 	phaseAccumulator += increment;
 // }
 
-
-char rx_buffer[64];
-volatile uint16_t rx_bytes_received = 0;
-volatile uint8_t data_ready_flag = 0;
-
-void Start_USART_RX_DMA(void)
-{
-    // 1. Wyłącz kanał DMA przed konfiguracją
-    LL_DMA_DisableChannel(GPDMA1, LL_DMA_CHANNEL_1);
-
-    // 2. Adres źródłowy (rejestr odbiorczy USART RDR)
-    LL_DMA_SetSrcAddress(GPDMA1, LL_DMA_CHANNEL_1, LL_USART_DMA_GetRegAddr(USART2, LL_USART_DMA_REG_DATA_RECEIVE));
-
-    // 3. Adres docelowy (bufor w RAM)
-    LL_DMA_SetDestAddress(GPDMA1, LL_DMA_CHANNEL_1, (uint32_t)rx_buffer);
-
-    // 4. Maksymalny rozmiar oczekiwanego bufora
-    LL_DMA_SetBlkDataLength(GPDMA1, LL_DMA_CHANNEL_1, 64);
-
-    // 5. Włącz kanał DMA i zgłoszenie DMA w USART
-    LL_DMA_EnableChannel(GPDMA1, LL_DMA_CHANNEL_1);
-    LL_USART_EnableDMAReq_RX(USART2);
-
-    // 6. Wyczyść i włącz przerwanie IDLE Line w USART
-    LL_USART_ClearFlag_IDLE(USART2);
-    LL_USART_EnableIT_IDLE(USART2);
-}
 
 /* USER CODE END 0 */
 
@@ -183,19 +153,18 @@ int main(void)
   LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH3N);
   LL_TIM_EnableCounter(TIM1);
 
+  CMD_Init();
+
   LL_USART_EnableDirectionTx(USART2);
   LL_USART_EnableDirectionRx(USART2);
-  Start_USART_RX_DMA();
   LL_USART_Enable(USART2);
 
-  CommandExecute_Init();
-  CommandExecute_Register(10, ADC_Measure);
-  CommandExecute_Register(11, NTC_Measure);
-  
-
-  
   Relay_Init();
   Relay_SetThreshold(8000);
+
+  while(!Relay_IsOn())
+    Relay_SM();
+
   TIM1->CCR1 = UINT16_MAX/2;//- 2000;
   TIM1->CCR2 = 0;
   TIM1->CCR3 = 0;
@@ -205,14 +174,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {    
-    if(data_ready_flag)
-    {
-      CommandExecute(rx_buffer);
-      memset(rx_buffer,0,sizeof(rx_buffer));
-      data_ready_flag = 0;
-      Start_USART_RX_DMA();
-    }
-    LL_GPIO_ResetOutputPin(LD2_GPIO_Port, LD2_Pin);
+    if(CMD_IsTaskReady())
+      CMD_Task();
+
+    if(LL_SYSTICK_IsEnabledIT())
+      LL_GPIO_SetOutputPin(LD2_GPIO_Port, LD2_Pin);
 
 //	while(!Relay_IsOn())
 //		  Relay_SM();
@@ -227,9 +193,6 @@ int main(void)
 
 	  // for(uint32_t delay =0 ;delay < 600000; delay++)
 		//   ;
-
-	  // LOG("Miau");
-	  // test++;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

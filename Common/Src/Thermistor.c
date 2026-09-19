@@ -8,7 +8,7 @@ static const uint16_t maxVoltage = 3500;
 
 int16_t Thermistor_GetHeatsinkTemp()
 {   
-    uint16_t voltageOnNTC = GetNtcVoltage();
+    uint16_t voltageOnNTC = ADC_GetNtcVoltage();
 
     if(voltageOnNTC == 0)
         return NTC_TOO_LOW_VOLTAGE;

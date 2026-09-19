@@ -9,14 +9,15 @@
 
 void UART_PrintPolling(const char *pData,uint8_t length)
 {
-	  for(uint8_t index = 0; index < length; index++)
+    for(uint8_t index = 0; index < length; index++)
 	  {
-		  while(!LL_USART_IsActiveFlag_TXE(UART_USED))
-			  ;
+		while(!LL_USART_IsActiveFlag_TXE(UART_USED))
+			;
 
-		  LL_USART_TransmitData8(UART_USED, pData[index]);
-		  LOG_WakeUp();
-	  }
+		LL_USART_TransmitData8(UART_USED, pData[index]);	  
+	}
+      
+    LOG_WakeUp();
 }
 
 void Send_USART_DMA_LL(const char *pData, uint8_t Size)
@@ -41,4 +42,14 @@ void Send_USART_DMA_LL(const char *pData, uint8_t Size)
 
     // 7. Włącz żądanie transmisji DMA w peryferium USART
     LL_USART_EnableDMAReq_TX(UART_USED);
+}
+
+void GPDMA1_Channel0_IRQHandler(void)
+{
+  if (LL_DMA_IsActiveFlag_TC(GPDMA1, LL_DMA_CHANNEL_0))
+    {
+        LL_DMA_ClearFlag_TC(GPDMA1, LL_DMA_CHANNEL_0);
+        LL_USART_DisableDMAReq_TX(USART1);
+        LOG_WakeUp();
+    }
 }

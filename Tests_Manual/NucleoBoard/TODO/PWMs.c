@@ -11,7 +11,6 @@ static float findMin(float a, float b)
 	return (a <= b) ? a : b;
 }
 
-__attribute__((optimize("O3")))
 void SVPWM(float alpha, float beta)
 {
 	float _alpha = alpha/3.3f;
@@ -38,7 +37,6 @@ void SVPWM(float alpha, float beta)
 	TIM1 -> CCR3 = (uint32_t) ((c + 0.5f) * 65535);
 }
 
-__attribute__((optimize("O3")))
 void SPWM(float alpha, float beta)
 {
 	float _alpha = alpha/3.3f;
@@ -56,7 +54,6 @@ void SPWM(float alpha, float beta)
 	TIM1 -> CCR3 = (uint32_t) ((c + 0.5f) * 65535);
 }
 
-__attribute__((optimize("O3")))
 void DPWM_MAX(float alpha, float beta)
 {
     float _alpha = alpha / 3.3f;   /* Vdc = actual DC bus voltage, not ADC Vref */
@@ -97,7 +94,6 @@ float abs_f(float x)
 	return (x >= 0) ? x : -x;
 }
 
-__attribute__((optimize("O3")))
 void DPWM1(float alpha, float beta)
 {
     float _alpha = alpha / 3.3f;
@@ -144,7 +140,6 @@ static inline void rotate_minus30(float alpha, float beta,
     *beta_r  = -SINE_MINUS_30   * alpha + COSINE_MINUS_30 * beta;
 }
 
-__attribute__((optimize("O3")))
 void DPWM2(float alpha, float beta)
 {
     float _alpha = alpha / 3.3f;   /* Vdc = actual DC bus voltage, not ADC Vref */
@@ -202,7 +197,6 @@ static inline void rotate_minus60(float alpha, float beta,
     *beta_r  = -SIN_MINUS_60   * alpha + COS_MINUS_60 * beta;
 }
 
-__attribute__((optimize("O3")))
 void DPWM3(float alpha, float beta)
 {
     float _alpha = alpha / 3.3f;   /* Vdc = actual DC bus voltage, not ADC Vref */
@@ -260,7 +254,6 @@ static inline void rotate_30(float alpha, float beta,
     *beta_r  = -SIN_30   * alpha + COS_30 * beta;
 }
 
-__attribute__((optimize("O3")))
 void DPWM0(float alpha, float beta)
 {
     float _alpha = alpha / 3.3f;   /* Vdc = actual DC bus voltage, not ADC Vref */
@@ -307,8 +300,6 @@ void DPWM0(float alpha, float beta)
     TIM1->CCR3 = (uint32_t)(dutyC * (float)arr + 0.5f);
 }
 
-
-__attribute__((optimize("O3")))
 void DPWM_MIN(float alpha, float beta)
 {
 	float _alpha = alpha/3.3f;

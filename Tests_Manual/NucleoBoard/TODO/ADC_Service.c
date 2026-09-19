@@ -113,9 +113,7 @@ uint32_t ADC_CalculateDcLinkVoltage(uint16_t adcMeasurement)
 }
 uint32_t ADC_GetDcLinkVoltage()
 {
-  // uint16_t measurement = ADC_ReadSingleChannelRaw(DC_LINK_CHANNEL);
-  // bus_Measurement      = MovingAvarage_Filter(DcBus_Filter, measurement);
-  return ADC_CalculateDcLinkVoltage(Bus_Voltage.filtered);
+  return ADC_CalculateDcLinkVoltage(ADC_ReadSingleChannelRaw(BUS_VOLTAGE_CHANNEL));
 }
 
 //_____________NTC______________

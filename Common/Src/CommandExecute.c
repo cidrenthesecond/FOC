@@ -27,7 +27,7 @@ static int isCommandIndexValid(uint32_t commandIndex);
 void CommandExecute_Init()
 {
     for(uint8_t index = 0; index < MAX_COMMANDS; index++)
-        CommandList->func = NULL;
+        CommandList[index].func = NULL;
 
     isInitalised = 1;
 }
