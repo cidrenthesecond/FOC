@@ -18,10 +18,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "SysTickDispatcher.h"
 #include "adc.h"
 #include "gpdma.h"
 #include "icache.h"
 #include "stm32h5xx_ll_cortex.h"
+#include "stm32h5xx_ll_gpio.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -36,6 +38,7 @@
 #include "ADC_Service.h"
 #include "CMD_Task.h"
 #include "System_Config.h"
+#include "SysTickWrapper.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -88,6 +91,10 @@ float target = 1.0f;
 // 	phaseAccumulator += increment;
 // }
 
+void LED_TASK(void)
+{
+  LL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+}
 
 /* USER CODE END 0 */
 
@@ -154,6 +161,8 @@ int main(void)
   LL_TIM_EnableCounter(TIM1);
 
   CMD_Init();
+  SysTick_Init();
+  SysTickDispatcher_Subscribe(LED_TASK, 1000);
 
   LL_USART_EnableDirectionTx(USART2);
   LL_USART_EnableDirectionRx(USART2);
@@ -176,9 +185,6 @@ int main(void)
   {    
     if(CMD_IsTaskReady())
       CMD_Task();
-
-    if(LL_SYSTICK_IsEnabledIT())
-      LL_GPIO_SetOutputPin(LD2_GPIO_Port, LD2_Pin);
 
 //	while(!Relay_IsOn())
 //		  Relay_SM();

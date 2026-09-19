@@ -45,6 +45,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${MAIN_DIR}/Common/Src/Relay.c
     ${MAIN_DIR}/Common/Src/Thermistor.c
     ${MAIN_DIR}/Common/Src/CommandExecute.c
+    ${MAIN_DIR}/Common/Src/SysTickDispatcher.c
 
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/GPIO_Driver.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/FPU/FPU.c
@@ -54,6 +55,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/CMD_Task.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/CMD_Commands.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/Cmd_Transport.c
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/SysTickWrapper.c
 
 
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/Log_Transport.c

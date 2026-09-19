@@ -25,12 +25,12 @@
 #include "Logger.h"
 #include "stm32h5xx_ll_adc.h"
 #include "stm32h5xx_ll_gpio.h"
+#include "SysTickDispatcher.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
-extern volatile uint16_t rx_bytes_received;
-extern volatile uint8_t data_ready_flag;
+
 /* USER CODE END TD */
 
 /* Private define ------------------------------------------------------------*/
@@ -187,7 +187,7 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
+  SysTickDispatcher_Wakeup();
   /* USER CODE END SysTick_IRQn 0 */
 
   /* USER CODE BEGIN SysTick_IRQn 1 */
