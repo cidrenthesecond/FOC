@@ -11,10 +11,10 @@ static float findMin(float a, float b)
 	return (a <= b) ? a : b;
 }
 
-void SVPWM(float alpha, float beta)
+void SVPWM(float alpha, float beta, float busVoltage)
 {
-	float _alpha = alpha/3.3f;
-	float _beta = beta/3.3f;
+	float _alpha = alpha/ busVoltage;
+	float _beta = beta/ busVoltage;
 
 	float a;
 	float b;

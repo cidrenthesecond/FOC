@@ -58,9 +58,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/SysTickWrapper.c
 
-
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/Log_Transport.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/System_Config.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/Timer_Driver.c
 )
 
 # Add include paths

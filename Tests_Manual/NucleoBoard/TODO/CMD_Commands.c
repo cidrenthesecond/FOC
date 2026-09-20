@@ -1,10 +1,12 @@
 #include "stdint.h"
 #include "stdint.h"
-#include "ADC_Service.h"
-#include "Thermistor.h"
 #include "Logger.h"
 #include "stdlib.h"
 #include <stdio.h>
+
+#include "ADC_Service.h"
+#include "Thermistor.h"
+#include "Timer_Driver.h"
 
 void ADC_Measure(int argc, char *argv[])
 {
@@ -79,4 +81,25 @@ void NTC_Measure(int argc, char *argv[])
     char message[32];
     sprintf(message, "[NTC] : HT Temp : %d",Temp);
     LOG(message);
+}
+
+void CMD_GetSwitchingFrequency(int argc, char *argv[])
+{
+    uint32_t switchingFrequency = PWM_GetSwitchingFrequency();
+    char message[32];
+    sprintf(message, "[PWM] : SF : %u Hz",switchingFrequency);
+    LOG(message);
+}
+
+void CMD_ESTOP_Command(int argc, char *argv[])
+{
+    if(argc == 0)
+        return;
+
+    uint32_t argument = strtol(argv[0],NULL,10);
+
+    if(argument == 0)
+        PWM_ESTOP();
+    else if (argument == 1)
+        PWM_ReArm();
 }

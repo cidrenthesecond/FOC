@@ -16,7 +16,6 @@ Igetable and Isetable:
 ADC:
 1. Analog Watchdogs
 
-UART:
 
 
 

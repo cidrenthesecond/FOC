@@ -8,8 +8,10 @@ void CMD_Init()
 {
     CommandExecute_Init();
 
+    CommandExecute_Register(CMD_ESTOP, CMD_ESTOP_Command);
     CommandExecute_Register(ADC_RAW_MEASURE_IDX, ADC_Measure);
     CommandExecute_Register(NTC_GET_TEMP_IDX,    NTC_Measure);
+    CommandExecute_Register(PWM_GET_SWITCHING_FREQUENCY, CMD_GetSwitchingFrequency);
 
     SetUpMonitoring();
 }

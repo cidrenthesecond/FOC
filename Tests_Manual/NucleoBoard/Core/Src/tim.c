@@ -49,7 +49,7 @@ void MX_TIM1_Init(void)
   TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
   TIM_InitStruct.RepetitionCounter = 0;
   LL_TIM_Init(TIM1, &TIM_InitStruct);
-  LL_TIM_DisableARRPreload(TIM1);
+  LL_TIM_EnableARRPreload(TIM1);
   LL_TIM_SetClockSource(TIM1, LL_TIM_CLOCKSOURCE_INTERNAL);
   LL_TIM_OC_EnablePreload(TIM1, LL_TIM_CHANNEL_CH1);
   TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
@@ -71,8 +71,8 @@ void MX_TIM1_Init(void)
   LL_TIM_SetTriggerOutput(TIM1, LL_TIM_TRGO_UPDATE);
   LL_TIM_SetTriggerOutput2(TIM1, LL_TIM_TRGO2_RESET);
   LL_TIM_DisableMasterSlaveMode(TIM1);
-  TIM_BDTRInitStruct.OSSRState = LL_TIM_OSSR_DISABLE;
-  TIM_BDTRInitStruct.OSSIState = LL_TIM_OSSI_DISABLE;
+  TIM_BDTRInitStruct.OSSRState = LL_TIM_OSSR_ENABLE;
+  TIM_BDTRInitStruct.OSSIState = LL_TIM_OSSI_ENABLE;
   TIM_BDTRInitStruct.LockLevel = LL_TIM_LOCKLEVEL_OFF;
   TIM_BDTRInitStruct.DeadTime = 255;
   TIM_BDTRInitStruct.BreakState = LL_TIM_BREAK_DISABLE;

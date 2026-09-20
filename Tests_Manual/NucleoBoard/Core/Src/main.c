@@ -18,12 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "SysTickDispatcher.h"
 #include "adc.h"
 #include "gpdma.h"
 #include "icache.h"
-#include "stm32h5xx_ll_cortex.h"
-#include "stm32h5xx_ll_gpio.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -174,9 +171,8 @@ int main(void)
   while(!Relay_IsOn())
     Relay_SM();
 
-  TIM1->CCR1 = UINT16_MAX/2;//- 2000;
-  TIM1->CCR2 = 0;
-  TIM1->CCR3 = 0;
+  TIM1->CCR1 = UINT16_MAX/2;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -186,9 +182,7 @@ int main(void)
     if(CMD_IsTaskReady())
       CMD_Task();
 
-//	while(!Relay_IsOn())
-//		  Relay_SM();
-//
+
 //	  for(uint32_t delay = 0; delay < 100000; delay++)
 //	    	;
 	  //LL_GPIO_SetOutputPin(WCET_GPIO_Port, WCET_Pin);
