@@ -1,5 +1,4 @@
 #include "Moving_Avarage_Filter.h"
-#include <cstdint>
 #include <stdlib.h>
 #include <string.h>
 
