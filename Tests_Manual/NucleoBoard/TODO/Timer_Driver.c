@@ -14,8 +14,18 @@ void PWM_Init()
   LL_TIM_CC_EnableChannel(PWM_TIMER, LL_TIM_CHANNEL_CH1N);
   LL_TIM_CC_EnableChannel(PWM_TIMER, LL_TIM_CHANNEL_CH2N);
   LL_TIM_CC_EnableChannel(PWM_TIMER, LL_TIM_CHANNEL_CH3N);
-  //LL_TIM_EnableCounter(PWM_TIMER);
 
+}
+
+void PWM_Start()
+{
+  LL_TIM_EnableCounter(PWM_TIMER);
+}
+
+void PWM_Stop()
+{
+    LL_TIM_DisableCounter(PWM_TIMER);
+    
 }
 
 void PWM_SetCaptureCompare(uint16_t phaseA, uint16_t phaseB, uint16_t phaseC)
