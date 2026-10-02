@@ -9,13 +9,6 @@
 #include "Logger.h"
 #include "stdio.h"
 
-//TO DO :
-//dodanie matematyki staloprzecinkowej dla optymalizacji
-//dodac mozliwosc aktualizacji predkosci po wiecej jak jednym przeladniwaniu
-//ISR update potrzebny
-//HV_Update zmienic na inline
-
-
 //Config Start
 static const uint32_t     Clock_Freq               = 20000000;
 static TIM_TypeDef* const capture_compare_timer    = TIM3;
@@ -96,15 +89,12 @@ __attribute__((optimize("O3")))
 int32_t HV_CalculateVelocity()
 {
 	const uint16_t num_pulses = LL_TIM_GetCounter(Encoder_timer);
-	//LL_TIM_DisableCounter(capture_compare_timer);
+
 	uint16_t ch1 = LL_TIM_IC_GetCaptureCH1(capture_compare_timer);
 	uint16_t ch2 = LL_TIM_IC_GetCaptureCH2(capture_compare_timer);
-	//LL_TIM_EnableCounter(capture_compare_timer);
 
 	const uint16_t capture = (ch1 > ch2) ? ch1 : ch2;
 //	const uint16_t capture = lastcapture;
-
-
 
 	int16_t delta = (int16_t)(num_pulses - old_num_pulses);
 
@@ -140,13 +130,6 @@ int32_t HV_CalculateVelocity()
 	int32_t result = (int32_t)(((int64_t)delta * (int64_t)measurement_factor) / (int64_t)time_frame); // to dziala dobrze ale dlugo 4000ns
 	//float result = (float)delta * (float)measurement_factor / (float)time_frame;
 	//int32_t result = (int32_t)delta*(measurement_factor/time_frame); // to wprowadza blad ale krotko 2000ns
-
-	if(result > 6200)
-	{
-		char buf[60];
-		//sprintf(buf,"DELTA:%i TIME:%lu LAST:%u CAP:%u \n",delta,time_frame,lastcapture_previous,capture);
-		//LOG(buf);
-	}
 
 	lastcapture_previous = capture;
 	prev_velocity = result;

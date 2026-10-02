@@ -9,15 +9,20 @@
 #ifndef INC_PULSECOUNTVELOCITY_STATIC_H_
 #define INC_PULSECOUNTVELOCITY_STATIC_H_
 
-#include "main.h"
+#include "stdint.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+//Interface for hardware init
+void PCV_HardwareInit(uint32_t measurementFrequency);
+
+void PCV_Init(uint32_t measurementFrequency);
 int32_t PCVs_CalculateVelocity();
 int32_t PCVs_CalculateVelocity1();
 void PCVs_Start();
+void PCV_Stop();
 
 #ifdef __cplusplus
 }

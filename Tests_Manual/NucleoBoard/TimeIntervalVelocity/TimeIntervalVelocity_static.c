@@ -80,16 +80,13 @@ int32_t TIVs_TimerOverflowISR() {
 	return prev_velocity;
 }
 
-__attribute__((optimize("O3")))
 int32_t TIVs_CalculateVelocity(TIV_Channel_t channel)
 {
-    __disable_irq();
     uint8_t timeout_num = timeout_cycles;
 
     uint16_t current_capture = 0;
 	if(channel == TIV_CHANNEL_A) current_capture = LL_TIM_IC_GetCaptureCH1(Timer_Used);
 	else current_capture = LL_TIM_IC_GetCaptureCH2(Timer_Used);
-	__enable_irq();
 
 	int32_t sign;
 	if(channel == TIV_CHANNEL_A) sign = TIVs_GetSign(cc_ChannelA_pin);
@@ -116,10 +113,6 @@ int32_t TIVs_Test(void)
 
     int32_t delta_signed = captureA - captureB;
 
-//    // if timer/counter can wrap, normalize into the valid range
-//    if (delta_signed < 0)
-//        delta_signed += (65535 + 1);   // ARR = auto-reload value of Timer_Used
-
     uint32_t delta;// = (uint32_t)delta_signed;
 
     if(delta_signed > 0)
@@ -131,14 +124,6 @@ int32_t TIVs_Test(void)
         return INT32_MAX;
 
     uint32_t value = measurement_factor / delta;
-
-    if((int32_t)value < 500 && (int32_t)value > 300)
-    {
-    	LL_GPIO_ResetOutputPin(LD2_GPIO_Port, LD2_Pin);
-    	char buff[50];
-    	sprintf(buff,"A:%u B:%u\n",captureA,captureB);
-    	LOG(buff);
-    }
 
     return (int32_t)value;
 }

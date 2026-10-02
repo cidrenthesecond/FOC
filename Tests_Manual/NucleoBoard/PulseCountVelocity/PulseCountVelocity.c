@@ -1,12 +1,9 @@
-/*
- * PulseMeas_static.c
- *
- *  Created on: Mar 6, 2026
- *      Author: pawluczenko
- */
+#include "PulseCountVelocity.h"
+#include <stdint.h>
+#include "stm32h5xx_ll_tim.h"
 
-
-#include "PulseCountVelocity_static.h"
+#define ENCODER_EDGES_COUNTED    2
+#define ENCODER_CHANNELS_COUNTED 2
 
 //CONFIG START
 static const uint8_t Encoder_Poles           	 = 12;
@@ -25,32 +22,25 @@ static TIM_TypeDef* const MeasurementFrame_Timer = TIM3;
 //Private functions
 static inline void PCVs_EncoderTimer_Start();
 static inline void PCVs_MeasFrameTimer_Start();
-static inline void MF_LUT_INIT();
-
 
 static const uint16_t Encoder_PulsesPerRevolution = Encoder_Poles*Encoder_Edges_Counted*Encoder_Channels_Counted;
 static uint32_t       Measurement_Factor          = (60*Measurement_Frequency)/Encoder_PulsesPerRevolution;
-static uint32_t       MF_LUT[timeout_cycles_goal + 1];
 
 static volatile uint16_t old_num_pulses	= 0;
 static volatile uint8_t timeout_cycles  = 0;
 static volatile int32_t prev_velocity   = 0;
 
+void PCV_Init(uint32_t measurementFrequency)
+{
+	PCV_HardwareInit(measurementFrequency);
+}
+
 
 void PCVs_Start()
 {
-	MF_LUT_INIT();
 	PCVs_EncoderTimer_Start();
 	PCVs_MeasFrameTimer_Start();
 	old_num_pulses = 0;
-}
-
-static inline void MF_LUT_INIT()
-{
-	for(uint8_t i = 0; i <= timeout_cycles_goal; i++)
-	{
-		MF_LUT[i]= Measurement_Factor / (i + 1);
-	}
 }
 
 static inline void PCVs_EncoderTimer_Start()
@@ -69,7 +59,6 @@ static inline void PCVs_MeasFrameTimer_Start()
 	LL_TIM_EnableIT_UPDATE(MeasurementFrame_Timer);
 }
 
-__attribute__((optimize("O3")))
 int32_t PCVs_CalculateVelocity()
 {
 	uint16_t num_pulses = LL_TIM_GetCounter(Encoder_Timer);
@@ -86,7 +75,6 @@ int32_t PCVs_CalculateVelocity()
 	return result;
 }
 
-__attribute__((optimize("O3")))
 int32_t PCVs_CalculateVelocity1()
 {
 	uint16_t num_pulses = LL_TIM_GetCounter(Encoder_Timer);
@@ -94,8 +82,6 @@ int32_t PCVs_CalculateVelocity1()
 
 	if(delta == 0)
 	{
-		//timeout_cycles++;
-
 		if(++timeout_cycles >= timeout_cycles_goal)
 		{
 			prev_velocity = 0;
@@ -107,7 +93,7 @@ int32_t PCVs_CalculateVelocity1()
 
 	int32_t result;
 
-	result = (int32_t)delta*(int32_t)MF_LUT[timeout_cycles];
+	result = (int32_t)delta*UINT16_MAX;
 
 	prev_velocity = result;
 	old_num_pulses = num_pulses;
@@ -115,20 +101,5 @@ int32_t PCVs_CalculateVelocity1()
 
 	return result;
 }
-
-/* ISR implementation example
- *
-
-
-	void TIMx_IRQHandler(void)
-	{
-		if(LL_TIM_IsActiveFlag_UPDATE(MeasurementFrame_Timer))
-		{
-			LL_TIM_ClearFlag_UPDATE(MeasurementFrame_Timer);
-			PCV_result = PCVs_CalculateVelocity1();
-		}
-	}
-
-*/
 
 
