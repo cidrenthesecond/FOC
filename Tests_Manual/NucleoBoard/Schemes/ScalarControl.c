@@ -14,7 +14,7 @@ static WaveGen cos_lut;
 static float CurrentFrequency;
 static uint32_t periodsSinceLastFrequencyChange;
 static uint32_t periodsToChangeFrequency;
-static float Setpoint = 10.0f;// 10 hz speed
+static float Setpoint = 5.0f;// 10 hz speed
 
 typedef struct {
     float alpha;
@@ -32,7 +32,8 @@ void ScalarControl_Init()
     cos_lut = WaveGen_Create(COSINE);
     WaveGen_SetFrequency(sin_lut,CurrentFrequency,SWITCHING_FREQUENCY);
     WaveGen_SetFrequency(cos_lut,CurrentFrequency,SWITCHING_FREQUENCY);
-    ScalarProfile_Init(230.0f, 50.0f, 50.0f,  10.0f);
+    ScalarProfile_Init(230.0f, 0.0f, 50.0f,  0.0f);
+    //ScalarProfile_Init(230.0f, 50.0f, 50.0f,  10.0f);
 }
 
 void ScalarControl_Task()
@@ -53,7 +54,7 @@ void ScalarControl_Task()
     float voltageMagnitude = ScalarProfile_GetVoltage(CurrentFrequency);
     VoltageVector_t vector = GetVoltageVector(voltageMagnitude);
 
-    Duty_t dutyCycles = SVPWM(vector.alpha,vector.beta,);
+    Duty_t dutyCycles = SVPWM(vector.alpha,vector.beta,20.0f);
     PWM_SetDuty(dutyCycles.duty_a,dutyCycles.duty_b,dutyCycles.duty_c);
 
     periodsSinceLastFrequencyChange++;

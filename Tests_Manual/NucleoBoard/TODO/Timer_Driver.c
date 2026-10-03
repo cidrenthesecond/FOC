@@ -37,7 +37,7 @@ void PWM_SetCaptureCompare(uint16_t phaseA, uint16_t phaseB, uint16_t phaseC)
 
 void PWM_SetDuty(float dutyA, float dutyB, float dutyC)
 {
-    uint32_t arr  = PWM_TIMER->ARR;   /* real timer period, never a magic number */
+    uint32_t arr  = 15999;//PWM_TIMER->ARR;   /* real timer period, never a magic number */
     uint32_t ccrA = (uint32_t)(dutyA * (float)arr + 0.5f);
     uint32_t ccrB = (uint32_t)(dutyB * (float)arr + 0.5f);
     uint32_t ccrC = (uint32_t)(dutyC * (float)arr + 0.5f);

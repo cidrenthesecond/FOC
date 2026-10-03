@@ -36,6 +36,9 @@
 #include "CMD_Task.h"
 #include "System_Config.h"
 #include "SysTickWrapper.h"
+#include "FOC_Scheme_Test.h"
+#include "PWM_Schemes.h"
+#include "Timer_Driver.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,6 +94,27 @@ float target = 1.0f;
 void LED_TASK(void)
 {
   LL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+}
+
+static uint8_t testTaskReady = 0;
+
+void TEST_FOC_TASK_ENABLE(void)
+{
+  testTaskReady = 1;
+}
+
+void TEST_TASK(void)
+{
+  if(testTaskReady == 0)
+    return;
+
+  float alpha;
+  float beta;
+
+  OpenLoop_AlfaBeta(&alpha, &beta);
+  Duty_t duty = SVPWM(alpha,beta,3.3f);
+  PWM_SetDuty(duty.duty_a, duty.duty_b,duty.duty_c);
+  testTaskReady = 0;
 }
 
 /* USER CODE END 0 */
@@ -160,6 +184,7 @@ int main(void)
   CMD_Init();
   SysTick_Init();
   SysTickDispatcher_Subscribe(LED_TASK, 1000);
+  SysTickDispatcher_Subscribe(TEST_FOC_TASK_ENABLE,1);
 
   LL_USART_EnableDirectionTx(USART2);
   LL_USART_EnableDirectionRx(USART2);
@@ -171,8 +196,6 @@ int main(void)
   while(!Relay_IsOn())
     Relay_SM();
 
-  TIM1->CCR1 = UINT16_MAX/2;
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -181,6 +204,8 @@ int main(void)
   {    
     if(CMD_IsTaskReady())
       CMD_Task();
+
+    TEST_TASK();
 
 
 //	  for(uint32_t delay = 0; delay < 100000; delay++)

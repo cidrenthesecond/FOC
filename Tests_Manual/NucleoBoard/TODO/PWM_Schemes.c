@@ -86,9 +86,15 @@ static inline RotatedVector_t RotateVector(float a, float b, Angle_t angle)
 
 static inline Duty_t Saturate(Duty_t d)
 {
-    d.duty_a = (d.duty_a < 0.0f) ? 0.0f : (d.duty_a > 1.0f ? 1.0f : d.duty_a);
-    d.duty_b = (d.duty_b < 0.0f) ? 0.0f : (d.duty_b > 1.0f ? 1.0f : d.duty_c);
-    d.duty_c = (d.duty_c < 0.0f) ? 0.0f : (d.duty_c > 1.0f ? 1.0f : d.duty_c);
+    if (d.duty_a < 0.0f) d.duty_a = 0.0f;
+    if (d.duty_a > 1.0f) d.duty_a = 1.0f;
+
+    if (d.duty_b < 0.0f) d.duty_b = 0.0f;
+    if (d.duty_b > 1.0f) d.duty_b = 1.0f;
+
+    if (d.duty_c < 0.0f) d.duty_c = 0.0f;
+    if (d.duty_c > 1.0f) d.duty_c = 1.0f;
+
     return d;
 }
 
@@ -108,9 +114,9 @@ Duty_t SVPWM(float v_alpha, float v_beta, float v_bus)
 	float offset = (max + min) * 0.5f;
 
     Duty_t result;
-    result.duty_a = a - offset;
-    result.duty_b = b - offset;
-    result.duty_c = c - offset;
+    result.duty_a = 0.5f + a - offset;
+    result.duty_b = 0.5f + b - offset;
+    result.duty_c = 0.5f + c - offset;
 
     return Saturate(result);
 }

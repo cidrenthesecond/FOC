@@ -9,6 +9,8 @@ typedef struct WaveGen_LUT{
 } WaveGen_LUT;
 
 extern const WaveGen_LUT SINE;
+extern const WaveGen_LUT COSINE;
 extern const WaveGen_LUT SIGMOID;
+
 
 #endif
