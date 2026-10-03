@@ -28,11 +28,12 @@ void ScalarControl_Init()
     CurrentFrequency = 0.0f;
     periodsSinceLastFrequencyChange = 0;
     periodsToChangeFrequency = 1000;
-    sin_lut = WaveGen_Create(SINE);
-    cos_lut = WaveGen_Create(COSINE);
+    sin_lut = WaveGen_Create(&SINE);
+    cos_lut = WaveGen_Create(&COSINE);
     WaveGen_SetFrequency(sin_lut,CurrentFrequency,SWITCHING_FREQUENCY);
     WaveGen_SetFrequency(cos_lut,CurrentFrequency,SWITCHING_FREQUENCY);
     ScalarProfile_Init(230.0f, 0.0f, 50.0f,  0.0f);
+    PWM_RegisterCallback(ScalarProfile_SetTaskReady);
     //ScalarProfile_Init(230.0f, 50.0f, 50.0f,  10.0f);
 }
 

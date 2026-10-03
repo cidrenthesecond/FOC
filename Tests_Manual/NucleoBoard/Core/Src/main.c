@@ -39,6 +39,7 @@
 #include "FOC_Scheme_Test.h"
 #include "PWM_Schemes.h"
 #include "Timer_Driver.h"
+#include "ScalarControl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -179,7 +180,6 @@ int main(void)
   LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH1N);
   LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH2N);
   LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH3N);
-  LL_TIM_EnableCounter(TIM1);
 
   CMD_Init();
   SysTick_Init();
@@ -193,8 +193,14 @@ int main(void)
   Relay_Init();
   Relay_SetThreshold(8000);
 
+
   while(!Relay_IsOn())
     Relay_SM();
+
+  ScalarControl_Init();
+
+  LOG("Test Start:");
+  PWM_Start();
 
   /* USER CODE END 2 */
 
@@ -206,18 +212,6 @@ int main(void)
       CMD_Task();
 
     TEST_TASK();
-
-
-//	  for(uint32_t delay = 0; delay < 100000; delay++)
-//	    	;
-	  //LL_GPIO_SetOutputPin(WCET_GPIO_Port, WCET_Pin);
-	  //OpenLoop_AlfaBeta(&alpha,&beta);
-	  //OpenLoop_LUT(&alpha,&beta);
-	  //LL_GPIO_ResetOutputPin(WCET_GPIO_Port, WCET_Pin);
-	  //SVPWM(alpha, beta);
-
-	  // for(uint32_t delay =0 ;delay < 600000; delay++)
-		//   ;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

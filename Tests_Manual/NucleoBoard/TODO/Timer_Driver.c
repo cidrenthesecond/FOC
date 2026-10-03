@@ -4,6 +4,8 @@
 #include "Logger.h"
 
 #define PWM_TIMER TIM1
+
+static void (*interruptCallback)(void);
   
 void PWM_Init()
 {
@@ -14,7 +16,11 @@ void PWM_Init()
   LL_TIM_CC_EnableChannel(PWM_TIMER, LL_TIM_CHANNEL_CH1N);
   LL_TIM_CC_EnableChannel(PWM_TIMER, LL_TIM_CHANNEL_CH2N);
   LL_TIM_CC_EnableChannel(PWM_TIMER, LL_TIM_CHANNEL_CH3N);
+}
 
+void PWM_RegisterCallback(void (*callback)(void))
+{
+    interruptCallback = callback;
 }
 
 void PWM_Start()

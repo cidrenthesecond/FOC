@@ -10,6 +10,7 @@ void PWM_ESTOP();
 void PWM_ReArm();
 void PWM_Start();
 void PWM_Stop();
+void PWM_RegisterCallback(void (*callback)(void));
 uint32_t PWM_GetSwitchingFrequency();
 uint32_t PWM_GetAutoReload();
 

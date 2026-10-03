@@ -1,5 +1,5 @@
-#ifndef SIN_LUT_H
-#define SIN_LUT_H
+#ifndef COS_LUT_H
+#define COS_LUT_H
 
 #include "stdint.h"
 

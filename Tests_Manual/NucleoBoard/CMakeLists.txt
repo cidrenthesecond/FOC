@@ -29,29 +29,12 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 add_subdirectory(cmake/stm32cubemx)
 add_subdirectory(App/Logger)
 add_subdirectory(App/CMD)
 add_subdirectory(App/FPU)
+add_subdirectory(App/WaveGen)
+add_subdirectory(App/ScalarProfile)
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
@@ -71,6 +54,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Tests/FOC_SCHEME/FOC_Scheme_Test.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/PWM_Schemes.c
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/Schemes/ScalarControl.c
 )
 
 # Add include paths
@@ -78,6 +63,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${MAIN_DIR}/Common/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/Tests/FOC_SCHEME
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO
+    ${CMAKE_CURRENT_SOURCE_DIR}/Schemes
 )
 
 # Remove wrong libob.a library dependency when using cpp files
@@ -89,5 +75,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     logger
     commandLine
     FPU
+    waveGen
+    scalarProfile
 )
 
