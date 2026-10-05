@@ -3,6 +3,7 @@
 
 #include "stdint.h"
 
+void LogTransport_Init();
 void UART_PrintPolling(const char *pData,uint8_t length);
 void Send_USART_DMA_LL(const char *pData, uint8_t Size);
 

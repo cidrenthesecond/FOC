@@ -134,9 +134,9 @@ Duty_t SPWM(float v_alpha, float v_beta, float v_bus)
 	c = -a -b;
 
     Duty_t result;
-    result.duty_a = a;
-    result.duty_b = b;
-    result.duty_c = c;
+    result.duty_a = a + 0.5f;
+    result.duty_b = b + 0.5f;
+    result.duty_c = c + 0.5f;
 
     return Saturate(result);
 }

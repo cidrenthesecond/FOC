@@ -3,6 +3,6 @@
 
 void ScalarControl_Init();
 void ScalarControl_Task();
-void ScalarProfile_SetTaskReady();
+void ScalarControl_SetTaskReady();
 
 #endif

@@ -1,3 +1,4 @@
+#include "stm32h533xx.h"
 #include "stm32h5xx_ll_adc.h"
 #include "ADC_Service.h"
 #include "Moving_Avarage_Filter.h"
@@ -5,12 +6,11 @@
 #include "Logger.h"
 #include "stdio.h"
 
-#define ADC_FULL_SCALE           4095
-#define ADC_VREF_MV              3300
-#define DIVIDER_CONSTANT         126  //zmiana nazwy
-
-#define ADC_OFFSET_SAMPLES_COUNT 50U
-#define FILTER_KERNEL 3
+#define ADC_FULL_SCALE            4095
+#define ADC_VREF_MV               3300
+#define BUS_VOLTAGE_DIVIDER_RATIO 126  
+#define ADC_OFFSET_SAMPLES_COUNT  50U
+#define FILTER_KERNEL             3
 
 static const uint32_t adc_channel_map[5] =
 {
@@ -21,29 +21,6 @@ static const uint32_t adc_channel_map[5] =
     [NTC_VOLTAGE_CHANNEL] = LL_ADC_CHANNEL_0
 };
 
-typedef struct{
-  uint16_t raw;
-  uint16_t filtered;
-} VoltageMeasurement_t;
-
-typedef struct{
-  uint16_t raw;
-  uint16_t filtered;
-  int16_t delta;
-} CurrentMeasurement_t;
-
-VoltageMeasurement_t Bus_Voltage;
-VoltageMeasurement_t NTC_Voltage;
-CurrentMeasurement_t A_Current;
-CurrentMeasurement_t B_Current;
-CurrentMeasurement_t C_Current;  
-
-static uint16_t bus_Measurement;
-static uint16_t NTC_Measurement;
-static uint16_t phase_A_Measurement;
-static uint16_t phase_B_Measurement;
-static uint16_t phase_C_Measurement;
-
 static uint16_t phase_a_offset_adc;
 static uint16_t phase_b_offset_adc;
 static uint16_t phase_c_offset_adc;
@@ -53,6 +30,8 @@ static MovingAvarage DcBus_Filter;
 static MovingAvarage Phase_A_Filter;
 static MovingAvarage Phase_B_Filter;
 static MovingAvarage Phase_C_Filter;
+
+static void (*OverCurrentInterruptCallback)(void);
 
 typedef union {
     uint8_t raw;
@@ -80,13 +59,43 @@ void ADC_Init()
   Phase_A_Filter = MovingAvarage_Init(FILTER_KERNEL);
   Phase_B_Filter = MovingAvarage_Init(FILTER_KERNEL);
   Phase_C_Filter = MovingAvarage_Init(FILTER_KERNEL);
+  OverCurrentInterruptCallback = NULL;
 
   ADC_Calibrate();
   ADC_CalibratePhaseOffsets();
-  ADC_SetOCP(6000);
-  //LL_ADC_EnableIT_JEOS(ADC1); NOT ADDED IN EXTI FOR NOW
+  ADC_Set_OCP_Threshold(6000);
+
   LL_ADC_Enable(ADC1);
   LL_ADC_INJ_StartConversion(ADC1);
+  LL_ADC_EnableIT_AWD2(ADC1);
+}
+
+void ADC_PrepareForControlLoop()
+{
+  MovingAvarage_Reset(DcBus_Filter);
+  MovingAvarage_Reset(Phase_A_Filter);
+  MovingAvarage_Reset(Phase_B_Filter);
+  MovingAvarage_Reset(Phase_C_Filter);
+}
+
+Analog_Feedback_t ADC_GetAnalogFeedback()
+{
+  Analog_Feedback_t result;
+
+  uint16_t phase_a_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_A_CHANNEL]);
+  uint16_t phase_b_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_B_CHANNEL]);
+  uint16_t phase_c_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_C_CHANNEL]);
+  uint16_t dcBus_measurement   = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[BUS_VOLTAGE_CHANNEL]);
+
+  phase_a_measurement = MovingAvarage_Filter(Phase_A_Filter, phase_a_measurement);
+  phase_b_measurement = MovingAvarage_Filter(Phase_B_Filter, phase_b_measurement);
+  phase_c_measurement = MovingAvarage_Filter(Phase_C_Filter, phase_c_measurement);
+  dcBus_measurement   = MovingAvarage_Filter(DcBus_Filter, dcBus_measurement);
+
+  result.Currents = ADC_CalculatePhaseCurrents(phase_a_measurement, phase_b_measurement, phase_c_measurement);
+  result.DcBus    = ADC_CalculateDcLinkVoltage(dcBus_measurement);
+
+  return result;
 }
 
 uint16_t ADC_ReadSingleChannelRaw(ADC_Channel_t channel)
@@ -109,7 +118,7 @@ uint16_t ADC_ReadSingleChannelRaw(ADC_Channel_t channel)
 
 uint32_t ADC_CalculateDcLinkVoltage(uint16_t adcMeasurement)
 {
-	return DIVIDER_CONSTANT * ADC_VREF_MV * adcMeasurement / ADC_FULL_SCALE;
+	return BUS_VOLTAGE_DIVIDER_RATIO * ADC_VREF_MV * adcMeasurement / ADC_FULL_SCALE;
 }
 uint32_t ADC_GetDcLinkVoltage()
 {
@@ -122,7 +131,7 @@ uint32_t ADC_GetDcLinkVoltage()
 uint16_t ADC_GetNtcVoltage()
 {
   uint16_t measurement = ADC_ReadSingleChannelRaw(NTC_VOLTAGE_CHANNEL);
-  NTC_Measurement      = MovingAvarage_Filter(NTC_Filter, measurement);
+  uint16_t NTC_Measurement      = MovingAvarage_Filter(NTC_Filter, measurement);
   return ADC_CalculateNtcVoltage(NTC_Measurement);
 }
 
@@ -155,7 +164,7 @@ static void ADC_Calibrate()
 
 //_______________OCP__________________
 
-void ADC_SetOCP(uint16_t thresholdCurrent_ma)
+void ADC_Set_OCP_Threshold(uint16_t thresholdCurrent_ma)
 {
   if(status.bits.phase_offset_configured == 0)
     return;
@@ -166,6 +175,14 @@ void ADC_SetOCP(uint16_t thresholdCurrent_ma)
   uint16_t thresholdLow    = midpointAvgg - thresholdOffset;
 
   LL_ADC_ConfigAnalogWDThresholds(ADC1, LL_ADC_AWD2, (thresholdHigh>>4), (thresholdLow>>4));
+}
+
+void ADC_Set_OCP_ISR(void (*isr)(void))
+{
+  if(isr == NULL)
+    return;
+
+  OverCurrentInterruptCallback = isr;
 }
 
 //________________Helper functions________________
@@ -248,5 +265,19 @@ void PrintFloat(float x)
   LOG(buffer);
 }
 
+/**
+  * @brief This function handles ADC1 global interrupt.
+  */
+void ADC1_IRQHandler(void)
+{
+  /* USER CODE BEGIN ADC1_IRQn 0 */
+  if(LL_ADC_IsActiveFlag_AWD2(ADC1))
+  {
+    OverCurrentInterruptCallback();
+    LL_ADC_ClearFlag_AWD2(ADC1);
+  }
+  /* USER CODE END ADC1_IRQn 0 */
+  /* USER CODE BEGIN ADC1_IRQn 1 */
 
-//PRZERWANIE KTORE LICZY prady
+  /* USER CODE END ADC1_IRQn 1 */
+}

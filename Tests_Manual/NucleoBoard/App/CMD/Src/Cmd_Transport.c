@@ -13,6 +13,12 @@ static volatile uint8_t data_ready_flag = 0;
 
 static void Start_USART_RX_DMA(void);
 
+void  InitCmdTransport()
+{
+    LL_USART_EnableDirectionRx(USART_USED);
+    LL_USART_Enable(USART_USED);
+}
+
 int IsDataReady(void)
 {
     return data_ready_flag;

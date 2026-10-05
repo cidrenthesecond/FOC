@@ -1,11 +1,8 @@
 #include "FOC_Scheme_Test.h"
 #include "arm_math.h"
 #include "stdint.h"
-
-static float d_setpoint = 1.0f;
-static float q_setpoint = 1.0f;
-
-uint8_t loop = 0;
+#include "PWM_Schemes.h"
+#include "Timer_Driver.h"
 
 //Mocking rotor position
 const float angle[36] = {
@@ -18,6 +15,44 @@ const float angle[36] = {
  240.0f, 250.0f, 260.0f, 270.0f,
  280.0f, 290.0f, 300.0f, 310.0f,
  320.0f, 330.0f, 340.0f, 350.0f };
+
+
+static float powerSupplyVoltage = 28.0f;
+static float VoltageSetpoint = 5.0f;
+
+static float d_setpoint = 1.0f;
+static float q_setpoint = 1.0f;
+
+static uint8_t loop = 0;
+static uint8_t testTaskReady = 0;
+
+void GenerateVoltage_TaskEnable(void)
+{
+  testTaskReady = 1;
+}
+
+uint8_t GenerateVoltage_IsTaskReady(void)
+{
+	return testTaskReady;
+}
+
+void GenerateVoltage_Task(void)
+{
+  if(testTaskReady == 0)
+    return;
+
+	float sinus, cosinus;
+	arm_sin_cos_f32(angle[loop], &sinus, &cosinus);
+
+	float alpha = VoltageSetpoint * sinus;
+	float beta  = VoltageSetpoint * cosinus;
+
+	Duty_t duty = SPWM(alpha, beta, powerSupplyVoltage);
+	PWM_SetDuty(duty.duty_a, duty.duty_b, duty.duty_c);
+
+	loop = (loop + 1) % 36;
+	testTaskReady = 0;
+}
 
 //After calling in equal intervals of time function returns
 //Alfa and beta which are sines 90 deg of of phase

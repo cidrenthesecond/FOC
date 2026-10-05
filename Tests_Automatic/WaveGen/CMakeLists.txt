@@ -7,6 +7,7 @@ add_executable(WaveGen_test
     ${MAIN_DIR}/common/Src/WaveGen_LUTs.c
     ${MAIN_DIR}/common/Src/SIN_LUT.c
     ${MAIN_DIR}/common/Src/SIGMOID_LUT.c
+    ${MAIN_DIR}/common/Src/COS_LUT.c
 )
 
 target_link_libraries(WaveGen_test PRIVATE
@@ -23,6 +24,7 @@ add_executable(WaveGen_plots
     ${MAIN_DIR}/common/Src/WaveGen_LUTs.c
     ${MAIN_DIR}/common/Src/SIN_LUT.c
     ${MAIN_DIR}/common/Src/SIGMOID_LUT.c
+    ${MAIN_DIR}/common/Src/COS_LUT.c
 )
 
 target_include_directories(WaveGen_plots PRIVATE

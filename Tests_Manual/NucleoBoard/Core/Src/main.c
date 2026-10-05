@@ -21,6 +21,7 @@
 #include "adc.h"
 #include "gpdma.h"
 #include "icache.h"
+#include "stm32h5xx_ll_gpio.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -31,13 +32,10 @@
 #include "Logger.h"
 #include "Relay.h"
 #include <stdint.h>
-#include "FPU.h"
-#include "ADC_Service.h"
 #include "CMD_Task.h"
 #include "System_Config.h"
 #include "SysTickWrapper.h"
 #include "FOC_Scheme_Test.h"
-#include "PWM_Schemes.h"
 #include "Timer_Driver.h"
 #include "ScalarControl.h"
 /* USER CODE END Includes */
@@ -73,50 +71,12 @@ static void MPU_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-uint32_t phaseAccumulator = 0;
-uint32_t  increment = UINT32_MAX/36;
-float target = 1.0f;
-
-// void OpenLoop_LUT(float * alpha, float *beta)
-// {
-// 	uint16_t index = phaseAccumulator >> 22;
-
-// 	float sin = (float)lut[index] / (float)INT32_MAX;//INT32_MAX;
-
-// 	uint32_t cosIndex = (index + 256) & 1023;
-// 	float cos = (float)lut[cosIndex] / (float)INT32_MAX;
-
-// 	*alpha = target * cos;
-// 	*beta  = target * sin;
-
-// 	phaseAccumulator += increment;
-// }
-
 void LED_TASK(void)
 {
   LL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 }
 
-static uint8_t testTaskReady = 0;
 
-void TEST_FOC_TASK_ENABLE(void)
-{
-  testTaskReady = 1;
-}
-
-void TEST_TASK(void)
-{
-  if(testTaskReady == 0)
-    return;
-
-  float alpha;
-  float beta;
-
-  OpenLoop_AlfaBeta(&alpha, &beta);
-  Duty_t duty = SVPWM(alpha,beta,3.3f);
-  PWM_SetDuty(duty.duty_a, duty.duty_b,duty.duty_c);
-  testTaskReady = 0;
-}
 
 /* USER CODE END 0 */
 
@@ -164,39 +124,15 @@ int main(void)
   MX_ADC1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  FPU_enable();
-
 
   System_Init();
-  LL_DMA_EnableIT_TC(GPDMA1, LL_DMA_CHANNEL_0);
 
-  ADC_Init();
-  LL_ADC_EnableIT_AWD2(ADC1);
-
-  LL_TIM_EnableAllOutputs(TIM1);
-  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH1);
-  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH2);
-  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH3);
-  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH1N);
-  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH2N);
-  LL_TIM_CC_EnableChannel(TIM1, LL_TIM_CHANNEL_CH3N);
-
-  CMD_Init();
   SysTick_Init();
   SysTickDispatcher_Subscribe(LED_TASK, 1000);
-  SysTickDispatcher_Subscribe(TEST_FOC_TASK_ENABLE,1);
+  SysTickDispatcher_Subscribe(GenerateVoltage_TaskEnable,1);
 
-  LL_USART_EnableDirectionTx(USART2);
-  LL_USART_EnableDirectionRx(USART2);
-  LL_USART_Enable(USART2);
-
-  Relay_Init();
-  Relay_SetThreshold(8000);
-
-
-  while(!Relay_IsOn())
-    Relay_SM();
-
+  LL_TIM_ClearFlag_UPDATE(TIM1);
+  LL_TIM_EnableIT_UPDATE(TIM1);
   ScalarControl_Init();
 
   LOG("Test Start:");
@@ -207,11 +143,18 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {    
+  { 
+    // if(GenerateVoltage_IsTaskReady())
+    // {
+    //   GenerateVoltage_Task();
+    // }
+      
     if(CMD_IsTaskReady())
       CMD_Task();
 
-    TEST_TASK();
+    // TEST_TASK();
+    ScalarControl_Task();
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -21,7 +21,14 @@ typedef struct {
     int32_t Current_C;
 } Phase_Currents_t;
 
+typedef struct {
+    Phase_Currents_t Currents;
+    uint32_t         DcBus;
+} Analog_Feedback_t;
+
 void ADC_Init();
+void ADC_PrepareForControlLoop();
+Analog_Feedback_t ADC_GetAnalogFeedback();
 
 uint16_t ADC_ReadSingleChannelRaw(ADC_Channel_t channel);
 
@@ -34,7 +41,8 @@ uint16_t ADC_CalculateNtcVoltage(uint16_t adcMeasurement);
 Phase_Currents_t  ADC_GetPhaseCurrents();
 Phase_Currents_t  ADC_CalculatePhaseCurrents(uint16_t ADC_Phase_A, uint16_t ADC_Phase_B, uint16_t ADC_Phase_C);
 
-void ADC_SetOCP(uint16_t thresholdCurrent_ma);
+void ADC_Set_OCP_Threshold(uint16_t thresholdCurrent_ma);
+void ADC_Set_OCP_ISR(void (*isr)(void));
 
 uint16_t GetNtcVoltage();
 

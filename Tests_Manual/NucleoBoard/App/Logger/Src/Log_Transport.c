@@ -7,6 +7,13 @@
 #define DMA_USED         GPDMA1
 #define DMA_CHANNEL_USED LL_DMA_CHANNEL_0
 
+void LogTransport_Init()
+{
+    LL_USART_EnableDirectionTx(UART_USED);
+    LL_DMA_EnableIT_TC(DMA_USED, DMA_CHANNEL_USED);
+    LL_USART_Enable(UART_USED);
+}
+
 void UART_PrintPolling(const char *pData,uint8_t length)
 {
     for(uint8_t index = 0; index < length; index++)

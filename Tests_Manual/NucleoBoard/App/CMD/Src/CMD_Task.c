@@ -6,6 +6,7 @@
 
 void CMD_Init()
 {
+    InitCmdTransport();
     CommandExecute_Init();
 
     CommandExecute_Register(CMD_ESTOP, CMD_ESTOP_Command);
