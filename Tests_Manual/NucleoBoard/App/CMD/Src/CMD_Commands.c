@@ -79,7 +79,7 @@ void NTC_Measure(int argc, char *argv[])
     int16_t Temp = Thermistor_GetHeatsinkTemp();
 
     char message[32];
-    sprintf(message, "[NTC] : HT Temp : %d",Temp);
+    sprintf(message, "[NTC] : HT Temp : %d mC",Temp);
     LOG(message);
 }
 
