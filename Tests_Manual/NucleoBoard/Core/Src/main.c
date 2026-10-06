@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "SysTickDispatcher.h"
 #include "adc.h"
 #include "gpdma.h"
 #include "icache.h"
@@ -37,6 +38,7 @@
 #include "FOC_Scheme_Test.h"
 #include "Timer_Driver.h"
 #include "ScalarControl.h"
+#include "NTC_Task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -128,6 +130,7 @@ int main(void)
 
   SysTick_Init();
   SysTickDispatcher_Subscribe(LED_TASK, 1000);
+  SysTickDispatcher_Subscribe(NTC_Task, 1000);
   //SysTickDispatcher_Subscribe(GenerateVoltage_TaskEnable,1);
 
   LL_TIM_ClearFlag_UPDATE(TIM1);
@@ -147,9 +150,11 @@ int main(void)
     // {
     //   GenerateVoltage_Task();
     // }
-      
-    if(CMD_IsTaskReady())
+    if(NTC_IsTaskReady())
+      NTC_Task();
+    else if(CMD_IsTaskReady())
       CMD_Task();
+    
 
     // TEST_TASK();
     ScalarControl_Task();
