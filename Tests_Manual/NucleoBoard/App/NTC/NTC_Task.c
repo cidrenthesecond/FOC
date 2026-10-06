@@ -12,6 +12,11 @@ uint8_t NTC_IsTaskReady(void)
     return taskReady;
 }
 
+void NTC_TaskInit(void)
+{
+
+}
+
 void NTC_Task(void)
 {
     int16_t HeatSinkTemp_mC = Thermistor_GetHeatsinkTemp();

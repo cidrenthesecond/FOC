@@ -4,6 +4,7 @@
 #include "stdint.h"
 
 uint8_t NTC_IsTaskReady(void);
+void    NTC_TaskInit(void);
 void    NTC_Task(void);
 void    NTC_SetTaskReady(void);
 
