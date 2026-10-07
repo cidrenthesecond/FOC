@@ -35,12 +35,12 @@ add_subdirectory(App/CMD)
 add_subdirectory(App/FPU)
 add_subdirectory(App/WaveGen)
 add_subdirectory(App/ScalarProfile)
+add_subdirectory(App/NTC)
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${MAIN_DIR}/Common/Src/PID.c
     ${MAIN_DIR}/Common/Src/Relay.c
-    ${MAIN_DIR}/Common/Src/Thermistor.c
     ${MAIN_DIR}/Common/Src/SysTickDispatcher.c
 
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/GPIO_Driver.c
@@ -77,5 +77,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     FPU
     waveGen
     scalarProfile
+    NTC
 )
 
