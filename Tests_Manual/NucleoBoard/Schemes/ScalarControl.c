@@ -17,7 +17,7 @@ static WaveGen cos_wave;
 static float CurrentFrequency;
 static uint32_t periodsSinceLastFrequencyChange;
 static uint32_t periodsToChangeFrequency;
-static float Setpoint = 6.0f;// 10 hz speed
+static float Setpoint = 5.0f;// 10 hz speed
 
 
 

@@ -17,7 +17,7 @@ const float angle[36] = {
  320.0f, 330.0f, 340.0f, 350.0f };
 
 
-static float powerSupplyVoltage = 28.0f;
+static float powerSupplyVoltage = 48.0f;
 static float VoltageSetpoint = 5.0f;
 
 static float d_setpoint = 1.0f;
