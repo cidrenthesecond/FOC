@@ -19,14 +19,13 @@ static uint32_t periodsSinceLastFrequencyChange;
 static uint32_t periodsToChangeFrequency;
 static float Setpoint = 5.0f;
 
-
-
 typedef struct {
     float alpha;
     float beta;
 } VoltageVector_t;
 
 static VoltageVector_t GetVoltageVector(float magnitude);
+static Duty_t          SwapPhases      (Duty_t duty);
 
 void ScalarControl_Init()
 {
@@ -62,6 +61,10 @@ void ScalarControl_Task()
     VoltageVector_t vector = GetVoltageVector(voltageMagnitude);
 
     Duty_t dutyCycles = SPWM(vector.alpha,vector.beta,(float)measurements.DcBus/1000.0f);
+
+    if(Setpoint < 0)
+        dutyCycles = SwapPhases(dutyCycles);
+
     PWM_SetDuty(dutyCycles.duty_a,dutyCycles.duty_b,dutyCycles.duty_c);
 
     periodsSinceLastFrequencyChange++;
@@ -82,6 +85,16 @@ static VoltageVector_t GetVoltageVector(float magnitude)
     result.beta  = sinNorm * magnitude;
 
     return result;
+}
+
+static Duty_t SwapPhases (Duty_t duty)
+{
+    float helper = duty.duty_a;
+
+    duty.duty_a = duty.duty_b;
+    duty.duty_b = helper;
+
+    return duty;
 }
 
 void ScalarControl_SetTaskReady()

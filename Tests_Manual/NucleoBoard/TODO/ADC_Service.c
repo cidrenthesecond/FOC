@@ -287,7 +287,9 @@ void ADC1_IRQHandler(void)
 {
   if(LL_ADC_IsActiveFlag_AWD2(ADC1))
   {
-    OverCurrentInterruptCallback();
+    if(OverCurrentInterruptCallback != NULL)
+      OverCurrentInterruptCallback();
+    
     LogOverCurrentReason();
     LL_ADC_ClearFlag_AWD2(ADC1);
   }

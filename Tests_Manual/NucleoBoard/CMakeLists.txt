@@ -56,6 +56,8 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/PWM_Schemes.c
 
     ${CMAKE_CURRENT_SOURCE_DIR}/Schemes/ScalarControl.c
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/EmergencyHandler.c
 )
 
 # Add include paths

@@ -7,6 +7,7 @@
 #include"ADC_Service.h"
 #include"FPU.h"
 #include "Relay.h"
+#include "EmergencyHandler.h"
 
 void System_Init()
 {   
@@ -19,6 +20,9 @@ void System_Init()
 
     ADC_Init();
     LOG("[ADC] : Init");
+
+    EmergencyHandler_Init();
+    LOG("Emergency handler init");
 
     PWM_Init();
     LOG("[PWM] : Init");
