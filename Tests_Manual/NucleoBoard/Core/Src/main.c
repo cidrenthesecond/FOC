@@ -154,9 +154,7 @@ int main(void)
       NTC_Task();
     else if(CMD_IsTaskReady())
       CMD_Task();
-    
 
-    // TEST_TASK();
     ScalarControl_Task();
 
     /* USER CODE END WHILE */

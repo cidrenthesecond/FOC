@@ -265,19 +265,31 @@ void PrintFloat(float x)
   LOG(buffer);
 }
 
+static void LogOverCurrentReason()
+{
+  uint16_t phase_a, phase_b, phase_c;
+
+  phase_a = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_A_CHANNEL]);
+  phase_b = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_B_CHANNEL]);
+  phase_c = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_C_CHANNEL]);
+
+  Phase_Currents_t currents = ADC_CalculatePhaseCurrents(phase_a, phase_b, phase_c);
+
+  char log[128];
+  sprintf(log,"OCP : Trigger : %u : %u : %u : ma", currents.Current_A, currents.Current_B, currents.Current_C);
+  LOG(log);
+}
+
 /**
   * @brief This function handles ADC1 global interrupt.
   */
 void ADC1_IRQHandler(void)
 {
-  /* USER CODE BEGIN ADC1_IRQn 0 */
   if(LL_ADC_IsActiveFlag_AWD2(ADC1))
   {
     OverCurrentInterruptCallback();
+    LogOverCurrentReason();
     LL_ADC_ClearFlag_AWD2(ADC1);
   }
-  /* USER CODE END ADC1_IRQn 0 */
-  /* USER CODE BEGIN ADC1_IRQn 1 */
 
-  /* USER CODE END ADC1_IRQn 1 */
 }
