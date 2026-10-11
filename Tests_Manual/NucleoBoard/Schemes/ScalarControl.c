@@ -15,6 +15,7 @@ static volatile uint8_t taskReady;
 static WaveGen sin_wave;
 static WaveGen cos_wave;
 static float CurrentFrequency;
+static float FrequencyStep;
 static uint32_t periodsSinceLastFrequencyChange;
 static uint32_t periodsToChangeFrequency;
 static float Setpoint = 5.0f;
@@ -24,12 +25,14 @@ typedef struct {
     float beta;
 } VoltageVector_t;
 
+
 static VoltageVector_t GetVoltageVector(float magnitude);
 static Duty_t          SwapPhases      (Duty_t duty);
 
 void ScalarControl_Init()
 {
     CurrentFrequency = 0.0f;
+    FrequencyStep = 1.0f;
     periodsSinceLastFrequencyChange = 0;
     periodsToChangeFrequency = 2000;
     sin_wave = WaveGen_Create(&SINE);
@@ -51,7 +54,7 @@ void ScalarControl_Task()
 
     if(CurrentFrequency < Setpoint && periodsSinceLastFrequencyChange >= periodsToChangeFrequency)
     {
-        CurrentFrequency += 1.0f;
+        CurrentFrequency += FrequencyStep;
         WaveGen_SetFrequency(sin_wave,CurrentFrequency,SWITCHING_FREQUENCY);
         WaveGen_SetFrequency(cos_wave,CurrentFrequency,SWITCHING_FREQUENCY);
         periodsSinceLastFrequencyChange = 0;

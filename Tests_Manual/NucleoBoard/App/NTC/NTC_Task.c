@@ -3,9 +3,9 @@
 #include <stdio.h>
 
 static volatile uint8_t taskReady = 0;
-
 static int16_t maxTemp_mC;
 static int16_t minTemp_mC;
+static void OnTemperatureOutOfRange(void);
 
 uint8_t NTC_IsTaskReady(void)
 {
