@@ -71,14 +71,10 @@ static void MPU_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 void LED_TASK(void)
 {
   LL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 }
-
-
-
 /* USER CODE END 0 */
 
 /**
