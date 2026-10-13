@@ -14,11 +14,11 @@
 
 static const uint32_t adc_channel_map[5] =
 {
-    [PHASE_A_CHANNEL]     = LL_ADC_CHANNEL_3,
-    [PHASE_B_CHANNEL]     = LL_ADC_CHANNEL_4,
-    [PHASE_C_CHANNEL]     = LL_ADC_CHANNEL_7,
-    [BUS_VOLTAGE_CHANNEL] = LL_ADC_CHANNEL_1,
-    [NTC_VOLTAGE_CHANNEL] = LL_ADC_CHANNEL_0
+  [PHASE_A_CHANNEL]     = LL_ADC_CHANNEL_3,
+  [PHASE_B_CHANNEL]     = LL_ADC_CHANNEL_4,
+  [PHASE_C_CHANNEL]     = LL_ADC_CHANNEL_7,
+  [BUS_VOLTAGE_CHANNEL] = LL_ADC_CHANNEL_1,
+  [NTC_VOLTAGE_CHANNEL] = LL_ADC_CHANNEL_0
 };
 
 static uint16_t phase_a_offset_adc;
@@ -106,7 +106,7 @@ uint16_t ADC_ReadSingleChannelRaw(ADC_Channel_t channel)
   LL_ADC_REG_StartConversion(ADC1);
 
   while (!LL_ADC_IsActiveFlag_EOC(ADC1))
-      ;
+    ;
 
   LL_ADC_ClearFlag_EOC(ADC1);
 
@@ -254,15 +254,6 @@ static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16
   phase_a_offset_adc = a_sum /ADC_OFFSET_SAMPLES_COUNT;
   phase_b_offset_adc = b_sum /ADC_OFFSET_SAMPLES_COUNT;
   phase_c_offset_adc = c_sum /ADC_OFFSET_SAMPLES_COUNT;
-}
-
-void PrintFloat(float x)
-{
-  int decimal    = (int)x;
-  int fractional = (int)((x - decimal)*100);
-  char buffer[30];
-  sprintf(buffer, "B: %d.%02d", decimal,fractional);
-  LOG(buffer);
 }
 
 static void LogOverCurrentReason()
