@@ -1,5 +1,6 @@
 #include "App_State.h"
 #include "App_Manger.h"
+#include "stdint.h"
 #include "stdbool.h"
 #include "string.h"
 
@@ -65,6 +66,15 @@ void App_Manager_Run()
     }
 
     CurrentState->run();
+}
+
+void App_Manager_ClearStates()
+{
+    for(uint8_t index = 0; index < APP_STATE_COUNT; index++)
+    {
+        StateRegistry[index]->init = NULL;
+        StateRegistry
+    }
 }
 
 

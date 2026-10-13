@@ -2,23 +2,23 @@
 #include "App_Manger.h"
 #include "App_State.h"
 
-TEST_GROUP(app_manager);
+TEST_GROUP(app_manager_register);
 
 void initStubFun() {}
 void runStubFun() {}
 void deinitStubFun() {}
 
-TEST_SETUP(app_manager)
+TEST_SETUP(app_manager_register)
 {
     
 }
 
-TEST_TEAR_DOWN(app_manager)
+TEST_TEAR_DOWN(app_manager_register)
 {
 
 }
 
-TEST(app_manager, registerState_WithTooHighId_ThrowsError)
+TEST(app_manager_register, registerState_WithTooHighId_ThrowsError)
 {
     AppState_t state = {
         .id = APP_STATE_COUNT,
@@ -30,7 +30,7 @@ TEST(app_manager, registerState_WithTooHighId_ThrowsError)
     TEST_ASSERT_FALSE(App_Manager_Register_State(&state));
 }
 
-TEST(app_manager, registerState_WithNullinit_ThrowsError)
+TEST(app_manager_register, registerState_WithNullinit_ThrowsError)
 {
     AppState_t state = {
         .id = APP_STATE_RUN,
@@ -41,7 +41,7 @@ TEST(app_manager, registerState_WithNullinit_ThrowsError)
     TEST_ASSERT_FALSE(App_Manager_Register_State(&state));
 }
 
-TEST(app_manager, registerState_WithNullRun_ThrowsError)
+TEST(app_manager_register, registerState_WithNullRun_ThrowsError)
 {
     AppState_t state = {
         .id = APP_STATE_RUN,
@@ -52,7 +52,7 @@ TEST(app_manager, registerState_WithNullRun_ThrowsError)
     TEST_ASSERT_FALSE(App_Manager_Register_State(&state));
 }
 
-TEST(app_manager, registerState_WithNullini_ThrowsError)
+TEST(app_manager_register, registerState_WithNullini_ThrowsError)
 {
     AppState_t state = {
         .id = APP_STATE_RUN,
@@ -63,7 +63,14 @@ TEST(app_manager, registerState_WithNullini_ThrowsError)
     TEST_ASSERT_FALSE(App_Manager_Register_State(&state));
 }
 
-TEST(app_manager, registerState_ProperRegistration_ReturnsSuccess)
+TEST(app_manager_register, registerState_ProperRegistration_ReturnsSuccess)
 {
-    
+    AppState_t state = {
+        .id = APP_STATE_RUN,
+        .init = initStubFun,
+        .run = runStubFun,
+        .deinit = deinitStubFun
+    };
+
+    TEST_ASSERT_TRUE(App_Manager_Register_State(&state));
 }
