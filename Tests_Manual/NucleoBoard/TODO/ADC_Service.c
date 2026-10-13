@@ -47,7 +47,6 @@ typedef union {
 static volatile StatusRegister_t status = {0};
 
 static void ADC_CalibratePhaseOffsets(void);
-static void ADC_PrepareForPhaseOffsetMeasurement(void);
 static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t * c_data);
 static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data);
 static void ADC_Calibrate();
@@ -162,6 +161,55 @@ static void ADC_Calibrate()
 	  ;
 }
 
+//________________Helper functions________________
+
+static void ADC_CalibratePhaseOffsets(void)
+{
+  uint16_t a_data[ADC_OFFSET_SAMPLES_COUNT];
+  uint16_t b_data[ADC_OFFSET_SAMPLES_COUNT];
+  uint16_t c_data[ADC_OFFSET_SAMPLES_COUNT];
+
+  LL_ADC_Enable(ADC1);
+  ADC_GatherOffsetData(a_data,b_data,c_data);
+  ADC_CalculatePhaseOffsets(a_data, b_data, c_data);
+  status.bits.phase_offset_configured = 1;
+
+  char buffer[64] = {0};
+  sprintf(buffer, "ADC: offsets: A %u, B %u, C %u",
+          phase_a_offset_adc,phase_b_offset_adc,phase_c_offset_adc);
+  LOG(buffer);
+
+  //return state to
+  LL_ADC_Disable(ADC1);
+  LL_ADC_INJ_SetTriggerSource(ADC1, LL_ADC_INJ_TRIG_EXT_TIM1_TRGO);
+}
+
+static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t * c_data)
+{
+  for(uint8_t i = 0; i < ADC_OFFSET_SAMPLES_COUNT; i++)
+  {
+    a_data[i] = ADC_ReadSingleChannelRaw(PHASE_A_CHANNEL);
+    b_data[i] = ADC_ReadSingleChannelRaw(PHASE_B_CHANNEL);
+    c_data[i] = ADC_ReadSingleChannelRaw(PHASE_C_CHANNEL);
+  }
+}
+
+static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data)
+{
+  uint32_t a_sum = 0, b_sum = 0, c_sum = 0;
+
+  for(uint8_t i = 0 ; i < ADC_OFFSET_SAMPLES_COUNT; i++)
+  {
+    a_sum += a_data[i];
+    b_sum += b_data[i];
+    c_sum += c_data[i];
+  }
+
+  phase_a_offset_adc = a_sum /ADC_OFFSET_SAMPLES_COUNT;
+  phase_b_offset_adc = b_sum /ADC_OFFSET_SAMPLES_COUNT;
+  phase_c_offset_adc = c_sum /ADC_OFFSET_SAMPLES_COUNT;
+}
+
 //_______________OCP__________________
 
 void ADC_Set_OCP_Threshold(uint16_t thresholdCurrent_ma)
@@ -185,77 +233,6 @@ void ADC_Set_OCP_ISR(void (*isr)(void))
   OverCurrentInterruptCallback = isr;
 }
 
-//________________Helper functions________________
-
-static void ADC_CalibratePhaseOffsets(void)
-{
-  //ADC_PrepareForPhaseOffsetMeasurement();
-
-  uint16_t a_data[ADC_OFFSET_SAMPLES_COUNT];
-  uint16_t b_data[ADC_OFFSET_SAMPLES_COUNT];
-  uint16_t c_data[ADC_OFFSET_SAMPLES_COUNT];
-
-  ADC_GatherOffsetData(a_data,b_data,c_data);
-  ADC_CalculatePhaseOffsets(a_data, b_data, c_data);
-  status.bits.phase_offset_configured = 1;
-
-  char buffer[64] = {0};
-  sprintf(buffer, "ADC: offsets: A %u, B %u, C %u",
-          phase_a_offset_adc,phase_b_offset_adc,phase_c_offset_adc);
-  LOG(buffer);
-
-  //return state to
-  LL_ADC_Disable(ADC1);
-  LL_ADC_INJ_SetTriggerSource(ADC1, LL_ADC_INJ_TRIG_EXT_TIM1_TRGO);
-}
-
-static void ADC_PrepareForPhaseOffsetMeasurement()
-{
-  LL_ADC_INJ_SetTriggerSource(ADC1, LL_ADC_INJ_TRIG_SOFTWARE);
-  LL_ADC_Enable(ADC1);
-  while (!LL_ADC_IsActiveFlag_ADRDY(ADC1))
-      ; // Czekamy aż przetwornik będzie gotowy
-
-  LL_ADC_ClearFlag_JEOS(ADC1);
-  LL_ADC_INJ_StartConversion(ADC1);
-  while (!LL_ADC_IsActiveFlag_JEOS(ADC1))
-    ;
-  LL_ADC_ClearFlag_JEOS(ADC1);
-}
-
-static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t * c_data)
-{
-  for(uint8_t i = 0; i < ADC_OFFSET_SAMPLES_COUNT; i++)
-  {
-    // LL_ADC_INJ_StartConversion(ADC1);
-
-    // while(!LL_ADC_IsActiveFlag_JEOS(ADC1))
-    //   ;
-
-    a_data[i] = ADC_ReadSingleChannelRaw(adc_channel_map[PHASE_A_CHANNEL]);//LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
-    b_data[i] = ADC_ReadSingleChannelRaw(adc_channel_map[PHASE_B_CHANNEL]);//LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
-    c_data[i] = ADC_ReadSingleChannelRaw(adc_channel_map[PHASE_C_CHANNEL]);//LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_4);
-
-    //LL_ADC_ClearFlag_JEOS(ADC1);
-  }
-}
-
-static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data)
-{
-  uint32_t a_sum = 0, b_sum = 0, c_sum = 0;
-
-  for(uint8_t i = 0 ; i < ADC_OFFSET_SAMPLES_COUNT; i++)
-  {
-    a_sum += a_data[i];
-    b_sum += b_data[i];
-    c_sum += c_data[i];
-  }
-
-  phase_a_offset_adc = a_sum /ADC_OFFSET_SAMPLES_COUNT;
-  phase_b_offset_adc = b_sum /ADC_OFFSET_SAMPLES_COUNT;
-  phase_c_offset_adc = c_sum /ADC_OFFSET_SAMPLES_COUNT;
-}
-
 static void LogOverCurrentReason()
 {
   uint16_t phase_a, phase_b, phase_c;
@@ -267,7 +244,7 @@ static void LogOverCurrentReason()
   Phase_Currents_t currents = ADC_CalculatePhaseCurrents(phase_a, phase_b, phase_c);
 
   char log[128];
-  sprintf(log,"OCP : Trigger : %u : %u : %u : ma", currents.Current_A, currents.Current_B, currents.Current_C);
+  sprintf(log,"OCP : Trigger : %ld : %ld : %ld : ma", currents.Current_A, currents.Current_B, currents.Current_C);
   LOG(log);
 }
 
@@ -284,5 +261,4 @@ void ADC1_IRQHandler(void)
     LogOverCurrentReason();
     LL_ADC_ClearFlag_AWD2(ADC1);
   }
-
 }
