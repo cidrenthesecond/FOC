@@ -189,7 +189,7 @@ void ADC_Set_OCP_ISR(void (*isr)(void))
 
 static void ADC_CalibratePhaseOffsets(void)
 {
-  ADC_PrepareForPhaseOffsetMeasurement();
+  //ADC_PrepareForPhaseOffsetMeasurement();
 
   uint16_t a_data[ADC_OFFSET_SAMPLES_COUNT];
   uint16_t b_data[ADC_OFFSET_SAMPLES_COUNT];
@@ -227,16 +227,16 @@ static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t *
 {
   for(uint8_t i = 0; i < ADC_OFFSET_SAMPLES_COUNT; i++)
   {
-    LL_ADC_INJ_StartConversion(ADC1);
+    // LL_ADC_INJ_StartConversion(ADC1);
 
-    while(!LL_ADC_IsActiveFlag_JEOS(ADC1))
-      ;
+    // while(!LL_ADC_IsActiveFlag_JEOS(ADC1))
+    //   ;
 
-    a_data[i] = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
-    b_data[i] = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
-    c_data[i] = LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_4);
+    a_data[i] = ADC_ReadSingleChannelRaw(adc_channel_map[PHASE_A_CHANNEL]);//LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_2);
+    b_data[i] = ADC_ReadSingleChannelRaw(adc_channel_map[PHASE_B_CHANNEL]);//LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_3);
+    c_data[i] = ADC_ReadSingleChannelRaw(adc_channel_map[PHASE_C_CHANNEL]);//LL_ADC_INJ_ReadConversionData12(ADC1, LL_ADC_INJ_RANK_4);
 
-    LL_ADC_ClearFlag_JEOS(ADC1);
+    //LL_ADC_ClearFlag_JEOS(ADC1);
   }
 }
 
