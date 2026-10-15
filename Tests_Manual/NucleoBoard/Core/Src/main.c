@@ -22,6 +22,7 @@
 #include "adc.h"
 #include "gpdma.h"
 #include "icache.h"
+#include "qkernel.h"
 #include "stm32h5xx_ll_gpio.h"
 #include "tim.h"
 #include "usart.h"
@@ -78,7 +79,7 @@ void LED_TASK(void)
   LL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 }
 
-
+extern uint32_t getSysTick();
 
 /* USER CODE END 0 */
 
@@ -130,17 +131,21 @@ int main(void)
   System_Init();
 
   SysTick_Init();
-  SysTickDispatcher_Subscribe(LED_TASK, 1000);
-  SysTickDispatcher_Subscribe(NTC_Task, 1000);
+  //SysTickDispatcher_Subscribe(LED_TASK, 1000);
+  //SysTickDispatcher_Subscribe(NTC_Task, 1000);
   //SysTickDispatcher_Subscribe(GenerateVoltage_TaskEnable,1);
 
-  LL_TIM_ClearFlag_UPDATE(TIM1);
-  LL_TIM_EnableIT_UPDATE(TIM1);
-  ScalarControl_Init();
+  // LL_TIM_ClearFlag_UPDATE(TIM1);
+  // LL_TIM_EnableIT_UPDATE(TIM1);
+  // ScalarControl_Init();
 
-  LOG("Test Start:");
-  PWM_Start();
+  // LOG("Test Start:");
+  // PWM_Start();
 
+  qOS_Setup(getSysTick, NULL);
+  qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qEnabled, NULL);
+  qOS_Add_EventTask(&CMD_Task, CMD_TaskCallback, qLowest_Priority, NULL);
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -151,12 +156,8 @@ int main(void)
     // {
     //   GenerateVoltage_Task();
     // }
-    if(NTC_IsTaskReady())
-      NTC_Task();
-    // else if(CMD_IsTaskReady())
-      // CMD_Task();
-
-    ScalarControl_Task();
+    qOS_Run();
+    //ScalarControl_Task();
 
     /* USER CODE END WHILE */
 

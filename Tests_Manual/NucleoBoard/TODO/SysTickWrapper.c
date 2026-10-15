@@ -3,6 +3,6 @@
 
 void SysTick_Init()
 {
-    SysTickDispatcher_Init();
+    //SysTickDispatcher_Init();
     LL_SYSTICK_EnableIT();
 }
