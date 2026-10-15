@@ -36,6 +36,7 @@ add_subdirectory(App/FPU)
 add_subdirectory(App/WaveGen)
 add_subdirectory(App/ScalarProfile)
 add_subdirectory(App/NTC)
+add_subdirectory(${MAIN_DIR}/QuarkTS-7.3.3 quarkts_build)
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
@@ -80,5 +81,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     waveGen
     scalarProfile
     NTC
+    quarkts
 )
 
