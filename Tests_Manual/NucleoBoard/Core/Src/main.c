@@ -39,6 +39,7 @@
 #include "Timer_Driver.h"
 #include "ScalarControl.h"
 #include "NTC_Task.h"
+#include "QuarkTS.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -152,8 +153,8 @@ int main(void)
     // }
     if(NTC_IsTaskReady())
       NTC_Task();
-    else if(CMD_IsTaskReady())
-      CMD_Task();
+    // else if(CMD_IsTaskReady())
+      // CMD_Task();
 
     ScalarControl_Task();
 
