@@ -1,5 +1,4 @@
 add_executable(test_CMSIS
-
     AllTests.c
     CMSIS_Test.c
     CMSIS_TestRunner.c
@@ -15,5 +14,4 @@ add_custom_command(TARGET test_CMSIS POST_BUILD
     COMMAND test_CMSIS -v
 
     COMMENT "Running CMSIS tests..."
-
 )
