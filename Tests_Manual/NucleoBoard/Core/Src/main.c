@@ -41,6 +41,7 @@
 #include "ScalarControl.h"
 #include "NTC_Task.h"
 #include "QuarkTS.h"
+#include "Control_Task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -132,16 +133,21 @@ int main(void)
 
   SysTick_Init();
 
-  // LL_TIM_ClearFlag_UPDATE(TIM1);
-  // LL_TIM_EnableIT_UPDATE(TIM1);
   // ScalarControl_Init();
 
-  // LOG("Test Start:");
-  // PWM_Start();
 
   qOS_Setup(getSysTick, NULL);
-  qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qEnabled, NULL);
+  //qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qEnabled, NULL);
   qOS_Add_EventTask(&CMD_Task, CMD_TaskCallback, qLowest_Priority, NULL);
+  qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qMedium_Priority, NULL);
+  Control_TaskInit();
+
+  
+  LL_TIM_ClearFlag_UPDATE(TIM1);
+  LL_TIM_EnableIT_UPDATE(TIM1);
+  LOG("Test Start:");
+  PWM_Start();
+
   
   /* USER CODE END 2 */
 
