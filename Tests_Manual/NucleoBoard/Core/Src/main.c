@@ -131,9 +131,6 @@ int main(void)
   System_Init();
 
   SysTick_Init();
-  //SysTickDispatcher_Subscribe(LED_TASK, 1000);
-  //SysTickDispatcher_Subscribe(NTC_Task, 1000);
-  //SysTickDispatcher_Subscribe(GenerateVoltage_TaskEnable,1);
 
   // LL_TIM_ClearFlag_UPDATE(TIM1);
   // LL_TIM_EnableIT_UPDATE(TIM1);
