@@ -60,6 +60,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/EmergencyHandler.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/Control_Task.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/MainSM.c
 )
 
 # Add include paths

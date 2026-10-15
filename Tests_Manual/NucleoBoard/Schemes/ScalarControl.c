@@ -17,6 +17,11 @@ static uint32_t periodsToChangeFrequency;
 static float Setpoint = 5.0f;
 
 typedef struct {
+    float Setpoint; 
+
+} ScalarControl_Assignment_t;
+
+typedef struct {
     float alpha;
     float beta;
 } VoltageVector_t;
@@ -36,7 +41,6 @@ void ScalarControl_Init()
     WaveGen_SetFrequency(sin_wave,CurrentFrequency,SWITCHING_FREQUENCY);
     WaveGen_SetFrequency(cos_wave,CurrentFrequency,SWITCHING_FREQUENCY);
     ScalarProfile_Init(230.0f, 0.0f, 50.0f,  0.0f);
-    //PWM_RegisterCallback(ScalarControl_SetTaskReady);
     ADC_PrepareForControlLoop();
 }
 

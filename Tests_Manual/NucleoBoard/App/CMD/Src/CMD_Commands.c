@@ -1,3 +1,6 @@
+#include "qfsm.h"
+#include "qtasks.h"
+#include "qtypes.h"
 #include "stdint.h"
 #include "stdint.h"
 #include "Logger.h"
@@ -7,6 +10,7 @@
 #include "ADC_Service.h"
 #include "Thermistor.h"
 #include "Timer_Driver.h"
+#include "MainSM.h"
 
 void ADC_Measure(int argc, char *argv[])
 {
@@ -102,4 +106,13 @@ void CMD_ESTOP_Command(int argc, char *argv[])
         PWM_ESTOP();
     else if (argument == 1)
         PWM_ReArm();
+}
+
+void System_ChangeMainSM(int argc, char*argv[])
+{
+    (void)argc, (void)argv;
+
+    
+    LOG("cmd 2 : executed");
+    qStateMachine_SendSignal(&MainSM, SIG_TOGGLE, NULL, qTrue);
 }

@@ -18,6 +18,7 @@ void CMD_Init()
     CommandExecute_Register(ADC_RAW_MEASURE_IDX, ADC_Measure);
     CommandExecute_Register(NTC_GET_TEMP_IDX,    NTC_Measure);
     CommandExecute_Register(PWM_GET_SWITCHING_FREQUENCY, CMD_GetSwitchingFrequency);
+    CommandExecute_Register(SYSTEM_TOGGLE_STATE, System_ChangeMainSM);
 
     SetUpMonitoring();
 }

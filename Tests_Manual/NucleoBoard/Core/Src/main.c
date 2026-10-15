@@ -18,11 +18,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "SysTickDispatcher.h"
 #include "adc.h"
 #include "gpdma.h"
 #include "icache.h"
+#include "qfsm.h"
 #include "qkernel.h"
+#include "qtypes.h"
 #include "stm32h5xx_ll_gpio.h"
 #include "tim.h"
 #include "usart.h"
@@ -33,15 +34,15 @@
 #include <arm_math.h>
 #include "Logger.h"
 #include <stdint.h>
+#include <stdio.h>
 #include "CMD_Task.h"
 #include "System_Config.h"
 #include "SysTickWrapper.h"
-#include "FOC_Scheme_Test.h"
 #include "Timer_Driver.h"
-#include "ScalarControl.h"
-#include "NTC_Task.h"
-#include "QuarkTS.h"
+#include "qkernel.h"
 #include "Control_Task.h"
+#include "NTC_Task.h"
+#include "MainSM.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -133,20 +134,20 @@ int main(void)
 
   SysTick_Init();
 
-  // ScalarControl_Init();
-
-
   qOS_Setup(getSysTick, NULL);
-  //qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qEnabled, NULL);
+  qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qEnabled, NULL);
   qOS_Add_EventTask(&CMD_Task, CMD_TaskCallback, qLowest_Priority, NULL);
-  qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qMedium_Priority, NULL);
-  Control_TaskInit();
+  //qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qMedium_Priority, NULL);
 
-  
-  LL_TIM_ClearFlag_UPDATE(TIM1);
-  LL_TIM_EnableIT_UPDATE(TIM1);
-  LOG("Test Start:");
-  PWM_Start();
+  qStateMachine_Setup(&MainSM, NULL, &IDLE, NULL, NULL);
+  qStateMachine_StateSubscribe(&MainSM, &IDLE, NULL, IDLE_Callback, NULL, NULL);
+  qStateMachine_StateSubscribe(&MainSM, &RUN, NULL, RUN_Callback, NULL, NULL);
+  qStateMachine_SubscribeToSignal(&MainSM, SIG_TOGGLE);
+  qOS_Add_StateMachineTask(&Main_Task, &MainSM, qHigh_Priority, 10, qEnabled, NULL);
+  // Control_TaskInit();
+
+  // LOG("Test Start:");
+  // PWM_Start();
 
   
   /* USER CODE END 2 */
@@ -160,7 +161,6 @@ int main(void)
     //   GenerateVoltage_Task();
     // }
     qOS_Run();
-    //ScalarControl_Task();
 
     /* USER CODE END WHILE */
 

@@ -20,6 +20,8 @@ void PWM_RegisterCallback(void (*callback)(void))
 
 void PWM_Start()
 {
+  LL_TIM_ClearFlag_UPDATE(TIM1);
+  LL_TIM_EnableIT_UPDATE(TIM1);
   LL_TIM_EnableCounter(PWM_TIMER);
 }
 
