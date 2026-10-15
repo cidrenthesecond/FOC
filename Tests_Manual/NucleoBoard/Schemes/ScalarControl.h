@@ -2,7 +2,7 @@
 #define SCALAR_CONTROL_H
 
 void ScalarControl_Init();
+void ScalarControl_BeforeLaunch();
 void ScalarControl_Task();
-void ScalarControl_SetTaskReady();
 
 #endif
