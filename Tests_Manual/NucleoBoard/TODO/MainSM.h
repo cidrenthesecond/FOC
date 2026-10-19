@@ -4,7 +4,7 @@
 #include "qfsm.h"
 #include "qtasks.h"
 
-#define SIG_TOGGLE ((qSM_SigId_t)QSM_SIGNAL_USER)
+#define SIG_TOGGLE ((qSM_SigId_t)(1))
 
 extern qTask_t Main_Task;
 extern qSM_t MainSM;

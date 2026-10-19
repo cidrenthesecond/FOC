@@ -28,7 +28,8 @@ void PWM_Start()
 void PWM_Stop()
 {
     LL_TIM_DisableCounter(PWM_TIMER);
-    
+    LL_TIM_SetCounter(PWM_TIMER, 0);
+    PWM_SetCaptureCompare(0, 0, 0);
 }
 
 void PWM_SetCaptureCompare(uint16_t phaseA, uint16_t phaseB, uint16_t phaseC)

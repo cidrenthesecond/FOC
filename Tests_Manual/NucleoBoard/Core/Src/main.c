@@ -23,6 +23,7 @@
 #include "icache.h"
 #include "qfsm.h"
 #include "qkernel.h"
+#include "qtasks.h"
 #include "qtypes.h"
 #include "stm32h5xx_ll_gpio.h"
 #include "tim.h"
@@ -38,11 +39,11 @@
 #include "CMD_Task.h"
 #include "System_Config.h"
 #include "SysTickWrapper.h"
-#include "Timer_Driver.h"
 #include "qkernel.h"
 #include "Control_Task.h"
 #include "NTC_Task.h"
 #include "MainSM.h"
+#include "QuarkTS.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -81,7 +82,17 @@ void LED_TASK(void)
   LL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 }
 
+void UART_PrintCharPolling(void *sp , const char c)
+{
+    while(!LL_USART_IsActiveFlag_TXE(USART2))
+		;
+
+	LL_USART_TransmitData8(USART2, c);	
+}
+
 extern uint32_t getSysTick();
+static qQueue_t MainSM_Queue;
+static qSM_Signal_t MainSM_QueueStorage[4];
 
 /* USER CODE END 0 */
 
@@ -135,20 +146,51 @@ int main(void)
   SysTick_Init();
 
   qOS_Setup(getSysTick, NULL);
+  qTrace_Set_OutputFcn(UART_PrintCharPolling);
   qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qEnabled, NULL);
   qOS_Add_EventTask(&CMD_Task, CMD_TaskCallback, qLowest_Priority, NULL);
+  qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qHigh_Priority, NULL);
   //qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qMedium_Priority, NULL);
 
-  qStateMachine_Setup(&MainSM, NULL, &IDLE, NULL, NULL);
-  qStateMachine_StateSubscribe(&MainSM, &IDLE, NULL, IDLE_Callback, NULL, NULL);
-  qStateMachine_StateSubscribe(&MainSM, &RUN, NULL, RUN_Callback, NULL, NULL);
-  qStateMachine_SubscribeToSignal(&MainSM, SIG_TOGGLE);
-  qOS_Add_StateMachineTask(&Main_Task, &MainSM, qHigh_Priority, 10, qEnabled, NULL);
-  // Control_TaskInit();
+qStateMachine_Setup(&MainSM, NULL, &IDLE, NULL, NULL);
 
-  // LOG("Test Start:");
-  // PWM_Start();
+qStateMachine_StateSubscribe(
+    &MainSM, &IDLE, NULL, IDLE_Callback, NULL, NULL
+);
 
+qStateMachine_StateSubscribe(
+    &MainSM, &RUN, NULL, RUN_Callback, NULL, NULL
+);
+
+/* Najpierw konfiguracja i instalacja kolejki */
+qQueue_Setup(
+    &MainSM_Queue,
+    MainSM_QueueStorage,
+    sizeof(qSM_Signal_t),
+    4
+);
+
+qStateMachine_InstallSignalQueue(&MainSM, &MainSM_Queue);
+
+/* Jednorazowe wejście do IDLE */
+qSM_Signal_t initSignal = {
+    .id = QSM_SIGNAL_NONE,
+    .sigData = NULL
+};
+
+qStateMachine_Run(&MainSM, initSignal);
+
+/* Task reaguje na zdarzenia asynchroniczne */
+qOS_Add_StateMachineTask(
+    &Main_Task,
+    &MainSM,
+    qHigh_Priority,
+    100,
+    qDisabled,
+    NULL
+);
+
+  Control_TaskInit();
   
   /* USER CODE END 2 */
 

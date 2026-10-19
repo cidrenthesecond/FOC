@@ -16,7 +16,7 @@ void Control_TaskInit()
 void Control_Task_Callback(qEvent_t e)
 {
     (void)e;
-    ScalarControl_Task();
+    ScalarControl_Task(); // to replace with function pointer
 }
 
 static void Control_Task_Notify(void)

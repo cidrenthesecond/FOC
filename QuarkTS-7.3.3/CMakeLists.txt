@@ -12,7 +12,7 @@
 #
 # This file is part of the QuarkTS OS distribution.
 
-cmake_minimum_required( VERSION 3.2 )
+cmake_minimum_required( VERSION 3.22 )
 project( quarkts 
          VERSION 7.3.2 
          DESCRIPTION "An open-source OS for small embedded applications" 

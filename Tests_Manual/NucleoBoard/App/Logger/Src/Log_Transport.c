@@ -27,6 +27,8 @@ void UART_PrintPolling(const char *pData,uint8_t length)
     LOG_WakeUp();
 }
 
+
+
 void Send_USART_DMA_LL(const char *pData, uint8_t Size)
 {
     // 1. Wyłącz kanał DMA przed konfiguracją
