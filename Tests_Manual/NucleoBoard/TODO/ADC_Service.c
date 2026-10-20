@@ -11,7 +11,11 @@
 #define BUS_VOLTAGE_DIVIDER_RATIO 126  
 #define ADC_OFFSET_SAMPLES_COUNT  50U
 #define FILTER_KERNEL             3
+#define ADC_OFFSET_TOP_MARGAIN    2100u
+#define ADC_OFFSET_BOTTOM_MARGAIN 1900u
 
+
+//BSP
 static const uint32_t adc_channel_map[5] =
 {
   [PHASE_A_CHANNEL]     = LL_ADC_CHANNEL_3,
@@ -20,6 +24,8 @@ static const uint32_t adc_channel_map[5] =
   [BUS_VOLTAGE_CHANNEL] = LL_ADC_CHANNEL_1,
   [NTC_VOLTAGE_CHANNEL] = LL_ADC_CHANNEL_0
 };
+
+#define ADC_USED ADC1
 
 static uint16_t phase_a_offset_adc;
 static uint16_t phase_b_offset_adc;
@@ -64,9 +70,9 @@ void ADC_Init()
   ADC_CalibratePhaseOffsets();
   ADC_Set_OCP_Threshold(6000);
 
-  LL_ADC_Enable(ADC1);
-  LL_ADC_INJ_StartConversion(ADC1);
-  LL_ADC_EnableIT_AWD2(ADC1);
+  LL_ADC_Enable(ADC_USED);
+  LL_ADC_INJ_StartConversion(ADC_USED);
+  LL_ADC_EnableIT_AWD2(ADC_USED);
 }
 
 void ADC_PrepareForControlLoop()
@@ -81,10 +87,10 @@ Analog_Feedback_t ADC_GetAnalogFeedback()
 {
   Analog_Feedback_t result;
 
-  uint16_t phase_a_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_A_CHANNEL]);
-  uint16_t phase_b_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_B_CHANNEL]);
-  uint16_t phase_c_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_C_CHANNEL]);
-  uint16_t dcBus_measurement   = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[BUS_VOLTAGE_CHANNEL]);
+  uint16_t phase_a_measurement = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[PHASE_A_CHANNEL]);
+  uint16_t phase_b_measurement = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[PHASE_B_CHANNEL]);
+  uint16_t phase_c_measurement = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[PHASE_C_CHANNEL]);
+  uint16_t dcBus_measurement   = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[BUS_VOLTAGE_CHANNEL]);
 
   phase_a_measurement = MovingAvarage_Filter(Phase_A_Filter, phase_a_measurement);
   phase_b_measurement = MovingAvarage_Filter(Phase_B_Filter, phase_b_measurement);
@@ -101,15 +107,15 @@ uint16_t ADC_ReadSingleChannelRaw(ADC_Channel_t channel)
 {
   uint32_t ll_channel = adc_channel_map[channel];
 
-  LL_ADC_REG_SetSequencerRanks(ADC1, LL_ADC_REG_RANK_1, ll_channel);
-  LL_ADC_REG_StartConversion(ADC1);
+  LL_ADC_REG_SetSequencerRanks(ADC_USED, LL_ADC_REG_RANK_1, ll_channel);
+  LL_ADC_REG_StartConversion(ADC_USED);
 
-  while (!LL_ADC_IsActiveFlag_EOC(ADC1))
+  while (!LL_ADC_IsActiveFlag_EOC(ADC_USED))
     ;
 
-  LL_ADC_ClearFlag_EOC(ADC1);
+  LL_ADC_ClearFlag_EOC(ADC_USED);
 
-  return LL_ADC_REG_ReadConversionData12(ADC1);
+  return LL_ADC_REG_ReadConversionData12(ADC_USED);
 }
 
 
@@ -155,9 +161,9 @@ Phase_Currents_t ADC_CalculatePhaseCurrents(uint16_t ADC_Phase_A, uint16_t ADC_P
 
 static void ADC_Calibrate()
 {
-  LL_ADC_StartCalibration(ADC1, LL_ADC_SINGLE_ENDED);
+  LL_ADC_StartCalibration(ADC_USED, LL_ADC_SINGLE_ENDED);
 
-  while(LL_ADC_IsCalibrationOnGoing(ADC1))
+  while(LL_ADC_IsCalibrationOnGoing(ADC_USED))
 	  ;
 }
 
@@ -169,7 +175,7 @@ static void ADC_CalibratePhaseOffsets(void)
   uint16_t b_data[ADC_OFFSET_SAMPLES_COUNT];
   uint16_t c_data[ADC_OFFSET_SAMPLES_COUNT];
 
-  LL_ADC_Enable(ADC1);
+  LL_ADC_Enable(ADC_USED);
   ADC_GatherOffsetData(a_data,b_data,c_data);
   ADC_CalculatePhaseOffsets(a_data, b_data, c_data);
   status.bits.phase_offset_configured = 1;
@@ -180,8 +186,8 @@ static void ADC_CalibratePhaseOffsets(void)
   LOG(buffer);
 
   //return state to
-  LL_ADC_Disable(ADC1);
-  LL_ADC_INJ_SetTriggerSource(ADC1, LL_ADC_INJ_TRIG_EXT_TIM1_TRGO);
+  LL_ADC_Disable(ADC_USED);
+  LL_ADC_INJ_SetTriggerSource(ADC_USED, LL_ADC_INJ_TRIG_EXT_TIM1_TRGO);
 }
 
 static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t * c_data)
@@ -222,7 +228,7 @@ void ADC_Set_OCP_Threshold(uint16_t thresholdCurrent_ma)
   uint16_t thresholdHigh   = midpointAvgg + thresholdOffset;
   uint16_t thresholdLow    = midpointAvgg - thresholdOffset;
 
-  LL_ADC_ConfigAnalogWDThresholds(ADC1, LL_ADC_AWD2, (thresholdHigh>>4), (thresholdLow>>4));
+  LL_ADC_ConfigAnalogWDThresholds(ADC_USED, LL_ADC_AWD2, (thresholdHigh>>4), (thresholdLow>>4));
 }
 
 void ADC_Set_OCP_ISR(void (*isr)(void))
@@ -237,9 +243,9 @@ static void LogOverCurrentReason()
 {
   uint16_t phase_a, phase_b, phase_c;
 
-  phase_a = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_A_CHANNEL]);
-  phase_b = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_B_CHANNEL]);
-  phase_c = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_C_CHANNEL]);
+  phase_a = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[PHASE_A_CHANNEL]);
+  phase_b = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[PHASE_B_CHANNEL]);
+  phase_c = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[PHASE_C_CHANNEL]);
 
   Phase_Currents_t currents = ADC_CalculatePhaseCurrents(phase_a, phase_b, phase_c);
 
@@ -249,16 +255,16 @@ static void LogOverCurrentReason()
 }
 
 /**
-  * @brief This function handles ADC1 global interrupt.
+  * @brief This function handles ADC_USED global interrupt.
   */
-void ADC1_IRQHandler(void)
+void ADC_USED_IRQHandler(void)
 {
-  if(LL_ADC_IsActiveFlag_AWD2(ADC1))
+  if(LL_ADC_IsActiveFlag_AWD2(ADC_USED))
   {
     if(OverCurrentInterruptCallback != NULL)
       OverCurrentInterruptCallback();
     
     LogOverCurrentReason();
-    LL_ADC_ClearFlag_AWD2(ADC1);
+    LL_ADC_ClearFlag_AWD2(ADC_USED);
   }
 }

@@ -10,7 +10,6 @@ qSM_t MainSM;
 qSM_State_t IDLE, RUN;
 
 uint8_t firstRun = 1;
-
 qSM_Status_t IDLE_Callback(qSM_Handler_t h)
 {
     qSM_Status_t retVal = qSM_STATUS_EXIT_SUCCESS;
