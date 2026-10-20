@@ -36,6 +36,7 @@ add_subdirectory(App/FPU)
 add_subdirectory(App/WaveGen)
 add_subdirectory(App/ScalarProfile)
 add_subdirectory(App/NTC)
+add_subdirectory(App/DSP)
 add_subdirectory(${MAIN_DIR}/QuarkTS-7.3.3 quarkts_build)
 
 # Add sources to executable
@@ -46,7 +47,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/GPIO_Driver.c
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/ADC_Service.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/Moving_Avarage_Filter.c
 
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/SysTickWrapper.c
 
@@ -84,5 +84,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     scalarProfile
     NTC
     quarkts
+    DSP
 )
 

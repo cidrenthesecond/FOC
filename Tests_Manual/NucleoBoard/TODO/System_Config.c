@@ -9,6 +9,14 @@
 #include "Relay.h"
 #include "EmergencyHandler.h"
 
+typedef enum {
+    INIT_FPU,
+    INIT_PWM,
+    INIT_CMD,
+    INIT_RELAY,
+
+} SystemInitState_t;
+
 void System_Init()
 {   
     LogTransport_Init();
@@ -18,11 +26,6 @@ void System_Init()
     FPU_enable();
     LOG("[FPU] : Init");
 
-    if(ADC_Init() == ADC_FAIL)
-        LOG("ADC Init Failed");
-    
-    LOG("[ADC] : Init");
-
     EmergencyHandler_Init();
     LOG("Emergency handler init");
 
@@ -31,6 +34,11 @@ void System_Init()
 
     CMD_Init();
     LOG("[CMD] : Init");
+
+    if(ADC_Init() == ADC_FAIL)
+        LOG("ADC Init Failed");
+    
+    LOG("[ADC] : Init");
 
     Relay_Init();
     LOG("[RELAY] : Init");
