@@ -23,7 +23,6 @@
 #include "icache.h"
 #include "qfsm.h"
 #include "qkernel.h"
-#include "qtasks.h"
 #include "qtypes.h"
 #include "stm32h5xx_ll_gpio.h"
 #include "tim.h"
@@ -43,7 +42,6 @@
 #include "Control_Task.h"
 #include "NTC_Task.h"
 #include "MainSM.h"
-#include "QuarkTS.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -84,6 +82,8 @@ void LED_TASK(void)
 
 void UART_PrintCharPolling(void *sp , const char c)
 {
+  (void)sp;
+
     while(!LL_USART_IsActiveFlag_TXE(USART2))
 		;
 
@@ -146,11 +146,9 @@ int main(void)
   SysTick_Init();
 
   qOS_Setup(getSysTick, NULL);
-  qTrace_Set_OutputFcn(UART_PrintCharPolling);
   qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qEnabled, NULL);
   qOS_Add_EventTask(&CMD_Task, CMD_TaskCallback, qLowest_Priority, NULL);
   qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qHigh_Priority, NULL);
-  //qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qMedium_Priority, NULL);
 
 qStateMachine_Setup(&MainSM, NULL, &IDLE, NULL, NULL);
 

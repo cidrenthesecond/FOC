@@ -24,8 +24,8 @@ static const uint32_t adc_channel_map[5] =
 #define BUS_VOLTAGE_DIVIDER_RATIO 126
 #define ADC_OFFSET_SAMPLES_COUNT  50U
 #define FILTER_KERNEL             3
-#define ADC_OFFSET_TOP_MARGAIN    2100u
-#define ADC_OFFSET_BOTTOM_MARGAIN 1900u
+#define ADC_OFFSET_TOP_MARGAIN    2200u
+#define ADC_OFFSET_BOTTOM_MARGAIN 2000u
 
 #define FLAG_ADC_OFFSETS_CALIBRATED (1U << 0)
 #define FLAG_ADC_INITIALISED        (1U << 1)
@@ -46,11 +46,12 @@ static MovingAvarage Phase_C_Filter;
 
 static void (*OverCurrentInterruptCallback)(void);
 
-static ADC_Status_t ADC_CalibratePhaseOffsets(void);
-static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t * c_data);
-static Phase_Offsets_t ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data);
 static void ADC_Calibrate();
-static ADC_Status_t ADC_ValidatePhaseOffsets(Phase_Offsets_t offsets);
+
+static ADC_Status_t    ADC_CalibratePhaseOffsets(void);
+static void            ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t * c_data);
+static Phase_Offsets_t ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data);
+static ADC_Status_t    ADC_ValidatePhaseOffsets(Phase_Offsets_t offsets);
 
 static uint8_t ADC_Status = 0;
 
@@ -65,10 +66,12 @@ ADC_Status_t ADC_Init()
 
   ADC_Calibrate();
 
-  ADC_CalibratePhaseOffsets();
+  if(ADC_CalibratePhaseOffsets() == ADC_FAIL)
+    return ADC_FAIL;
 
   ADC_Set_OCP_Threshold(6000);  // In need of config
 
+  LL_ADC_INJ_SetTriggerSource(ADC_USED, LL_ADC_INJ_TRIG_EXT_TIM1_TRGO);
   LL_ADC_Enable(ADC_USED);
   LL_ADC_INJ_StartConversion(ADC_USED);
   LL_ADC_EnableIT_AWD2(ADC_USED);
@@ -178,10 +181,10 @@ static ADC_Status_t ADC_CalibratePhaseOffsets(void)
 
   LL_ADC_Enable(ADC_USED);
   ADC_GatherOffsetData(a_data,b_data,c_data);
+  LL_ADC_Disable(ADC_USED);
   Phase_Offsets_t offsets = ADC_CalculatePhaseOffsets(a_data, b_data, c_data);
   
-  if(ADC_ValidatePhaseOffsets(offsets) == ADC_FAIL)
-    return ADC_FAIL;
+
 
   phase_offsets.a = offsets.a;
   phase_offsets.b = offsets.b;
@@ -194,9 +197,11 @@ static ADC_Status_t ADC_CalibratePhaseOffsets(void)
           phase_offsets.c);
   LOG(buffer);
 
-  //return state to
-  LL_ADC_Disable(ADC_USED);
-  LL_ADC_INJ_SetTriggerSource(ADC_USED, LL_ADC_INJ_TRIG_EXT_TIM1_TRGO);
+  if(ADC_ValidatePhaseOffsets(offsets) == ADC_FAIL)
+    return ADC_FAIL;
+
+
+  
 
   return ADC_SUCCESS;
 }
