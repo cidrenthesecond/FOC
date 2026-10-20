@@ -5,10 +5,11 @@ set(CMAKE_C_STANDARD 99)
 add_definitions(-DUNITY_FIXTURE_NO_EXTERN)
 
 add_compile_options(-Wall -Wextra)
+add_link_options(--trace)
 
 # Ścieżka bazowa do Twojego folderu Unity
 set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
-set(UNITY_DIR ${MAIN_DIR}/Unity)
+set(UNITY_DIR ${MAIN_DIR}/Unity)  
 set(CMSIS_DIR ${MAIN_DIR}/lib/CMSIS-DSP/Source)
 set(MOCK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Mocks)
 
@@ -20,6 +21,8 @@ add_library(unity_lib STATIC
     ${UNITY_DIR}/extras/fixture/src/unity_fixture.c
     ${UNITY_DIR}/extras/memory/src/unity_memory.c
 )
+
+
 
 # # 2. DODAJEMY WSZYSTKIE ŚCIEŻKI DO NAGŁÓWKÓW
 target_include_directories(unity_lib PUBLIC 
@@ -47,7 +50,8 @@ add_subdirectory(WaveGen)
 add_subdirectory(ScalarProfile)
 add_subdirectory(SysTickDispatcher)
 add_subdirectory(CommandExecute)
-add_subdirectory(QuarkTS)
+add_subdirectory(MainStateMachine)
+#add_subdirectory(QuarkTS)
 
 # Add the CMSIS-DSP library from the relative path
 #add_subdirectory(${CMSIS_DIR})

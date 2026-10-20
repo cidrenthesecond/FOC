@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../Common"
+		},
+		{
+			"path": "../../os_config"
+		},
+		{
+			"path": "../../QuarkTS-7.3.3"
+		}
+	],
+	"settings": {}
+}
