@@ -2,6 +2,7 @@
 #include "MainSM.h"
 #include "Timer_Driver.h"
 #include "ScalarControl.h"
+#include "Control_Task.h"
 #include "qfsm.h"
 #include "qtasks.h"
 
