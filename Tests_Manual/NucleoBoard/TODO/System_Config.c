@@ -18,7 +18,9 @@ void System_Init()
     FPU_enable();
     LOG("[FPU] : Init");
 
-    ADC_Init();
+    if(ADC_Init() == ADC_FAIL)
+        LOG("ADC Init Failed");
+    
     LOG("[ADC] : Init");
 
     EmergencyHandler_Init();

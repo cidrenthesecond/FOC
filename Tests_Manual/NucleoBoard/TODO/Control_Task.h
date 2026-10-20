@@ -4,12 +4,10 @@
 #include "qtasks.h"
 
 extern qTask_t Control_Task;
-//extern void(*Control_Task_Callback)(qEvent_t e);
+// extern void(*Control_Task_Callback)(qEvent_t e);
 
 void Control_TaskInit();
 void Control_Task_Callback(qEvent_t e);
 void Control_Task_SetCallback();
-
-
 
 #endif
