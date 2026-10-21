@@ -80,6 +80,7 @@ void ADC_Measure(int argc, char *argv[])
 
 void NTC_Measure(int argc, char *argv[])
 {
+    (void)argc,(void)argv;
     int16_t Temp = Thermistor_GetHeatsinkTemp();
 
     char message[32];
@@ -89,6 +90,8 @@ void NTC_Measure(int argc, char *argv[])
 
 void CMD_GetSwitchingFrequency(int argc, char *argv[])
 {
+    (void)argc,(void)argv;
+
     uint32_t switchingFrequency = PWM_GetSwitchingFrequency();
     char message[32];
     sprintf(message, "[PWM] : SF : %u Hz",switchingFrequency);
