@@ -23,6 +23,7 @@
 #include "icache.h"
 #include "qfsm.h"
 #include "qkernel.h"
+#include "qtasks.h"
 #include "qtypes.h"
 #include "stm32h5xx_ll_gpio.h"
 #include "tim.h"
@@ -171,12 +172,12 @@ qQueue_Setup(
 qStateMachine_InstallSignalQueue(&MainSM, &MainSM_Queue);
 
 /* Jednorazowe wejście do IDLE */
-qSM_Signal_t initSignal = {
-    .id = QSM_SIGNAL_NONE,
-    .sigData = NULL
-};
+// qSM_Signal_t initSignal = {
+//     .id = QSM_SIGNAL_NONE,
+//     .sigData = NULL
+// };
 
-qStateMachine_Run(&MainSM, initSignal);
+// qStateMachine_Run(&MainSM, initSignal);
 
 /* Task reaguje na zdarzenia asynchroniczne */
 qOS_Add_StateMachineTask(
