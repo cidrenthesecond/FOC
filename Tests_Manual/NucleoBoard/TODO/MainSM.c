@@ -1,7 +1,7 @@
 #include "Logger.h"
 #include "MainSM.h"
 #include "Timer_Driver.h"
-#include "ScalarControl.h"
+#include "Control_Task.h"
 #include "qfsm.h"
 #include "qtasks.h"
 
@@ -50,7 +50,7 @@ qSM_Status_t RUN_Callback(qSM_Handler_t h)
     {
         case QSM_SIGNAL_ENTRY:
             LOG("Entered RUN State");
-            ScalarControl_BeforeLaunch();
+            Control_Before_Launch();
             PWM_Start();
             break;
         case SIG_TOGGLE:

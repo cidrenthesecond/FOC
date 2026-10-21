@@ -43,6 +43,7 @@
 #include "Control_Task.h"
 #include "NTC_Task.h"
 #include "MainSM.h"
+#include "ScalarControl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -94,6 +95,11 @@ void UART_PrintCharPolling(void *sp , const char c)
 extern uint32_t getSysTick();
 static qQueue_t MainSM_Queue;
 static qSM_Signal_t MainSM_QueueStorage[4];
+
+static const ControlStrategy_t scalar_strategy = {
+  .before_launch = ScalarControl_BeforeLaunch,
+  .execute       = ScalarControl_Task
+};
 
 /* USER CODE END 0 */
 
@@ -172,12 +178,12 @@ qQueue_Setup(
 qStateMachine_InstallSignalQueue(&MainSM, &MainSM_Queue);
 
 /* Jednorazowe wejście do IDLE */
-// qSM_Signal_t initSignal = {
-//     .id = QSM_SIGNAL_NONE,
-//     .sigData = NULL
-// };
+qSM_Signal_t initSignal = {
+    .id = QSM_SIGNAL_NONE,
+    .sigData = NULL
+};
 
-// qStateMachine_Run(&MainSM, initSignal);
+qStateMachine_Run(&MainSM, initSignal);
 
 /* Task reaguje na zdarzenia asynchroniczne */
 qOS_Add_StateMachineTask(
@@ -189,7 +195,10 @@ qOS_Add_StateMachineTask(
     NULL
 );
 
+  ScalarControl_Init();
   Control_TaskInit();
+  Control_Task_SetStrategy(&scalar_strategy);
+
   
   /* USER CODE END 2 */
 
