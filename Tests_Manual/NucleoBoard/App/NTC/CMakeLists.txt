@@ -8,4 +8,9 @@ target_include_directories(NTC PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+target_link_libraries(NTC 
+    PRIVATE
+        quarkts    
+)
+
 

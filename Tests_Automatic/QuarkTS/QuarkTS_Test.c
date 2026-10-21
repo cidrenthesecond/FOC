@@ -2,8 +2,6 @@
 #include "QuarkTS.h"
 #include "fff.h"
 
-#define TIMER_TICK 1.0f
-
 void fakeTask_callback(qEvent_t e);
 qTask_t fakeTask;
 static uint32_t tickSet = 0.0f;
@@ -29,7 +27,7 @@ TEST_SETUP(QuarkTS)
     RESET_FAKE(fakeTask_callback);
     FFF_RESET_HISTORY();
     SetTime(0);
-    qOS_Setup(GetTime, TIMER_TICK, NULL);
+    qOS_Setup(GetTime, 1000);
 }
 
 TEST_TEAR_DOWN(QuarkTS)

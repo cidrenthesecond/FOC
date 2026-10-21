@@ -2,7 +2,7 @@
 #define CMD_TRANSPORT_H
 
 void  InitCmdTransport();
-int   IsDataReady(void);
+void  Set_OnDataReady_Callback(void (*callback)(void));
 char* GetData(void);
 void  SetUpMonitoring(void);
 

@@ -4,8 +4,6 @@ add_executable(QuarkTS_Test
     QuarkTS_TestRunner.c
 )
 
-add_subdirectory(X:/Projects/FOC_Driver/Firmware/QuarkTS-7.3.3 quarkts_build)
-
 target_include_directories(QuarkTS_Test PRIVATE
     ${MAIN_DIR}/Common/Inc
 )

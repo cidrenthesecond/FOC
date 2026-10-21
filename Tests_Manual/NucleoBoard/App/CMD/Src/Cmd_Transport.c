@@ -9,7 +9,7 @@
 #define BUFFER_SIZE      64
 
 char rx_buffer[BUFFER_SIZE] = {0};
-static volatile uint8_t data_ready_flag = 0;
+void (* OnDataReady_Callback)(void);
 
 static void Start_USART_RX_DMA(void);
 
@@ -17,11 +17,12 @@ void  InitCmdTransport()
 {
     LL_USART_EnableDirectionRx(USART_USED);
     LL_USART_Enable(USART_USED);
+    OnDataReady_Callback = NULL;
 }
 
-int IsDataReady(void)
+void  Set_OnDataReady_Callback(void (*callback)(void))
 {
-    return data_ready_flag;
+    OnDataReady_Callback = callback;
 }
 
 char* GetData(void)
@@ -32,7 +33,6 @@ char* GetData(void)
 void SetUpMonitoring(void)
 {
     memset(rx_buffer,0,sizeof(rx_buffer));
-    data_ready_flag = 0;
     Start_USART_RX_DMA();
 }
 
@@ -40,9 +40,12 @@ void USART2_IRQHandler(void)
 {
   if (LL_USART_IsActiveFlag_IDLE(USART2) && LL_USART_IsEnabledIT_IDLE(USART2))
     {
-        LL_USART_ClearFlag_IDLE(USART2);
         LL_DMA_DisableChannel(GPDMA1, LL_DMA_CHANNEL_1);
-        data_ready_flag = 1;
+
+        if(OnDataReady_Callback != NULL)
+            OnDataReady_Callback();
+
+        LL_USART_ClearFlag_IDLE(USART2);
     }
 }
 

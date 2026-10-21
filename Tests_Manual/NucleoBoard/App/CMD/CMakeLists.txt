@@ -15,4 +15,5 @@ target_include_directories(commandLine PUBLIC
 target_link_libraries(commandLine
     PRIVATE
         stm32cubemx
+        quarkts
 )

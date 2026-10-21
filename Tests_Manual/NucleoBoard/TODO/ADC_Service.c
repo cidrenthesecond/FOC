@@ -6,12 +6,7 @@
 #include "Logger.h"
 #include "stdio.h"
 
-#define ADC_FULL_SCALE            4095
-#define ADC_VREF_MV               3300
-#define BUS_VOLTAGE_DIVIDER_RATIO 126  
-#define ADC_OFFSET_SAMPLES_COUNT  50U
-#define FILTER_KERNEL             3
-
+//-------------------BSP----------------------------
 static const uint32_t adc_channel_map[5] =
 {
   [PHASE_A_CHANNEL]     = LL_ADC_CHANNEL_3,
@@ -21,9 +16,27 @@ static const uint32_t adc_channel_map[5] =
   [NTC_VOLTAGE_CHANNEL] = LL_ADC_CHANNEL_0
 };
 
-static uint16_t phase_a_offset_adc;
-static uint16_t phase_b_offset_adc;
-static uint16_t phase_c_offset_adc;
+#define ADC_USED ADC1
+//--------------------------------------------------
+
+#define ADC_FULL_SCALE            4095
+#define ADC_VREF_MV               3300
+#define BUS_VOLTAGE_DIVIDER_RATIO 126
+#define ADC_OFFSET_SAMPLES_COUNT  50U
+#define FILTER_KERNEL             3
+#define ADC_OFFSET_TOP_MARGAIN    2200u
+#define ADC_OFFSET_BOTTOM_MARGAIN 2000u
+
+#define FLAG_ADC_OFFSETS_CALIBRATED (1U << 0)
+#define FLAG_ADC_INITIALISED        (1U << 1)
+
+typedef struct {
+  uint16_t a;
+  uint16_t b;
+  uint16_t c;
+} Phase_Offsets_t;
+
+static Phase_Offsets_t phase_offsets;
 
 static MovingAvarage NTC_Filter;
 static MovingAvarage DcBus_Filter;
@@ -33,25 +46,16 @@ static MovingAvarage Phase_C_Filter;
 
 static void (*OverCurrentInterruptCallback)(void);
 
-typedef union {
-    uint8_t raw;
-    struct {
-        uint8_t ready                   : 1; // Bit 0
-        uint8_t error                   : 1; // Bit 1
-        uint8_t busy                    : 1; // Bit 2
-        uint8_t phase_offset_configured : 1; // Bit 3
-        uint8_t reserved                : 4; // Bity 4-7
-    } bits;
-} StatusRegister_t;
-
-static volatile StatusRegister_t status = {0};
-
-static void ADC_CalibratePhaseOffsets(void);
-static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t * c_data);
-static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data);
 static void ADC_Calibrate();
 
-void ADC_Init()
+static ADC_Status_t    ADC_CalibratePhaseOffsets(void);
+static void            ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t * c_data);
+static Phase_Offsets_t ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data);
+static ADC_Status_t    ADC_ValidatePhaseOffsets(Phase_Offsets_t offsets);
+
+static uint8_t ADC_Status = 0;
+
+ADC_Status_t ADC_Init()
 {
   NTC_Filter     = MovingAvarage_Init(FILTER_KERNEL);
   DcBus_Filter   = MovingAvarage_Init(FILTER_KERNEL);
@@ -61,12 +65,18 @@ void ADC_Init()
   OverCurrentInterruptCallback = NULL;
 
   ADC_Calibrate();
-  ADC_CalibratePhaseOffsets();
-  ADC_Set_OCP_Threshold(6000);
 
-  LL_ADC_Enable(ADC1);
-  LL_ADC_INJ_StartConversion(ADC1);
-  LL_ADC_EnableIT_AWD2(ADC1);
+  if(ADC_CalibratePhaseOffsets() == ADC_FAIL)
+    return ADC_FAIL;
+
+  ADC_Set_OCP_Threshold(6000);  // In need of config
+
+  LL_ADC_INJ_SetTriggerSource(ADC_USED, LL_ADC_INJ_TRIG_EXT_TIM1_TRGO);
+  LL_ADC_Enable(ADC_USED);
+  LL_ADC_INJ_StartConversion(ADC_USED);
+  LL_ADC_EnableIT_AWD2(ADC_USED);
+
+  return ADC_SUCCESS;
 }
 
 void ADC_PrepareForControlLoop()
@@ -81,10 +91,10 @@ Analog_Feedback_t ADC_GetAnalogFeedback()
 {
   Analog_Feedback_t result;
 
-  uint16_t phase_a_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_A_CHANNEL]);
-  uint16_t phase_b_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_B_CHANNEL]);
-  uint16_t phase_c_measurement = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_C_CHANNEL]);
-  uint16_t dcBus_measurement   = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[BUS_VOLTAGE_CHANNEL]);
+  uint16_t phase_a_measurement = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[PHASE_A_CHANNEL]);
+  uint16_t phase_b_measurement = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[PHASE_B_CHANNEL]);
+  uint16_t phase_c_measurement = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[PHASE_C_CHANNEL]);
+  uint16_t dcBus_measurement   = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[BUS_VOLTAGE_CHANNEL]);
 
   phase_a_measurement = MovingAvarage_Filter(Phase_A_Filter, phase_a_measurement);
   phase_b_measurement = MovingAvarage_Filter(Phase_B_Filter, phase_b_measurement);
@@ -101,15 +111,15 @@ uint16_t ADC_ReadSingleChannelRaw(ADC_Channel_t channel)
 {
   uint32_t ll_channel = adc_channel_map[channel];
 
-  LL_ADC_REG_SetSequencerRanks(ADC1, LL_ADC_REG_RANK_1, ll_channel);
-  LL_ADC_REG_StartConversion(ADC1);
+  LL_ADC_REG_SetSequencerRanks(ADC_USED, LL_ADC_REG_RANK_1, ll_channel);
+  LL_ADC_REG_StartConversion(ADC_USED);
 
-  while (!LL_ADC_IsActiveFlag_EOC(ADC1))
+  while (!LL_ADC_IsActiveFlag_EOC(ADC_USED))
     ;
 
-  LL_ADC_ClearFlag_EOC(ADC1);
+  LL_ADC_ClearFlag_EOC(ADC_USED);
 
-  return LL_ADC_REG_ReadConversionData12(ADC1);
+  return LL_ADC_REG_ReadConversionData12(ADC_USED);
 }
 
 
@@ -146,42 +156,54 @@ uint16_t ADC_CalculateNtcVoltage(uint16_t adcMeasurement)
 Phase_Currents_t ADC_CalculatePhaseCurrents(uint16_t ADC_Phase_A, uint16_t ADC_Phase_B, uint16_t ADC_Phase_C)
 {
   Phase_Currents_t result;
-  result.Current_A = ((int32_t)ADC_Phase_A - (int32_t)phase_a_offset_adc) *3128/1000;
-  result.Current_B = ((int32_t)ADC_Phase_B - (int32_t)phase_b_offset_adc) *3128/1000;
-  result.Current_C = ((int32_t)ADC_Phase_C - (int32_t)phase_c_offset_adc) *3128/1000;
+  result.Current_A = ((int32_t)ADC_Phase_A - (int32_t)phase_offsets.a) *3128/1000;
+  result.Current_B = ((int32_t)ADC_Phase_B - (int32_t)phase_offsets.b) *3128/1000;
+  result.Current_C = ((int32_t)ADC_Phase_C - (int32_t)phase_offsets.c) *3128/1000;
   return result;
 }
 
 
 static void ADC_Calibrate()
 {
-  LL_ADC_StartCalibration(ADC1, LL_ADC_SINGLE_ENDED);
+  LL_ADC_StartCalibration(ADC_USED, LL_ADC_SINGLE_ENDED);
 
-  while(LL_ADC_IsCalibrationOnGoing(ADC1))
+  while(LL_ADC_IsCalibrationOnGoing(ADC_USED))
 	  ;
 }
 
 //________________Helper functions________________
 
-static void ADC_CalibratePhaseOffsets(void)
+static ADC_Status_t ADC_CalibratePhaseOffsets(void)
 {
   uint16_t a_data[ADC_OFFSET_SAMPLES_COUNT];
   uint16_t b_data[ADC_OFFSET_SAMPLES_COUNT];
   uint16_t c_data[ADC_OFFSET_SAMPLES_COUNT];
 
-  LL_ADC_Enable(ADC1);
+  LL_ADC_Enable(ADC_USED);
   ADC_GatherOffsetData(a_data,b_data,c_data);
-  ADC_CalculatePhaseOffsets(a_data, b_data, c_data);
-  status.bits.phase_offset_configured = 1;
+  LL_ADC_Disable(ADC_USED);
+  Phase_Offsets_t offsets = ADC_CalculatePhaseOffsets(a_data, b_data, c_data);
+  
+
+
+  phase_offsets.a = offsets.a;
+  phase_offsets.b = offsets.b;
+  phase_offsets.c = offsets.c;
 
   char buffer[64] = {0};
   sprintf(buffer, "ADC: offsets: A %u, B %u, C %u",
-          phase_a_offset_adc,phase_b_offset_adc,phase_c_offset_adc);
+          phase_offsets.a,
+          phase_offsets.b,
+          phase_offsets.c);
   LOG(buffer);
 
-  //return state to
-  LL_ADC_Disable(ADC1);
-  LL_ADC_INJ_SetTriggerSource(ADC1, LL_ADC_INJ_TRIG_EXT_TIM1_TRGO);
+  if(ADC_ValidatePhaseOffsets(offsets) == ADC_FAIL)
+    return ADC_FAIL;
+
+
+  
+
+  return ADC_SUCCESS;
 }
 
 static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t * c_data)
@@ -194,7 +216,7 @@ static void ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data, uint16_t *
   }
 }
 
-static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data)
+static Phase_Offsets_t ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data)
 {
   uint32_t a_sum = 0, b_sum = 0, c_sum = 0;
 
@@ -205,24 +227,38 @@ static void ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16
     c_sum += c_data[i];
   }
 
-  phase_a_offset_adc = a_sum /ADC_OFFSET_SAMPLES_COUNT;
-  phase_b_offset_adc = b_sum /ADC_OFFSET_SAMPLES_COUNT;
-  phase_c_offset_adc = c_sum /ADC_OFFSET_SAMPLES_COUNT;
+  Phase_Offsets_t result;
+  result.a = a_sum /ADC_OFFSET_SAMPLES_COUNT;
+  result.b = b_sum /ADC_OFFSET_SAMPLES_COUNT;
+  result.c = c_sum /ADC_OFFSET_SAMPLES_COUNT;
+  return result;
+}
+
+static ADC_Status_t ADC_ValidatePhaseOffsets(Phase_Offsets_t offsets)
+{
+  if(offsets.a <= ADC_OFFSET_BOTTOM_MARGAIN || offsets.a >= ADC_OFFSET_TOP_MARGAIN)
+    return ADC_FAIL;
+  if(offsets.b <= ADC_OFFSET_BOTTOM_MARGAIN || offsets.b >= ADC_OFFSET_TOP_MARGAIN)
+    return ADC_FAIL;
+  if(offsets.c <= ADC_OFFSET_BOTTOM_MARGAIN || offsets.c >= ADC_OFFSET_TOP_MARGAIN)
+    return ADC_FAIL;
+
+  return ADC_SUCCESS;
 }
 
 //_______________OCP__________________
 
 void ADC_Set_OCP_Threshold(uint16_t thresholdCurrent_ma)
 {
-  if(status.bits.phase_offset_configured == 0)
+  if(ADC_Status & ~FLAG_ADC_OFFSETS_CALIBRATED)
     return;
 
   uint16_t thresholdOffset = thresholdCurrent_ma*1000/3128;
-  uint16_t midpointAvgg    = (phase_a_offset_adc+phase_b_offset_adc+phase_c_offset_adc)/3;
+  uint16_t midpointAvgg    = (phase_offsets.a+phase_offsets.b+phase_offsets.c)/3;
   uint16_t thresholdHigh   = midpointAvgg + thresholdOffset;
   uint16_t thresholdLow    = midpointAvgg - thresholdOffset;
 
-  LL_ADC_ConfigAnalogWDThresholds(ADC1, LL_ADC_AWD2, (thresholdHigh>>4), (thresholdLow>>4));
+  LL_ADC_ConfigAnalogWDThresholds(ADC_USED, LL_ADC_AWD2, (thresholdHigh>>4), (thresholdLow>>4));
 }
 
 void ADC_Set_OCP_ISR(void (*isr)(void))
@@ -237,9 +273,9 @@ static void LogOverCurrentReason()
 {
   uint16_t phase_a, phase_b, phase_c;
 
-  phase_a = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_A_CHANNEL]);
-  phase_b = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_B_CHANNEL]);
-  phase_c = LL_ADC_INJ_ReadConversionData12(ADC1, adc_channel_map[PHASE_C_CHANNEL]);
+  phase_a = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[PHASE_A_CHANNEL]);
+  phase_b = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[PHASE_B_CHANNEL]);
+  phase_c = LL_ADC_INJ_ReadConversionData12(ADC_USED, adc_channel_map[PHASE_C_CHANNEL]);
 
   Phase_Currents_t currents = ADC_CalculatePhaseCurrents(phase_a, phase_b, phase_c);
 
@@ -249,16 +285,16 @@ static void LogOverCurrentReason()
 }
 
 /**
-  * @brief This function handles ADC1 global interrupt.
+  * @brief This function handles ADC_USED global interrupt.
   */
-void ADC1_IRQHandler(void)
+void ADC_USED_IRQHandler(void)
 {
-  if(LL_ADC_IsActiveFlag_AWD2(ADC1))
+  if(LL_ADC_IsActiveFlag_AWD2(ADC_USED))
   {
     if(OverCurrentInterruptCallback != NULL)
       OverCurrentInterruptCallback();
     
     LogOverCurrentReason();
-    LL_ADC_ClearFlag_AWD2(ADC1);
+    LL_ADC_ClearFlag_AWD2(ADC_USED);
   }
 }

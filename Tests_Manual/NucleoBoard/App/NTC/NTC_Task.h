@@ -2,10 +2,13 @@
 #define NTC_TASK_H
 
 #include "stdint.h"
+#include "qtasks.h"
 
-uint8_t NTC_IsTaskReady(void);
+extern qTask_t NTC_Task;
+
+#define NTC_TASK_PERIOD 1000u
+
 void    NTC_TaskInit(void);
-void    NTC_Task(void);
-void    NTC_SetTaskReady(void);
+void    NTC_TaskCallback(qEvent_t e);
 
 #endif
