@@ -1,9 +1,10 @@
 #ifndef CONTROL_TASK_H
 #define CONTROL_TASK_H
 
+
+#include "stdbool.h"
 #include "qtasks.h"
 
-extern qTask_t Control_Task;
 
 typedef struct{
     void(*before_launch)(void);

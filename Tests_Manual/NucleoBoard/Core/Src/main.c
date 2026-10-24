@@ -147,8 +147,6 @@ int main(void)
 
   SysTick_Init();
 
-  qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qHigh_Priority, NULL);
-
   qStateMachine_Setup(&MainSM, NULL, &IDLE, NULL, NULL);
 
   qStateMachine_StateSubscribe(

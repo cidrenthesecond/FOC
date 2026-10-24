@@ -48,8 +48,11 @@ void CMD_TaskCallback(qEvent_t e)
 
 void CMD_SetActive(bool state)
 {
-    if(isInitialized)
-       isActive = state; 
+    if(!isInitialized)
+        return;
+
+    if(state) isActive = 1;
+    else      isActive = 0;
 }
 
 static void CMD_TaskNotify()
