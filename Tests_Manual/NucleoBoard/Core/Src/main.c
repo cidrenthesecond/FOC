@@ -92,7 +92,6 @@ void UART_PrintCharPolling(void *sp , const char c)
 	LL_USART_TransmitData8(USART2, c);	
 }
 
-extern uint32_t getSysTick();
 static qQueue_t MainSM_Queue;
 static qSM_Signal_t MainSM_QueueStorage[4];
 
