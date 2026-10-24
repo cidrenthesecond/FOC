@@ -1,3 +1,4 @@
+#include "CMD_Task.h"
 #include "Logger.h"
 #include "MainSM.h"
 #include "Timer_Driver.h"
@@ -28,6 +29,7 @@ qSM_Status_t IDLE_Callback(qSM_Handler_t h)
     switch (h->Signal) 
     {
         case QSM_SIGNAL_ENTRY:
+            CMD_SetActive(true);
             PWM_Stop();
             LOG("Entered IDLE State");
             break;

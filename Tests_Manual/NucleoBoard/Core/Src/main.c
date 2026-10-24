@@ -142,52 +142,52 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  qOS_Setup(getSysTick, NULL);
   System_Init();
 
   SysTick_Init();
 
-  qOS_Setup(getSysTick, NULL);
+  
   qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qAsleep, NULL);
-  qOS_Add_EventTask(&CMD_Task, CMD_TaskCallback, qLowest_Priority, NULL);
   qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qHigh_Priority, NULL);
 
-qStateMachine_Setup(&MainSM, NULL, &IDLE, NULL, NULL);
+  qStateMachine_Setup(&MainSM, NULL, &IDLE, NULL, NULL);
 
-qStateMachine_StateSubscribe(
-    &MainSM, &IDLE, NULL, IDLE_Callback, NULL, NULL
-);
+  qStateMachine_StateSubscribe(
+      &MainSM, &IDLE, NULL, IDLE_Callback, NULL, NULL
+  );
 
-qStateMachine_StateSubscribe(
-    &MainSM, &RUN, NULL, RUN_Callback, NULL, NULL
-);
+  qStateMachine_StateSubscribe(
+      &MainSM, &RUN, NULL, RUN_Callback, NULL, NULL
+  );
 
-/* Najpierw konfiguracja i instalacja kolejki */
-qQueue_Setup(
-    &MainSM_Queue,
-    MainSM_QueueStorage,
-    sizeof(qSM_Signal_t),
-    4
-);
+  /* Najpierw konfiguracja i instalacja kolejki */
+  qQueue_Setup(
+      &MainSM_Queue,
+      MainSM_QueueStorage,
+      sizeof(qSM_Signal_t),
+      4
+  );
 
-qStateMachine_InstallSignalQueue(&MainSM, &MainSM_Queue);
+  qStateMachine_InstallSignalQueue(&MainSM, &MainSM_Queue);
 
-/* Jednorazowe wejście do IDLE */
-qSM_Signal_t initSignal = {
-    .id = QSM_SIGNAL_NONE,
-    .sigData = NULL
-};
+  /* Jednorazowe wejście do IDLE */
+  qSM_Signal_t initSignal = {
+      .id = QSM_SIGNAL_NONE,
+      .sigData = NULL
+  };
 
-qStateMachine_Run(&MainSM, initSignal);
+  qStateMachine_Run(&MainSM, initSignal);
 
-/* Task reaguje na zdarzenia asynchroniczne */
-qOS_Add_StateMachineTask(
-    &Main_Task,
-    &MainSM,
-    qHigh_Priority,
-    100,
-    qDisabled,
-    NULL
-);
+  /* Task reaguje na zdarzenia asynchroniczne */
+  qOS_Add_StateMachineTask(
+      &Main_Task,
+      &MainSM,
+      qHigh_Priority,
+      100,
+      qDisabled,
+      NULL
+  );
 
   ScalarControl_Init();
   Control_TaskInit();
