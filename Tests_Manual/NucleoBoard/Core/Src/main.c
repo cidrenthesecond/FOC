@@ -43,6 +43,7 @@
 #include "Control_Task.h"
 #include "NTC_Task.h"
 #include "MainSM.h"
+#include "ScalarControl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -147,7 +148,7 @@ int main(void)
   SysTick_Init();
 
   qOS_Setup(getSysTick, NULL);
-  qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qEnabled, NULL);
+  qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qAsleep, NULL);
   qOS_Add_EventTask(&CMD_Task, CMD_TaskCallback, qLowest_Priority, NULL);
   qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qHigh_Priority, NULL);
 
@@ -172,12 +173,12 @@ qQueue_Setup(
 qStateMachine_InstallSignalQueue(&MainSM, &MainSM_Queue);
 
 /* Jednorazowe wejście do IDLE */
-// qSM_Signal_t initSignal = {
-//     .id = QSM_SIGNAL_NONE,
-//     .sigData = NULL
-// };
+qSM_Signal_t initSignal = {
+    .id = QSM_SIGNAL_NONE,
+    .sigData = NULL
+};
 
-// qStateMachine_Run(&MainSM, initSignal);
+qStateMachine_Run(&MainSM, initSignal);
 
 /* Task reaguje na zdarzenia asynchroniczne */
 qOS_Add_StateMachineTask(
@@ -189,7 +190,10 @@ qOS_Add_StateMachineTask(
     NULL
 );
 
+  ScalarControl_Init();
   Control_TaskInit();
+  Control_Task_SetStrategy(&scalar_strategy);
+
   
   /* USER CODE END 2 */
 

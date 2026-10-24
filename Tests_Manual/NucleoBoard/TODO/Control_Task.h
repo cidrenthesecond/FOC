@@ -4,10 +4,19 @@
 #include "qtasks.h"
 
 extern qTask_t Control_Task;
-// extern void(*Control_Task_Callback)(qEvent_t e);
+
+typedef struct{
+    void(*before_launch)(void);
+    void(*execute)(void);
+} ControlStrategy_t;
+
+extern const ControlStrategy_t scalar_strategy;
 
 void Control_TaskInit();
+void Control_Before_Launch();
 void Control_Task_Callback(qEvent_t e);
-void Control_Task_SetCallback();
+void Control_Task_SetStrategy(const ControlStrategy_t *strategy);
+
+
 
 #endif
