@@ -96,11 +96,6 @@ extern uint32_t getSysTick();
 static qQueue_t MainSM_Queue;
 static qSM_Signal_t MainSM_QueueStorage[4];
 
-static const ControlStrategy_t scalar_strategy = {
-  .before_launch = ScalarControl_BeforeLaunch,
-  .execute       = ScalarControl_Task
-};
-
 /* USER CODE END 0 */
 
 /**
@@ -153,7 +148,7 @@ int main(void)
   SysTick_Init();
 
   qOS_Setup(getSysTick, NULL);
-  qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qEnabled, NULL);
+  qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qAsleep, NULL);
   qOS_Add_EventTask(&CMD_Task, CMD_TaskCallback, qLowest_Priority, NULL);
   qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qHigh_Priority, NULL);
 

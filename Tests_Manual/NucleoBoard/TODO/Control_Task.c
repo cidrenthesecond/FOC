@@ -1,11 +1,18 @@
 #include "Control_Task.h"
+#include "ScalarControl.h"
 #include "Timer_Driver.h"
 #include "qtasks.h"
 
 qTask_t Control_Task;
 
+const ControlStrategy_t scalar_strategy = {
+    .before_launch = ScalarControl_BeforeLaunch,
+    .execute       = ScalarControl_Task
+};
+
 static ControlStrategy_t activeStrategy = {0};
 static void Control_Task_Notify(void);
+
 
 void Control_TaskInit()
 {
