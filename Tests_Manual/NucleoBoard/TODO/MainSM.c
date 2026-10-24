@@ -1,10 +1,12 @@
 #include "CMD_Task.h"
+#include "NTC_Task.h"
 #include "Logger.h"
 #include "MainSM.h"
 #include "Timer_Driver.h"
 #include "Control_Task.h"
 #include "qfsm.h"
 #include "qtasks.h"
+#include <stdbool.h>
 
 qTask_t Main_Task;
 qSM_t MainSM;
@@ -30,6 +32,7 @@ qSM_Status_t IDLE_Callback(qSM_Handler_t h)
     {
         case QSM_SIGNAL_ENTRY:
             CMD_SetActive(true);
+            NTC_SetActive(true);
             PWM_Stop();
             LOG("Entered IDLE State");
             break;

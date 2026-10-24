@@ -2,13 +2,14 @@
 #define NTC_TASK_H
 
 #include "stdint.h"
-#include "qtasks.h"
+#include "stdbool.h"
 
-extern qTask_t NTC_Task;
+#include "qtasks.h"
 
 #define NTC_TASK_PERIOD 1000u
 
-void    NTC_TaskInit(void);
-void    NTC_TaskCallback(qEvent_t e);
+void NTC_TaskInit(void);
+void NTC_TaskCallback(qEvent_t e);
+void NTC_SetActive(bool set);
 
 #endif

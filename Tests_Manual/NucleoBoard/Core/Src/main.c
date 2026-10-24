@@ -147,8 +147,6 @@ int main(void)
 
   SysTick_Init();
 
-  
-  qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qAsleep, NULL);
   qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qHigh_Priority, NULL);
 
   qStateMachine_Setup(&MainSM, NULL, &IDLE, NULL, NULL);
