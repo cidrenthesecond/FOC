@@ -141,11 +141,12 @@ int main(void)
   MX_ADC1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  SysTick_Init();
+  
   qOS_Setup(getSysTick, NULL);
   System_Init();
 
-  SysTick_Init();
+  
 
   qStateMachine_Setup(&MainSM, NULL, &IDLE, NULL, NULL);
 
