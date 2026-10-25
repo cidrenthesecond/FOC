@@ -4,8 +4,8 @@
 typedef enum {
     INIT_PENDING,
     INIT_SUCCESS
-} SystemInitReturn_t;
+} SystemInitStatus_t;
 
-SystemInitReturn_t System_Init();
+SystemInitStatus_t System_Init();
 
 #endif

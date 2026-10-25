@@ -26,11 +26,11 @@ typedef enum {
 
 static SystemInitState_t currentState    = 0;
 
-static SystemInitReturn_t ProceedInitialisation();
+static SystemInitStatus_t ProceedInitialisation();
 
-SystemInitReturn_t System_Init()
+SystemInitStatus_t System_Init()
 {   
-    SystemInitReturn_t result = INIT_PENDING;
+    SystemInitStatus_t result = INIT_PENDING;
 
     switch(currentState)
     {
@@ -97,9 +97,9 @@ SystemInitReturn_t System_Init()
     return result;
 }
 
-static SystemInitReturn_t ProceedInitialisation()
+static SystemInitStatus_t ProceedInitialisation()
 {
-    SystemInitReturn_t result = INIT_PENDING;
+    SystemInitStatus_t result = INIT_PENDING;
     currentState += 1;
 
     if(currentState == INIT_FINISHED)

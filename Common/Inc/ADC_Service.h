@@ -8,6 +8,12 @@
 
 typedef enum
 {
+    ADC_SUCCESS,
+    ADC_FAIL
+} ADC_Status_t;
+
+typedef enum
+{
     PHASE_A_CHANNEL,
     PHASE_B_CHANNEL,
     PHASE_C_CHANNEL,
@@ -26,7 +32,7 @@ typedef struct {
     uint32_t         DcBus;
 } Analog_Feedback_t;
 
-void ADC_Init();
+ADC_Status_t ADC_Init();
 void ADC_PrepareForControlLoop();
 Analog_Feedback_t ADC_GetAnalogFeedback();
 
