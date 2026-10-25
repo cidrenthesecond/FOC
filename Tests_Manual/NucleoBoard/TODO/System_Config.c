@@ -8,7 +8,10 @@
 #include"FPU.h"
 #include "Relay.h"
 #include "EmergencyHandler.h"
+
 #include "NTC_Task.h"
+#include "ScalarControl.h"
+#include "Control_Task.h"
 
 typedef enum {
     INIT_LOGGER,
@@ -19,6 +22,8 @@ typedef enum {
     INIT_EMERGENCY,
     INIT_ADC,
     INIT_RELAY,
+    INIT_SCALAR_CONTROL,
+    INIT_CONTROL_TASK,
     INIT_FINISHED,
     INIT_ERROR
 } SystemInitState_t;
@@ -27,6 +32,7 @@ typedef enum {
 static SystemInitState_t currentState    = 0;
 
 static SystemInitStatus_t ProceedInitialisation();
+
 
 SystemInitStatus_t System_Init()
 {   
@@ -66,10 +72,23 @@ SystemInitStatus_t System_Init()
             result = ProceedInitialisation();
             break;
 
+        case INIT_SCALAR_CONTROL:
+            ScalarControl_Init();
+            LOG("Scalar Control init");
+            result = ProceedInitialisation();
+            break;
+
+        case INIT_CONTROL_TASK:
+            Control_TaskInit();
+            Control_Task_SetStrategy(&scalar_strategy);
+            result = ProceedInitialisation();
+            break;
+
         case INIT_EMERGENCY:
             EmergencyHandler_Init();
             LOG("Emergency handler init");
             result = ProceedInitialisation();
+            break;
 
         case INIT_ADC:
             if(ADC_Init() == ADC_FAIL)

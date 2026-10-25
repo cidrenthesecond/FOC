@@ -21,11 +21,6 @@
 #include "adc.h"
 #include "gpdma.h"
 #include "icache.h"
-#include "qfsm.h"
-#include "qkernel.h"
-#include "qtasks.h"
-#include "qtypes.h"
-#include "stm32h5xx_ll_gpio.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -36,11 +31,9 @@
 #include "Logger.h"
 #include <stdint.h>
 #include <stdio.h>
-#include "System_Config.h"
 #include "SysTickWrapper.h"
 #include "qkernel.h"
-#include "Control_Task.h"
-#include "ScalarControl.h"
+#include "MainSM.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -137,16 +130,7 @@ int main(void)
   SysTick_Init();
 
   qOS_Setup(getSysTick, NULL);
-  System_Init();
-
-  /* Najpierw konfiguracja i instalacja kolejki */
-
-
-  ScalarControl_Init();
-  Control_TaskInit();
-  Control_Task_SetStrategy(&scalar_strategy);
-
-  
+  Enter_MainStateMachine();
   /* USER CODE END 2 */
 
   /* Infinite loop */
