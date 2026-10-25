@@ -115,3 +115,11 @@ void System_ChangeMainSM(int argc, char*argv[])
     LOG("cmd 2 : executed");
     ToggleState();
 }
+
+void System_RequestErrorReset(int argc, char*argv[])
+{
+    (void)argc, (void)argv;
+
+    LOG( "cmd 3 : executed");
+    Main_RequestErrorReset();
+}

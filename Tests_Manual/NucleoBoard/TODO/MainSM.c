@@ -1,21 +1,30 @@
-#include "CMD_Task.h"
 #include "NTC_Task.h"
 #include "Logger.h"
 #include "MainSM.h"
 #include "Timer_Driver.h"
 #include "Control_Task.h"
+#include "qfsm.h"
 #include "qkernel.h"
 #include <stdbool.h>
-#include <string.h>
-
+#include <stdio.h>
 #include "System_Config.h"
 #include "qtasks.h"
 
-#define SIG_TOGGLE ((qSM_SigId_t)(1))
+#define NEXT_STATE_SCHEDULED ((qSM_SigId_t)(1))
+
+typedef struct {
+    uint8_t systemInitalised : 1;
+    uint8_t miau             : 1;
+    uint8_t reserved         : 6;
+} MainSM_Status_t;
+
+static MainSM_Status_t mainSM_Status;
 
 static qTask_t Main_Task;
 static qSM_t MainSM;
-static qSM_State_t INIT, IDLE, RUN;
+static qSM_State_t INIT, IDLE, RUN, ERROR;
+static qSM_State_t *CurrentState;
+static qSM_State_t *ScheduledState;
 
 static qQueue_t MainSM_Queue;
 static qSM_Signal_t MainSM_QueueStorage[4];
@@ -25,6 +34,9 @@ qSM_Status_t IDLE_Callback(qSM_Handler_t h);
 qSM_Status_t RUN_Callback(qSM_Handler_t h);
 
 uint8_t firstRun = 1;
+
+static void RequestNextState(qSM_State_t *next);
+static void ProccessScheduledState(qSM_Handler_t h);
 
 void Enter_MainStateMachine()
 {
@@ -43,17 +55,27 @@ void Enter_MainStateMachine()
 
     // /* Jednorazowe wejście do INIT */
     // qSM_Signal_t initSignal = {.id = QSM_SIGNAL_NONE,.sigData = NULL};  
-    // qStateMachine_Run(&MainSM, initSignal); 
+    // qStateMachine_Run(&MainSM, initSignal);
+    CurrentState = &INIT;
 }
 
 qSM_Status_t INIT_Callback(qSM_Handler_t h)
 {
     qSM_Status_t retVal = qSM_STATUS_EXIT_SUCCESS;
 
+    uint8_t size = sizeof(mainSM_Status);
+
+    char message[64] = {0};
+    sprintf(message, "size of register : %u",size);
+    LOG(message);
+
+
     SystemInitStatus_t initStatus = System_Init();
     if(initStatus == INIT_SUCCESS)
     {
-        h->NextState = &IDLE;        
+        mainSM_Status.systemInitalised = 1;
+        h->NextState = &IDLE;
+        CurrentState = &IDLE;        
     }
 
     return retVal;
@@ -71,9 +93,9 @@ qSM_Status_t IDLE_Callback(qSM_Handler_t h)
             Control_Task_SetActive(false);
             LOG("Entered IDLE State");
             break;
-        case SIG_TOGGLE:
+        case NEXT_STATE_SCHEDULED:
             LOG("MainSM: SIG_TOGGLE received in IDLE");
-            h->NextState = &RUN;
+            ProccessScheduledState(h);
             retVal = qSM_STATUS_SIGNAL_HANDLED;
             break;
         default:
@@ -94,8 +116,8 @@ qSM_Status_t RUN_Callback(qSM_Handler_t h)
             Control_Before_Launch();
             PWM_Start();
             break;
-        case SIG_TOGGLE:
-            h->NextState = &IDLE;
+        case NEXT_STATE_SCHEDULED:
+            ProccessScheduledState(h);
             retVal = qSM_STATUS_SIGNAL_HANDLED;
             break;
         default:
@@ -106,8 +128,36 @@ qSM_Status_t RUN_Callback(qSM_Handler_t h)
 
 void ToggleState()
 {
-    if(MainSM.qPrivate.current == &INIT)
+    if(CurrentState == &ERROR || mainSM_Status.systemInitalised == 0)
+        return; 
+
+    if(CurrentState == &IDLE)
+        RequestNextState(&RUN);
+    else if(CurrentState == &RUN)
+        RequestNextState(&IDLE);
+}
+
+void Main_RequestErrorReset()
+{
+    if(CurrentState != &ERROR)
         return;
 
-    qStateMachine_SendSignal(&MainSM, SIG_TOGGLE, NULL, qTrue);
+    RequestNextState(&IDLE);
+}
+
+
+static void RequestNextState(qSM_State_t *next)
+{
+    if(ScheduledState == &ERROR)
+        return;
+
+    ScheduledState = next;
+    qStateMachine_SendSignal(&MainSM, NEXT_STATE_SCHEDULED, NULL, qTrue);
+}
+
+static void ProccessScheduledState(qSM_Handler_t h)
+{
+    h -> NextState = ScheduledState;
+    CurrentState   = ScheduledState;
+    ScheduledState = NULL;
 }

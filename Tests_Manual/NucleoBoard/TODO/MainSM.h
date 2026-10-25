@@ -3,5 +3,6 @@
 
 void Enter_MainStateMachine();
 void ToggleState();
+void Main_RequestErrorReset();
 
 #endif
