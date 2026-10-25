@@ -52,16 +52,13 @@ qSM_Status_t INIT_Callback(qSM_Handler_t h)
     SystemInitStatus_t initStatus = System_Init();
     if(initStatus == INIT_SUCCESS)
     {
-        
+        //next state        
     }
-    switch (h -> Signal)
+    else
     {
-        case QSM_SIGNAL_ENTRY:
-            System_Init();
-            break;
-        default:
-            break;
+
     }
+
     return retVal;
 }
 
