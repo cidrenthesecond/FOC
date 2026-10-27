@@ -30,7 +30,6 @@
 #include <arm_math.h>
 #include "Logger.h"
 #include <stdint.h>
-#include <stdio.h>
 #include "SysTickWrapper.h"
 #include "qkernel.h"
 #include "MainSM.h"
@@ -76,8 +75,8 @@ void UART_PrintCharPolling(void *sp , const char c)
 {
   (void)sp;
 
-    while(!LL_USART_IsActiveFlag_TXE(USART2))
-		;
+  while(!LL_USART_IsActiveFlag_TXE(USART2))
+	  ;
 
 	LL_USART_TransmitData8(USART2, c);	
 }

@@ -26,12 +26,10 @@ static qSM_State_t INIT, IDLE, RUN, ERROR;
 static qSM_State_t *CurrentState;
 static qSM_State_t *ScheduledState;
 
-static qQueue_t MainSM_Queue;
-static qSM_Signal_t MainSM_QueueStorage[4];
-
 qSM_Status_t INIT_Callback(qSM_Handler_t h);
 qSM_Status_t IDLE_Callback(qSM_Handler_t h);
 qSM_Status_t RUN_Callback(qSM_Handler_t h);
+qSM_Status_t ERROR_Callback(qSM_Handler_t h);
 
 uint8_t firstRun = 1;
 
@@ -45,11 +43,8 @@ void Enter_MainStateMachine()
     qStateMachine_StateSubscribe(&MainSM, &IDLE, NULL, IDLE_Callback, NULL, NULL);  
     qStateMachine_StateSubscribe( &MainSM, &RUN, NULL, RUN_Callback, NULL, NULL);
     qStateMachine_StateSubscribe(&MainSM, &INIT, NULL, INIT_Callback, NULL, NULL);
+    qStateMachine_StateSubscribe(&MainSM, &ERROR, NULL, ERROR_Callback, NULL, NULL);
 
-    qQueue_Setup( &MainSM_Queue,MainSM_QueueStorage, sizeof(qSM_Signal_t),4);
-
-    qStateMachine_InstallSignalQueue(&MainSM, &MainSM_Queue);   
-    
     /* Task reaguje na zdarzenia asynchroniczne */
     qOS_Add_StateMachineTask(&Main_Task,&MainSM,qHigh_Priority,1,qEnabled,NULL);
 
@@ -62,20 +57,32 @@ void Enter_MainStateMachine()
 qSM_Status_t INIT_Callback(qSM_Handler_t h)
 {
     qSM_Status_t retVal = qSM_STATUS_EXIT_SUCCESS;
-
-    uint8_t size = sizeof(mainSM_Status);
-
-    char message[64] = {0};
-    sprintf(message, "size of register : %u",size);
-    LOG(message);
-
-
-    SystemInitStatus_t initStatus = System_Init();
-    if(initStatus == INIT_SUCCESS)
+    SystemInitStatus_t initStatus;
+    
+    switch (h-> Signal)
     {
-        mainSM_Status.systemInitalised = 1;
-        h->NextState = &IDLE;
-        CurrentState = &IDLE;        
+        case QSM_SIGNAL_ENTRY:
+            LOG("Entered INIT state");
+            break;
+        case NEXT_STATE_SCHEDULED:
+            ProccessScheduledState(h);
+            break;
+        case QSM_SIGNAL_NONE:
+            initStatus = System_Init();
+
+            if(initStatus == INIT_SUCCESS)
+            {
+                mainSM_Status.systemInitalised = 1;
+                RequestNextState(&IDLE);
+            }
+            else if(initStatus == INIT_FAIL)
+            {
+                RequestNextState(&ERROR);
+            }
+
+            retVal = qSM_STATUS_SIGNAL_HANDLED;
+        default:
+            break;  
     }
 
     return retVal;
@@ -126,6 +133,24 @@ qSM_Status_t RUN_Callback(qSM_Handler_t h)
     return retVal;
 }
 
+qSM_Status_t ERROR_Callback(qSM_Handler_t h)
+{
+    qSM_Status_t retVal = qSM_STATUS_EXIT_SUCCESS;
+    switch (h->Signal)
+    {
+        case QSM_SIGNAL_ENTRY:
+            LOG("Entered ERROR");
+            break;
+        case NEXT_STATE_SCHEDULED:
+            ProccessScheduledState(h);
+            retVal = qSM_STATUS_SIGNAL_HANDLED;
+            break;
+        default:
+            break;
+    }
+    return retVal;
+}
+
 void ToggleState()
 {
     if(CurrentState == &ERROR || mainSM_Status.systemInitalised == 0)
@@ -142,7 +167,10 @@ void Main_RequestErrorReset()
     if(CurrentState != &ERROR)
         return;
 
-    RequestNextState(&IDLE);
+    if(mainSM_Status.systemInitalised)
+        RequestNextState(&IDLE);
+    else
+        RequestNextState(&INIT);
 }
 
 

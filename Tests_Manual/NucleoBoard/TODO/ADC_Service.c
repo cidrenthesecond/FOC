@@ -2,7 +2,6 @@
 #include "stm32h5xx_ll_adc.h"
 #include "ADC_Service.h"
 #include "Moving_Avarage_Filter.h"
-
 #include "Logger.h"
 #include "stdio.h"
 

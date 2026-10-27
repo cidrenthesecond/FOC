@@ -8,7 +8,6 @@
 #include"FPU.h"
 #include "Relay.h"
 #include "EmergencyHandler.h"
-
 #include "NTC_Task.h"
 #include "ScalarControl.h"
 #include "Control_Task.h"
@@ -92,8 +91,12 @@ SystemInitStatus_t System_Init()
 
         case INIT_ADC:
             if(ADC_Init() == ADC_FAIL)
+            {
                 LOG("ADC Init Failed");
-    
+                result = INIT_FAIL;
+                break;
+            }
+                
             LOG("[ADC] : Init");
             result = ProceedInitialisation();
             break;

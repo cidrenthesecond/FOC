@@ -3,7 +3,8 @@
 
 typedef enum {
     INIT_PENDING,
-    INIT_SUCCESS
+    INIT_SUCCESS,
+    INIT_FAIL
 } SystemInitStatus_t;
 
 SystemInitStatus_t System_Init();
