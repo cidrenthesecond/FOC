@@ -11,6 +11,7 @@
 #include "NTC_Task.h"
 #include "ScalarControl.h"
 #include "Control_Task.h"
+#include "SysTickWrapper.h"
 
 typedef enum {
     INIT_LOGGER,
@@ -21,6 +22,7 @@ typedef enum {
     INIT_EMERGENCY,
     INIT_ADC,
     INIT_RELAY,
+    RELAY_CLOSING,
     INIT_SCALAR_CONTROL,
     INIT_CONTROL_TASK,
     INIT_FINISHED,
@@ -104,13 +106,29 @@ SystemInitStatus_t System_Init()
         case INIT_RELAY:
             Relay_Init();
             LOG("[RELAY] : Init");
-            Relay_SetThreshold(8000);
-    
-            while(!Relay_IsOn())
-                Relay_SM();
 
             result = ProceedInitialisation();
             break;
+
+        case RELAY_CLOSING:
+            Relay_SetThreshold(8000);
+            Timeout_t timeout = Timeout_Create(5000);
+            Timeout_Start(timeout);
+    
+            while(!Relay_IsOn() && !Timeout_IsTriggered(timeout))
+                Relay_SM();
+
+            if(!Relay_IsOn())
+            {
+                LOG("Relay : Error");
+                LOG("Relay : DC link voltage below threshold");
+                result = INIT_FAIL;
+                break;
+            }
+
+            result = ProceedInitialisation();
+            break;
+            
         default:
             LOG("ERROR : init entered case out of bounds");
             break;

@@ -10,6 +10,7 @@
 #include "System_Config.h"
 #include "qtasks.h"
 
+
 #define NEXT_STATE_SCHEDULED ((qSM_SigId_t)(1))
 
 typedef struct {
@@ -19,6 +20,9 @@ typedef struct {
 } MainSM_Status_t;
 
 static MainSM_Status_t mainSM_Status;
+
+static qQueue_t MainSM_SignalQueue;
+static qSM_Signal_t MainSM_SignalStorage[1];
 
 static qTask_t Main_Task;
 static qSM_t MainSM;
@@ -45,6 +49,10 @@ void Enter_MainStateMachine()
     qStateMachine_StateSubscribe(&MainSM, &INIT, NULL, INIT_Callback, NULL, NULL);
     qStateMachine_StateSubscribe(&MainSM, &ERROR, NULL, ERROR_Callback, NULL, NULL);
 
+    qQueue_Setup( &MainSM_SignalQueue,MainSM_SignalStorage, sizeof(qSM_Signal_t),1);
+
+    qStateMachine_InstallSignalQueue(&MainSM, &MainSM_SignalQueue);   
+    
     /* Task reaguje na zdarzenia asynchroniczne */
     qOS_Add_StateMachineTask(&Main_Task,&MainSM,qHigh_Priority,1,qEnabled,NULL);
 
