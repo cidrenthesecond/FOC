@@ -6,7 +6,7 @@
 #include "PWM_Schemes.h"
 #include "Timer_Driver.h"
 
-#define SWITCHING_FREQUENCY 1000
+#define SWITCHING_FREQUENCY 1000.0f
 
 static WaveGen sin_wave;
 static WaveGen cos_wave;
