@@ -21,11 +21,6 @@
 #include "adc.h"
 #include "gpdma.h"
 #include "icache.h"
-#include "qfsm.h"
-#include "qkernel.h"
-#include "qtasks.h"
-#include "qtypes.h"
-#include "stm32h5xx_ll_gpio.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -35,15 +30,9 @@
 #include <arm_math.h>
 #include "Logger.h"
 #include <stdint.h>
-#include <stdio.h>
-#include "CMD_Task.h"
-#include "System_Config.h"
 #include "SysTickWrapper.h"
 #include "qkernel.h"
-#include "Control_Task.h"
-#include "NTC_Task.h"
 #include "MainSM.h"
-#include "ScalarControl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -86,16 +75,11 @@ void UART_PrintCharPolling(void *sp , const char c)
 {
   (void)sp;
 
-    while(!LL_USART_IsActiveFlag_TXE(USART2))
-		;
+  while(!LL_USART_IsActiveFlag_TXE(USART2))
+	  ;
 
 	LL_USART_TransmitData8(USART2, c);	
 }
-
-extern uint32_t getSysTick();
-static qQueue_t MainSM_Queue;
-static qSM_Signal_t MainSM_QueueStorage[4];
-
 /* USER CODE END 0 */
 
 /**
@@ -142,59 +126,10 @@ int main(void)
   MX_ADC1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-
-  System_Init();
-
   SysTick_Init();
 
   qOS_Setup(getSysTick, NULL);
-  qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qAsleep, NULL);
-  qOS_Add_EventTask(&CMD_Task, CMD_TaskCallback, qLowest_Priority, NULL);
-  qOS_Add_EventTask(&Control_Task, Control_Task_Callback, qHigh_Priority, NULL);
-
-qStateMachine_Setup(&MainSM, NULL, &IDLE, NULL, NULL);
-
-qStateMachine_StateSubscribe(
-    &MainSM, &IDLE, NULL, IDLE_Callback, NULL, NULL
-);
-
-qStateMachine_StateSubscribe(
-    &MainSM, &RUN, NULL, RUN_Callback, NULL, NULL
-);
-
-/* Najpierw konfiguracja i instalacja kolejki */
-qQueue_Setup(
-    &MainSM_Queue,
-    MainSM_QueueStorage,
-    sizeof(qSM_Signal_t),
-    4
-);
-
-qStateMachine_InstallSignalQueue(&MainSM, &MainSM_Queue);
-
-/* Jednorazowe wejście do IDLE */
-qSM_Signal_t initSignal = {
-    .id = QSM_SIGNAL_NONE,
-    .sigData = NULL
-};
-
-qStateMachine_Run(&MainSM, initSignal);
-
-/* Task reaguje na zdarzenia asynchroniczne */
-qOS_Add_StateMachineTask(
-    &Main_Task,
-    &MainSM,
-    qHigh_Priority,
-    100,
-    qDisabled,
-    NULL
-);
-
-  ScalarControl_Init();
-  Control_TaskInit();
-  Control_Task_SetStrategy(&scalar_strategy);
-
-  
+  Enter_MainStateMachine();
   /* USER CODE END 2 */
 
   /* Infinite loop */

@@ -2,12 +2,10 @@
 #define CMD_TASK_H
 
 #include "qtasks.h"
-
-extern qTask_t CMD_Task;
+#include "stdbool.h"
 
 void CMD_Init();
 void CMD_TaskCallback(qEvent_t e);
-
-
+void CMD_SetActive(bool state);
 
 #endif

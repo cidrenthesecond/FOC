@@ -2,7 +2,6 @@
 #include "stm32h5xx_ll_adc.h"
 #include "ADC_Service.h"
 #include "Moving_Avarage_Filter.h"
-
 #include "Logger.h"
 #include "stdio.h"
 
@@ -182,26 +181,23 @@ static ADC_Status_t ADC_CalibratePhaseOffsets(void)
   LL_ADC_Enable(ADC_USED);
   ADC_GatherOffsetData(a_data,b_data,c_data);
   LL_ADC_Disable(ADC_USED);
-  Phase_Offsets_t offsets = ADC_CalculatePhaseOffsets(a_data, b_data, c_data);
+  Phase_Offsets_t calculatedOffsets = ADC_CalculatePhaseOffsets(a_data, b_data, c_data);
   
-
-
-  phase_offsets.a = offsets.a;
-  phase_offsets.b = offsets.b;
-  phase_offsets.c = offsets.c;
-
-  char buffer[64] = {0};
-  sprintf(buffer, "ADC: offsets: A %u, B %u, C %u",
-          phase_offsets.a,
-          phase_offsets.b,
-          phase_offsets.c);
-  LOG(buffer);
-
-  if(ADC_ValidatePhaseOffsets(offsets) == ADC_FAIL)
+  if(ADC_ValidatePhaseOffsets(calculatedOffsets) == ADC_FAIL)
     return ADC_FAIL;
 
+  phase_offsets.a = calculatedOffsets.a;
+  phase_offsets.b = calculatedOffsets.b;
+  phase_offsets.c = calculatedOffsets.c;
 
+  char buffer[64] = {0};
   
+  sprintf(buffer,"ADC: offsets: A %u, B %u, C %u.",
+          calculatedOffsets.a,
+          calculatedOffsets.b,
+          calculatedOffsets.c);
+
+  LOG(buffer);
 
   return ADC_SUCCESS;
 }

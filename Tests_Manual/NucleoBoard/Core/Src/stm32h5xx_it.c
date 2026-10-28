@@ -18,12 +18,10 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include "main.h"
 #include "stm32h5xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "SysTickDispatcher.h"
-#include "QuarkTS.h"
-#include "qclock.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,11 +57,7 @@
 /* External variables --------------------------------------------------------*/
 
 /* USER CODE BEGIN EV */
-static volatile uint32_t sysTick = 0;
-uint32_t getSysTick()
-{
-  return sysTick;
-}
+
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -183,40 +177,12 @@ void PendSV_Handler(void)
   /* USER CODE END PendSV_IRQn 1 */
 }
 
-/**
-  * @brief This function handles System tick timer.
-  */
-void SysTick_Handler(void)
-{
-  /* USER CODE BEGIN SysTick_IRQn 0 */
-  sysTick++;
-  //SysTickDispatcher_Wakeup();
-  /* USER CODE END SysTick_IRQn 0 */
-
-  /* USER CODE BEGIN SysTick_IRQn 1 */
-
-  /* USER CODE END SysTick_IRQn 1 */
-}
-
 /******************************************************************************/
 /* STM32H5xx Peripheral Interrupt Handlers                                    */
 /* Add here the Interrupt Handlers for the used peripherals.                  */
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32h5xx.s).                    */
 /******************************************************************************/
-
-/**
-  * @brief This function handles GPDMA1 Channel 1 global interrupt.
-  */
-void GPDMA1_Channel1_IRQHandler(void)
-{
-  /* USER CODE BEGIN GPDMA1_Channel1_IRQn 0 */
-
-  /* USER CODE END GPDMA1_Channel1_IRQn 0 */
-  /* USER CODE BEGIN GPDMA1_Channel1_IRQn 1 */
-
-  /* USER CODE END GPDMA1_Channel1_IRQn 1 */
-}
 
 /* USER CODE BEGIN 1 */
 

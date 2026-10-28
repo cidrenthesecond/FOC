@@ -3,6 +3,7 @@
 
 #define CMD_ESTOP                    1u
 #define SYSTEM_TOGGLE_STATE          2u
+#define SYSTEM_ERROR_RESET           3u
 #define ADC_RAW_MEASURE_IDX         10u
 #define NTC_GET_TEMP_IDX            11u
 #define PWM_GET_SWITCHING_FREQUENCY 12u

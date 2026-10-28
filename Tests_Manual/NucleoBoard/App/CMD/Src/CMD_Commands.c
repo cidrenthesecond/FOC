@@ -1,6 +1,3 @@
-#include "qfsm.h"
-#include "qtasks.h"
-#include "qtypes.h"
 #include "stdint.h"
 #include "stdint.h"
 #include "Logger.h"
@@ -115,7 +112,14 @@ void System_ChangeMainSM(int argc, char*argv[])
 {
     (void)argc, (void)argv;
 
-    
     LOG("cmd 2 : executed");
-    qStateMachine_SendSignal(&MainSM, SIG_TOGGLE, NULL, qTrue);
+    ToggleState();
+}
+
+void System_RequestErrorReset(int argc, char*argv[])
+{
+    (void)argc, (void)argv;
+
+    LOG( "cmd 3 : executed");
+    Main_RequestErrorReset();
 }
