@@ -5,6 +5,8 @@
 #include "WaveGen_LUTs.h"
 #include "PWM_Schemes.h"
 #include "Timer_Driver.h"
+#include "main.h"
+#include "stm32h5xx_ll_gpio.h"
 
 #define SWITCHING_FREQUENCY 1000.0f
 
@@ -53,6 +55,7 @@ void ScalarControl_BeforeLaunch()
 
 void ScalarControl_Task()
 {
+    LL_GPIO_SetOutputPin(WCET_GPIO_Port, WCET_Pin);
     Analog_Feedback_t measurements = ADC_GetAnalogFeedback();
 
     if(CurrentFrequency < Setpoint && periodsSinceLastFrequencyChange >= periodsToChangeFrequency)
@@ -74,6 +77,7 @@ void ScalarControl_Task()
     PWM_SetDuty(dutyCycles.duty_a,dutyCycles.duty_b,dutyCycles.duty_c);
 
     periodsSinceLastFrequencyChange++;
+    LL_GPIO_ResetOutputPin(WCET_GPIO_Port, WCET_Pin);
 }
 
 static VoltageVector_t GetVoltageVector(float magnitude)
