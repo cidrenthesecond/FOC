@@ -10,6 +10,7 @@ target_include_directories(commandLine PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/Inc
     
     ${MAIN_TEST_DIR}/TODO
+    ${MAIN_TEST_DIR}/Schemes
 )
 
 target_link_libraries(commandLine

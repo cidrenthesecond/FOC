@@ -9,6 +9,7 @@
 #include "stdbool.h"
 
 #define SWITCHING_FREQUENCY 1000.0f
+#define FREQUENCY_TOLERANCE 0.001f
 
 static WaveGen sin_wave;
 static WaveGen cos_wave;
@@ -16,7 +17,7 @@ static float CurrentFrequency;
 static float FrequencyStep;
 static uint32_t periodsSinceLastFrequencyChange;
 static uint32_t periodsToChangeFrequency;
-static float Setpoint = -5.0f;
+static float Setpoint = 5.0f;
 
 typedef struct {
     float alpha;
@@ -61,12 +62,16 @@ void ScalarControl_Task()
     LL_GPIO_SetOutputPin(WCET_GPIO_Port, WCET_Pin);
     Analog_Feedback_t measurements = ADC_GetAnalogFeedback();
 
+    float error = Setpoint - CurrentFrequency;
+
     if(!IsSetPointReached() && periodsSinceLastFrequencyChange >= periodsToChangeFrequency)
     {
-        if(Setpoint > CurrentFrequency)
+        if(error > FrequencyStep)
             CurrentFrequency += FrequencyStep;
-        else if (Setpoint < CurrentFrequency)
+        else if (error < -FrequencyStep)
             CurrentFrequency -= FrequencyStep;
+        else
+            CurrentFrequency = Setpoint;
 
         WaveGen_SetFrequency(sin_wave,Absolute_F(CurrentFrequency),SWITCHING_FREQUENCY);
         WaveGen_SetFrequency(cos_wave,Absolute_F(CurrentFrequency),SWITCHING_FREQUENCY);
@@ -87,14 +92,14 @@ void ScalarControl_Task()
     LL_GPIO_ResetOutputPin(WCET_GPIO_Port, WCET_Pin);
 }
 
+void ScalarControl_SetSetpoint(float target)
+{
+    Setpoint = target;
+}
+
 static bool IsSetPointReached()
 {
-    if(Setpoint > 0.0f)
-        return CurrentFrequency > Setpoint;
-    else if(Setpoint < 0.0f)
-        return CurrentFrequency < Setpoint;
-    else
-        return true;
+    return Absolute_F(Setpoint - CurrentFrequency) <= FREQUENCY_TOLERANCE;
 }
 
 static float Absolute_F(float x)

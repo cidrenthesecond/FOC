@@ -24,12 +24,13 @@ void CMD_Init()
     Set_OnDataReady_Callback(CMD_TaskNotify);
     CommandExecute_Init();
 
-    CommandExecute_Register(CMD_ESTOP, CMD_ESTOP_Command);
-    CommandExecute_Register(SYSTEM_TOGGLE_STATE, System_ChangeMainSM);
-    CommandExecute_Register(SYSTEM_ERROR_RESET, System_RequestErrorReset);
-    CommandExecute_Register(ADC_RAW_MEASURE_IDX, ADC_Measure);
-    CommandExecute_Register(NTC_GET_TEMP_IDX,    NTC_Measure);
+    CommandExecute_Register(CMD_ESTOP,                   CMD_ESTOP_Command);
+    CommandExecute_Register(SYSTEM_TOGGLE_STATE,         System_ChangeMainSM);
+    CommandExecute_Register(SYSTEM_ERROR_RESET,          System_RequestErrorReset);
+    CommandExecute_Register(ADC_RAW_MEASURE_IDX,         ADC_Measure);
+    CommandExecute_Register(NTC_GET_TEMP_IDX,            NTC_Measure);
     CommandExecute_Register(PWM_GET_SWITCHING_FREQUENCY, CMD_GetSwitchingFrequency);
+    CommandExecute_Register(SCALAR_CHANGE_SETPOINT,      ScalarControl_ChangeSetPoint);
     
 
     qOS_Add_EventTask(&CMD_Task, CMD_TaskCallback, qLowest_Priority, NULL);
