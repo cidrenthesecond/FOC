@@ -110,10 +110,19 @@ void CMD_ESTOP_Command(int argc, char *argv[])
 
 void System_ChangeMainSM(int argc, char*argv[])
 {
-    (void)argc, (void)argv;
+    if(argc != 1)
+        return;
+
+    uint32_t argument = strtol(argv[0], NULL, 10);
+
+    if(argument == 0)
+        Main_RequestIDLE();
+    else if(argument == 1)
+        Main_RequestRUN();
+    else
+        LOG("cmd 2 : argument not handled");
 
     LOG("cmd 2 : executed");
-    ToggleState();
 }
 
 void System_RequestErrorReset(int argc, char*argv[])

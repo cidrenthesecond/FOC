@@ -18,6 +18,8 @@ static uint8_t isInitialized = 0;
 static uint8_t isStrategySet = 0;
 static qTask_t Control_Task;
 
+
+
 void Control_TaskInit()
 {
     PWM_RegisterCallback(Control_Task_Notify);
