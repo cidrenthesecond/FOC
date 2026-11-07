@@ -6,9 +6,10 @@
 #include "PWM_Schemes.h"
 #include "Timer_Driver.h"
 #include "main.h"
-#include "stm32h5xx_ll_gpio.h"
+#include "stdbool.h"
 
 #define SWITCHING_FREQUENCY 1000.0f
+#define FREQUENCY_TOLERANCE 0.001f
 
 static WaveGen sin_wave;
 static WaveGen cos_wave;
@@ -23,9 +24,12 @@ typedef struct {
     float beta;
 } VoltageVector_t;
 
-
+static bool IsSetPointReached();
+static float Absolute_F(float x);
 static VoltageVector_t GetVoltageVector(float magnitude);
 static Duty_t          SwapPhases      (Duty_t duty);
+
+Analog_Feedback_t test;
 
 void ScalarControl_Init()
 {
@@ -58,26 +62,52 @@ void ScalarControl_Task()
     LL_GPIO_SetOutputPin(WCET_GPIO_Port, WCET_Pin);
     Analog_Feedback_t measurements = ADC_GetAnalogFeedback();
 
-    if(CurrentFrequency < Setpoint && periodsSinceLastFrequencyChange >= periodsToChangeFrequency)
+    float error = Setpoint - CurrentFrequency;
+
+    if(!IsSetPointReached() && periodsSinceLastFrequencyChange >= periodsToChangeFrequency)
     {
-        CurrentFrequency += FrequencyStep;
-        WaveGen_SetFrequency(sin_wave,CurrentFrequency,SWITCHING_FREQUENCY);
-        WaveGen_SetFrequency(cos_wave,CurrentFrequency,SWITCHING_FREQUENCY);
+        if(error > FrequencyStep)
+            CurrentFrequency += FrequencyStep;
+        else if (error < -FrequencyStep)
+            CurrentFrequency -= FrequencyStep;
+        else
+            CurrentFrequency = Setpoint;
+
+        WaveGen_SetFrequency(sin_wave,Absolute_F(CurrentFrequency),SWITCHING_FREQUENCY);
+        WaveGen_SetFrequency(cos_wave,Absolute_F(CurrentFrequency),SWITCHING_FREQUENCY);
         periodsSinceLastFrequencyChange = 0;
     }
 
-    float voltageMagnitude = ScalarProfile_GetVoltage(CurrentFrequency); //In need of phase RMS to line Amplitude
+    float voltageMagnitude = ScalarProfile_GetVoltage(Absolute_F(CurrentFrequency)); //In need of phase RMS to line Amplitude
     VoltageVector_t vector = GetVoltageVector(voltageMagnitude);
 
     Duty_t dutyCycles = SPWM(vector.alpha,vector.beta,(float)measurements.DcBus/1000.0f);
 
-    if(Setpoint < 0)
+    if(CurrentFrequency < 0)
         dutyCycles = SwapPhases(dutyCycles);
 
     PWM_SetDuty(dutyCycles.duty_a,dutyCycles.duty_b,dutyCycles.duty_c);
 
     periodsSinceLastFrequencyChange++;
     LL_GPIO_ResetOutputPin(WCET_GPIO_Port, WCET_Pin);
+}
+
+void ScalarControl_SetSetpoint(float target)
+{
+    Setpoint = target;
+}
+
+static bool IsSetPointReached()
+{
+    return Absolute_F(Setpoint - CurrentFrequency) <= FREQUENCY_TOLERANCE;
+}
+
+static float Absolute_F(float x)
+{
+    if(x >= 0.0f)
+        return x;
+    else
+        return -x;
 }
 
 static VoltageVector_t GetVoltageVector(float magnitude)

@@ -4,5 +4,6 @@
 void ScalarControl_Init();
 void ScalarControl_BeforeLaunch();
 void ScalarControl_Task();
+void ScalarControl_SetSetpoint(float target);
 
 #endif

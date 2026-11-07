@@ -37,11 +37,17 @@ qSM_Status_t ERROR_Callback(qSM_Handler_t h);
 
 uint8_t firstRun = 1;
 
-static void RequestNextState(qSM_State_t *next);
+static bool RequestNextState(qSM_State_t *target);
 static void ProccessScheduledState(qSM_Handler_t h);
+static bool CanTransitionTo(const qSM_State_t *target);
 
 void Enter_MainStateMachine()
 {
+    mainSM_Status.systemInitalised = 0;
+    CurrentState                   = &INIT;
+    ScheduledState                 = NULL;
+    firstRun                       = 1;
+
     qStateMachine_Setup(&MainSM, NULL, &INIT, NULL, NULL);
 
     qStateMachine_StateSubscribe(&MainSM, &IDLE, NULL, IDLE_Callback, NULL, NULL);  
@@ -159,16 +165,16 @@ qSM_Status_t ERROR_Callback(qSM_Handler_t h)
     return retVal;
 }
 
-void ToggleState()
-{
-    if(CurrentState == &ERROR || mainSM_Status.systemInitalised == 0)
-        return; 
+// void ToggleState()
+// {
+//     if(CurrentState == &ERROR || mainSM_Status.systemInitalised == 0)
+//         return; 
 
-    if(CurrentState == &IDLE)
-        RequestNextState(&RUN);
-    else if(CurrentState == &RUN)
-        RequestNextState(&IDLE);
-}
+//     if(CurrentState == &IDLE)
+//         RequestNextState(&RUN);
+//     else if(CurrentState == &RUN)
+//         RequestNextState(&IDLE);
+// }
 
 void Main_RequestErrorReset()
 {
@@ -181,14 +187,66 @@ void Main_RequestErrorReset()
         RequestNextState(&INIT);
 }
 
-
-static void RequestNextState(qSM_State_t *next)
+void Main_RequestRUN()
 {
-    if(ScheduledState == &ERROR)
-        return;
+    RequestNextState(&RUN);
+}
 
-    ScheduledState = next;
+void Main_RequestIDLE()
+{
+    RequestNextState(&IDLE);
+}
+
+void Main_RequestERROR()
+{
+    RequestNextState(&ERROR);
+}
+
+static bool CanTransitionTo(const qSM_State_t *target)
+{
+    if (target == &ERROR)
+        return CurrentState != &ERROR;
+
+    if (CurrentState == &INIT)
+        return target == &IDLE && mainSM_Status.systemInitalised;
+
+    if (CurrentState == &IDLE)
+        return target == &RUN;
+
+    if (CurrentState == &RUN)
+        return target == &IDLE;
+
+    if (CurrentState == &ERROR)
+    {
+        return mainSM_Status.systemInitalised
+            ? target == &IDLE
+            : target == &INIT;
+    }
+
+    return false;
+}
+
+static bool RequestNextState(qSM_State_t *target)
+{
+    if (target == NULL || !CanTransitionTo(target))
+        return false;
+
+    if (ScheduledState != NULL)
+    {
+        /* Let ERROR replace a pending request; its signal is already queued. */
+        if (target == &ERROR && ScheduledState != &ERROR)
+        {
+            ScheduledState = target;
+            return qTrue;
+        }
+
+        return qFalse;
+    }
+
+    ScheduledState = target;
     qStateMachine_SendSignal(&MainSM, NEXT_STATE_SCHEDULED, NULL, qTrue);
+
+    return qTrue;
 }
 
 static void ProccessScheduledState(qSM_Handler_t h)

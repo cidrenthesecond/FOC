@@ -7,6 +7,7 @@
 #include "ADC_Service.h"
 #include "Thermistor.h"
 #include "Timer_Driver.h"
+#include "ScalarControl.h"
 #include "MainSM.h"
 
 void ADC_Measure(int argc, char *argv[])
@@ -110,10 +111,19 @@ void CMD_ESTOP_Command(int argc, char *argv[])
 
 void System_ChangeMainSM(int argc, char*argv[])
 {
-    (void)argc, (void)argv;
+    if(argc != 1)
+        return;
+
+    uint32_t argument = strtol(argv[0], NULL, 10);
+
+    if(argument == 0)
+        Main_RequestIDLE();
+    else if(argument == 1)
+        Main_RequestRUN();
+    else
+        LOG("cmd 2 : argument not handled");
 
     LOG("cmd 2 : executed");
-    ToggleState();
 }
 
 void System_RequestErrorReset(int argc, char*argv[])
@@ -122,4 +132,17 @@ void System_RequestErrorReset(int argc, char*argv[])
 
     LOG( "cmd 3 : executed");
     Main_RequestErrorReset();
+}
+
+void ScalarControl_ChangeSetPoint(int argc, char*argv[])
+{
+    if(argc != 1 || argv == NULL)
+        return;
+
+    float argument = strtof(argv[0], NULL);
+
+    if(argument > 6.0f || argument < -6.0f)
+        return;
+
+    ScalarControl_SetSetpoint(argument);
 }

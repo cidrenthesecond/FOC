@@ -7,5 +7,6 @@ void NTC_Measure(int argc, char *argv[]);
 void CMD_GetSwitchingFrequency(int argc, char *argv[]);
 void CMD_ESTOP_Command(int argc, char *argv[]);
 void System_RequestErrorReset(int argc, char*argv[]);
+void ScalarControl_ChangeSetPoint(int argc, char*argv[]);
 
 #endif

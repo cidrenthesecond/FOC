@@ -2,12 +2,13 @@ add_executable(MainSM_Test
     AllTests.c
     MainSM_Tests.c
     MainSM_TestsRunner.c
-    "${MAIN_DIR}/Tests_Manual/NucleoBoard/TODO/MainSM.c"
+    ${MAIN_DIR}/Tests_Manual/NucleoBoard/TODO/MainSM.c
     
 )
 
 target_include_directories(MainSM_Test PRIVATE
     ${MAIN_DIR}/Common/Inc
+    ${MAIN_DIR}/Tests_Manual/NucleoBoard/APP/NTC
     ${MAIN_DIR}/Tests_Manual/NucleoBoard/TODO
     ${MAIN_DIR}/Tests_Manual/NucleoBoard/Schemes
 )
