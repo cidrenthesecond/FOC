@@ -50,7 +50,8 @@ add_subdirectory(WaveGen)
 add_subdirectory(ScalarProfile)
 add_subdirectory(SysTickDispatcher)
 add_subdirectory(CommandExecute)
-add_subdirectory(MainStateMachine)
+#add_subdirectory(MainStateMachine)
+add_subdirectory(ConfigManager)
 #add_subdirectory(QuarkTS)
 
 # Add the CMSIS-DSP library from the relative path
