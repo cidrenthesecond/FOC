@@ -1,5 +1,5 @@
 add_library(ConfigManager STATIC
-    ConfigManger.c
+    ConfigManager.c
     ConfigManager.h
     ConfigInterface.h
 )
