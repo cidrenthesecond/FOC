@@ -2,7 +2,7 @@
 #include "arm_math.h"
 #include "stdint.h"
 #include "PWM_Schemes.h"
-#include "Timer_Driver.h"
+#include "PWM_Driver.h"
 
 //Mocking rotor position
 const float angle[36] = {

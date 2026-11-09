@@ -4,9 +4,9 @@
 #include "WaveGen.h"
 #include "WaveGen_LUTs.h"
 #include "PWM_Schemes.h"
-#include "Timer_Driver.h"
+#include "PWM_Driver.h"
 #include "main.h"
-#include "stdbool.h"
+#include "stdbool.h" 
 
 #define SWITCHING_FREQUENCY 1000.0f
 #define FREQUENCY_TOLERANCE 0.001f

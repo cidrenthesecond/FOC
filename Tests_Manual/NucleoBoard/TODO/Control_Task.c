@@ -1,6 +1,6 @@
 #include "Control_Task.h"
 #include "ScalarControl.h"
-#include "Timer_Driver.h"
+#include "PWM_Driver.h"
 #include "qtasks.h"
 #include "qkernel.h"
 
