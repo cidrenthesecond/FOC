@@ -19,6 +19,8 @@ target_include_directories(test_relay PRIVATE
 
 target_link_libraries(test_relay PRIVATE
     unity_lib
+    fff_lib
+    Logger_Interface
 )
 
 add_custom_command(TARGET test_relay POST_BUILD

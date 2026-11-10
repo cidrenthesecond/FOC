@@ -1,5 +1,8 @@
 add_library(ConfigManager STATIC
-    ConfigManager.c
-    ConfigManager.h
-    ConfigInterface.h
+    Src/ConfigManager.c
+)
+
+target_include_directories(ConfigManager
+PUBLIC
+    Inc
 )

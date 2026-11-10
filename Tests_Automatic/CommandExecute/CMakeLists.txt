@@ -20,6 +20,7 @@ target_include_directories(CommandExecute_test PRIVATE
 
 target_link_libraries(CommandExecute_test PRIVATE
     unity_lib
+    fff_lib
 )
 
 add_custom_command(TARGET CommandExecute_test POST_BUILD

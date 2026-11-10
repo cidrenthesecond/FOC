@@ -1,10 +1,7 @@
 add_executable(test_FIFO
-
     AllTests.c
     FIFO_Test.c
     FIFO_TestRunner.c
-
-    ${MAIN_DIR}/Common/Src/FIFO.c
 )
 
 target_include_directories(test_FIFO PRIVATE
@@ -13,6 +10,7 @@ target_include_directories(test_FIFO PRIVATE
 
 target_link_libraries(test_FIFO PRIVATE
     unity_lib
+    FIFO
 )
 
 add_custom_command(TARGET test_FIFO POST_BUILD

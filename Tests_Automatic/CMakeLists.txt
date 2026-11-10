@@ -9,26 +9,36 @@ add_link_options(--trace)
 
 # Ścieżka bazowa do Twojego folderu Unity
 set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
-set(UNITY_DIR ${MAIN_DIR}/Unity)  
 set(CMSIS_DIR ${MAIN_DIR}/lib/CMSIS-DSP/Source)
 set(MOCK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Mocks)
 
 # set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# 1. Definiujemy bibliotekę Unity
 add_library(unity_lib STATIC 
-    ${UNITY_DIR}/src/unity.c
-    ${UNITY_DIR}/extras/fixture/src/unity_fixture.c
-    ${UNITY_DIR}/extras/memory/src/unity_memory.c
+    Unity/src/unity.c
+    Unity/extras/fixture/src/unity_fixture.c
+    Unity/extras/memory/src/unity_memory.c
 )
 
-
-
-# # 2. DODAJEMY WSZYSTKIE ŚCIEŻKI DO NAGŁÓWKÓW
 target_include_directories(unity_lib PUBLIC 
-    ${UNITY_DIR}/src                         # Dla unity.h
-    ${UNITY_DIR}/extras/fixture/src          # Dla unity_fixture.h
-    ${UNITY_DIR}/extras/memory/src           # DLA UNITY_MEMORY.H - To naprawia Twój błąd
+    Unity/src
+    Unity/extras/fixture/src 
+    Unity/extras/memory/src
+)
+
+add_library(fff_lib INTERFACE)
+
+target_include_directories(fff_lib
+    INTERFACE
+        fff
+)
+
+add_library(test_harness INTERFACE)
+
+target_link_libraries(test_harness
+    INTERFACE
+        unity_lib
+        fff_lib
 )
 
 # Add the CMSIS-DSP library from the relative path
@@ -37,9 +47,15 @@ add_subdirectory(
     "${CMAKE_BINARY_DIR}/CMSIS-DSP"
 )
 
-add_subdirectory(Mocks/LOG_Spy)
-add_subdirectory(Mocks/GPIO_Mock)
+#UUT builds
+add_subdirectory(${MAIN_DIR}/Absolete/SysTickDispatcher SysTickDispatcher_build)
+add_subdirectory(${MAIN_DIR}/Common/FIFO FIFO_build)
+add_subdirectory(${MAIN_DIR}/Common/Logger Logger_build)
+add_subdirectory(${MAIN_DIR}/Common/PID PID_build)
 
+
+add_subdirectory(Mocks/GPIO_Mock)
+add_subdirectory(Mocks/LOG_Spy)
 add_subdirectory(Relay)
 add_subdirectory(PID)
 add_subdirectory(FIFO)
@@ -53,21 +69,5 @@ add_subdirectory(CommandExecute)
 add_subdirectory(MainStateMachine)
 add_subdirectory(ConfigManager)
 #add_subdirectory(QuarkTS)
-
-# Add the CMSIS-DSP library from the relative path
-#add_subdirectory(${CMSIS_DIR})
-
-# target_include_directories(run_tests PRIVATE
-#     Inc
-#     Mocks
-#     ${CMAKE_SOURCE_DIR}/lib/CMSIS-DSP/Include
-#     ${CMAKE_SOURCE_DIR}/lib/CMSIS-DSP/PrivateInclude
-# )
-
-# # Łączymy wszystko
-# target_link_libraries(run_tests PRIVATE
-#     unity_lib
-#     CMSISDSP
-# )
 
 

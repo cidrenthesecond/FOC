@@ -4,8 +4,6 @@ target_sources(SysTickDispatcher_test PRIVATE
     AllTests.c
     SysTickDispatcher_TestRunner.c
     SysTickDispatcher_Test.c
-
-    ${MAIN_DIR}/Common/Src/SysTickDispatcher.c
 )
 
 target_include_directories(SysTickDispatcher_test PRIVATE
@@ -13,7 +11,9 @@ target_include_directories(SysTickDispatcher_test PRIVATE
 )
 
 target_link_libraries(SysTickDispatcher_test
+    SysTickDispatcher
     unity_lib
+    fff_lib
 )
 
 add_custom_command(TARGET SysTickDispatcher_test POST_BUILD

@@ -13,11 +13,12 @@ target_include_directories(MainSM_Test PRIVATE
     ${MAIN_DIR}/Tests_Manual/NucleoBoard/Schemes
 )
 
-add_subdirectory(X:/Projects/FOC_Driver/Firmware/QuarkTS-7.3.3 quarkts_build)
+add_subdirectory(${MAIN_DIR}/QuarkTS-7.3.3 quarkts_build)
 
 target_link_libraries(MainSM_Test PRIVATE
     quarkts
     unity_lib
+    Logger_Interface
 )
 
 add_custom_command(TARGET MainSM_Test POST_BUILD
