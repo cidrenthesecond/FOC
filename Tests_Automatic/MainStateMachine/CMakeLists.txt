@@ -17,8 +17,8 @@ add_subdirectory(${MAIN_DIR}/QuarkTS-7.3.3 quarkts_build)
 
 target_link_libraries(MainSM_Test PRIVATE
     quarkts
-    unity_lib
     Logger_Interface
+    test_harness
 )
 
 add_custom_command(TARGET MainSM_Test POST_BUILD

@@ -8,9 +8,11 @@ add_compile_options(-Wall -Wextra)
 add_link_options(--trace)
 
 # Ścieżka bazowa do Twojego folderu Unity
-set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/..)
-set(CMSIS_DIR ${MAIN_DIR}/lib/CMSIS-DSP/Source)
-set(MOCK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Mocks)
+set(MAIN_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/..)
+set(UUT_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/../Common)
+set(ABSOLETE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../Absolete)
+set(CMSIS_DIR    ${MAIN_DIR}/lib/CMSIS-DSP/Source)
+set(MOCK_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/Mocks)
 
 # set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -48,26 +50,13 @@ add_subdirectory(
 )
 
 #UUT builds
-add_subdirectory(${MAIN_DIR}/Absolete/SysTickDispatcher SysTickDispatcher_build)
-add_subdirectory(${MAIN_DIR}/Common/FIFO FIFO_build)
-add_subdirectory(${MAIN_DIR}/Common/Logger Logger_build)
-add_subdirectory(${MAIN_DIR}/Common/PID PID_build)
+add_subdirectory(${UUT_DIR}      uut_build)
+add_subdirectory(${ABSOLETE_DIR} absolete_build)
 
+add_subdirectory(Mocks)
+add_subdirectory(Tests)
 
-add_subdirectory(Mocks/GPIO_Mock)
-add_subdirectory(Mocks/LOG_Spy)
-add_subdirectory(Relay)
-add_subdirectory(PID)
-add_subdirectory(FIFO)
-add_subdirectory(Logger)
-add_subdirectory(CMSIS)
-add_subdirectory(Thermistor)
-add_subdirectory(WaveGen)
-add_subdirectory(ScalarProfile)
-add_subdirectory(SysTickDispatcher)
-add_subdirectory(CommandExecute)
 add_subdirectory(MainStateMachine)
-add_subdirectory(ConfigManager)
 #add_subdirectory(QuarkTS)
 
 
