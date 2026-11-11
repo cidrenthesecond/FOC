@@ -1,4 +1,5 @@
 #include "Logger.h"
+#include "FIFO.h"
 #include "string.h"
 
 static void (*PrintLog)(const char *pData,uint8_t length) = NULL;

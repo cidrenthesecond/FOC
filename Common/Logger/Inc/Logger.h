@@ -1,4 +1,3 @@
-#include "FIFO.h"
 #include <stdint.h>
 
 #ifndef LOGGER_H

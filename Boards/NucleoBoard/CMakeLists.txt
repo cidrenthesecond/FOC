@@ -20,7 +20,10 @@ message("Build type: " ${CMAKE_BUILD_TYPE})
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
-set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+set(MAIN_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+set(COMMON_DIR  ${MAIN_DIR}/Common)
+set(DRIVERS_DIR ${MAIN_DIR}/Drivers)
+set(APP_DIR     ${MAIN_DIR}/App)
 
 # Enable CMake support for ASM and C languages
 enable_language(C ASM)
@@ -28,47 +31,43 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
+#build mx generated files
 add_subdirectory(cmake/stm32cubemx)
-add_subdirectory(App/Logger)
-add_subdirectory(App/CMD)
-add_subdirectory(App/FPU)
-add_subdirectory(App/WaveGen)
-add_subdirectory(App/ScalarProfile)
-add_subdirectory(App/NTC)
-add_subdirectory(App/DSP)
+#build OS
 add_subdirectory(${MAIN_DIR}/QuarkTS-7.3.3 quarkts_build)
 
-# Add sources to executable
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    ${MAIN_DIR}/Common/Src/PID.c
-    ${MAIN_DIR}/Common/Src/Relay.c
-    ${MAIN_DIR}/Common/Src/SysTickDispatcher.c
-
-    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/GPIO_Driver.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/ADC_Service.c
-
-    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/SysTickWrapper.c
-
-    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/System_Config.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/PWM_Driver.c
-
-    ${CMAKE_CURRENT_SOURCE_DIR}/Tests/FOC_SCHEME/FOC_Scheme_Test.c
+#short workaround
+add_library(PWM_Schemes STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/PWM_Schemes.c
-
-    ${CMAKE_CURRENT_SOURCE_DIR}/Schemes/ScalarControl.c
-
-    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/EmergencyHandler.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/Control_Task.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/TODO/MainSM.c
 )
+
+target_include_directories(PWM_Schemes
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/TODO
+)
+
+target_link_libraries(PWM_Schemes
+    PRIVATE
+        stm32cubemx
+)
+
+#build common files
+add_subdirectory(${COMMON_DIR} common_build)
+#build drivers
+add_subdirectory(${DRIVERS_DIR} drivers_build)
+#build app related
+add_subdirectory(${APP_DIR} app_build)
+
+target_link_libraries(Relay PRIVATE GPIO_Driver)
+# Add sources to executable
+#target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+ #   ${CMAKE_CURRENT_SOURCE_DIR}/Tests/FOC_SCHEME/FOC_Scheme_Test.c
+#)
 
 # Add include paths
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    ${MAIN_DIR}/Common/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}/Tests/FOC_SCHEME
-    ${CMAKE_CURRENT_SOURCE_DIR}/TODO
-    ${CMAKE_CURRENT_SOURCE_DIR}/Schemes
-)
+#target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+ #   ${CMAKE_CURRENT_SOURCE_DIR}/Tests/FOC_SCHEME
+#)
 
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
@@ -76,13 +75,11 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
-    logger
-    commandLine
-    FPU
-    waveGen
-    scalarProfile
-    NTC
     quarkts
-    DSP
+    MainSM
+    SysTickWrapper
+    Logger
+    ADC_Service
+    GPIO_Driver
 )
 
