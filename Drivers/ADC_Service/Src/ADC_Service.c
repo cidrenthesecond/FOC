@@ -1,22 +1,18 @@
-#include "stm32h533xx.h"
+#include "bsp.h"
 #include "stm32h5xx_ll_adc.h"
 #include "ADC_Service.h"
 #include "Moving_Avarage_Filter.h"
 #include "Logger.h"
 #include "stdio.h"
 
-//-------------------BSP----------------------------
 static const uint32_t adc_channel_map[5] =
 {
-  [PHASE_A_CHANNEL]     = LL_ADC_CHANNEL_3,
-  [PHASE_B_CHANNEL]     = LL_ADC_CHANNEL_4,
-  [PHASE_C_CHANNEL]     = LL_ADC_CHANNEL_7,
-  [BUS_VOLTAGE_CHANNEL] = LL_ADC_CHANNEL_1,
-  [NTC_VOLTAGE_CHANNEL] = LL_ADC_CHANNEL_0
+    [PHASE_A_CHANNEL]     = ADC_CHANNEL_PHASE_A,
+    [PHASE_B_CHANNEL]     = ADC_CHANNEL_PHASE_B,
+    [PHASE_C_CHANNEL]     = ADC_CHANNEL_PHASE_C,
+    [BUS_VOLTAGE_CHANNEL] = ADC_CHANNEL_BUS_VOLTAGE,
+    [NTC_VOLTAGE_CHANNEL] = ADC_CHANNEL_NTC
 };
-
-#define ADC_USED ADC1
-//--------------------------------------------------
 
 #define ADC_FULL_SCALE            4095
 #define ADC_VREF_MV               3300

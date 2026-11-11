@@ -20,10 +20,11 @@ message("Build type: " ${CMAKE_BUILD_TYPE})
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
-set(MAIN_DIR    ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-set(COMMON_DIR  ${MAIN_DIR}/Common)
-set(DRIVERS_DIR ${MAIN_DIR}/Drivers)
-set(APP_DIR     ${MAIN_DIR}/App)
+set(MAIN_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+set(BSP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bsp)
+set(COMMON_DIR      ${MAIN_DIR}/Common)
+set(DRIVERS_DIR     ${MAIN_DIR}/Drivers)
+set(APP_DIR         ${MAIN_DIR}/App)
 
 # Enable CMake support for ASM and C languages
 enable_language(C ASM)

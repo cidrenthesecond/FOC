@@ -1,11 +1,10 @@
+#include "bsp.h"
 #include "Cmd_Transport.h"
 #include "stm32h5xx_ll_dma.h"
 #include "stm32h5xx_ll_usart.h"
 #include "string.h"
 
-#define DMA_USED         GPDMA1
-#define DMA_CHANNEL_USED LL_DMA_CHANNEL_1
-#define USART_USED       USART2
+
 #define BUFFER_SIZE      64
 
 char rx_buffer[BUFFER_SIZE] = {0};
@@ -15,8 +14,8 @@ static void Start_USART_RX_DMA(void);
 
 void  InitCmdTransport()
 {
-    LL_USART_EnableDirectionRx(USART_USED);
-    LL_USART_Enable(USART_USED);
+    LL_USART_EnableDirectionRx(CMD_UART);
+    LL_USART_Enable(CMD_UART);
     OnDataReady_Callback = NULL;
 }
 
@@ -38,36 +37,36 @@ void SetUpMonitoring(void)
 
 void USART2_IRQHandler(void)
 {
-  if (LL_USART_IsActiveFlag_IDLE(USART2) && LL_USART_IsEnabledIT_IDLE(USART2))
+  if (LL_USART_IsActiveFlag_IDLE(CMD_UART) && LL_USART_IsEnabledIT_IDLE(CMD_UART))
     {
-        LL_DMA_DisableChannel(GPDMA1, LL_DMA_CHANNEL_1);
+        LL_DMA_DisableChannel(CMD_DMA, CMD_DMA_CHANNEL);
 
         if(OnDataReady_Callback != NULL)
             OnDataReady_Callback();
 
-        LL_USART_ClearFlag_IDLE(USART2);
+        LL_USART_ClearFlag_IDLE(CMD_UART);
     }
 }
 
 static void Start_USART_RX_DMA(void)
 {
     // 1. Wyłącz kanał DMA przed konfiguracją
-    LL_DMA_DisableChannel(DMA_USED, DMA_CHANNEL_USED);
+    LL_DMA_DisableChannel(CMD_DMA, CMD_DMA_CHANNEL);
 
     // 2. Adres źródłowy (rejestr odbiorczy USART RDR)
-    LL_DMA_SetSrcAddress(DMA_USED, DMA_CHANNEL_USED, LL_USART_DMA_GetRegAddr(USART_USED, LL_USART_DMA_REG_DATA_RECEIVE));
+    LL_DMA_SetSrcAddress(CMD_DMA, CMD_DMA_CHANNEL, LL_USART_DMA_GetRegAddr(CMD_UART, LL_USART_DMA_REG_DATA_RECEIVE));
 
     // 3. Adres docelowy (bufor w RAM)
-    LL_DMA_SetDestAddress(DMA_USED, DMA_CHANNEL_USED, (uint32_t)rx_buffer);
+    LL_DMA_SetDestAddress(CMD_DMA, CMD_DMA_CHANNEL, (uint32_t)rx_buffer);
 
     // 4. Maksymalny rozmiar oczekiwanego bufora
-    LL_DMA_SetBlkDataLength(DMA_USED, DMA_CHANNEL_USED, 64);
+    LL_DMA_SetBlkDataLength(CMD_DMA, CMD_DMA_CHANNEL, 64);
 
     // 5. Włącz kanał DMA i zgłoszenie DMA w USART
-    LL_DMA_EnableChannel(DMA_USED, DMA_CHANNEL_USED);
-    LL_USART_EnableDMAReq_RX(USART_USED);
+    LL_DMA_EnableChannel(CMD_DMA, CMD_DMA_CHANNEL);
+    LL_USART_EnableDMAReq_RX(CMD_UART);
 
     // 6. Wyczyść i włącz przerwanie IDLE Line w USART
-    LL_USART_ClearFlag_IDLE(USART_USED);
-    LL_USART_EnableIT_IDLE(USART_USED);
+    LL_USART_ClearFlag_IDLE(CMD_UART);
+    LL_USART_EnableIT_IDLE(CMD_UART);
 }

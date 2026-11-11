@@ -1,20 +1,8 @@
+#include "bsp.h"
 #include "GPIO_Driver.h"
-#include "stm32h533xx.h"
 #include "stm32h5xx_ll_gpio.h"
 
-#define GPIO_RELAY_PORT GPIOB
-#define GPIO_RELAY_PIN  LL_GPIO_PIN_6
 
-#define MUX_ENCODER_A_PORT 1
-#define MUX_ENCODER_A_PIN  2
-#define MUX_ENCODER_B_PORT 3
-#define MUX_ENCODER_B_PIN  4
-#define MUX_ENCODER_0_PORT 5
-#define MUX_ENCODER_0_PIN  6
-#define LINE_RECEIVER_EN_PORT      7
-#define LINE_RECEIVER_EN_PIN       8
-#define ENCODER_PWR_SWITCH_EN_PORT 9
-#define ENCODER_PWR_SWITCH_EN_PIN  10
 
 static void (*Encoder_Power_Fault_Callback)(void);
 static void (*Error_Fixed_Button_Callback)(void);

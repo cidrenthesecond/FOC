@@ -1,9 +1,8 @@
+#include "bsp.h"
 #include "PWM_Driver.h"
 #include "stm32h5xx_ll_tim.h"
 #include "stm32h5xx_ll_rcc.h"
 #include "Logger.h"
-
-#define PWM_TIMER TIM1
 
 static void (*interruptCallback)(void);
 static uint32_t workAround = 15000;
@@ -76,7 +75,7 @@ void PWM_ESTOP()
 
 void PWM_ReArm()
 {
-    LL_TIM_ClearFlag_BRK(TIM1);
+    LL_TIM_ClearFlag_BRK(PWM_TIMER);
     LL_TIM_EnableAllOutputs(PWM_TIMER);
     LL_TIM_CC_EnableChannel(PWM_TIMER, LL_TIM_CHANNEL_CH1);
     LL_TIM_CC_EnableChannel(PWM_TIMER, LL_TIM_CHANNEL_CH2);
