@@ -1,18 +1,28 @@
-add_executable(test_LOG_Spy
+add_library(LOG_Spy STATIC
+    LOG_Spy.c
+)
 
+target_include_directories(LOG_Spy
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(LOG_Spy
+    PUBLIC
+        Logger_Interface
+)
+
+add_executable(test_LOG_Spy
 AllTests.c
 LOG_Spy_Test.c
 LOG_Spy_TestRunner.c
-LOG_Spy.c
 )
 
-target_include_directories(test_LOG_Spy PRIVATE
-    ${MAIN_DIR}/Common/Inc
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-target_link_libraries(test_LOG_Spy PRIVATE
-    unity_lib
+target_link_libraries(test_LOG_Spy 
+    PRIVATE
+        test_harness
+        Logger_Interface
+        LOG_Spy
 )
 
 add_custom_command(TARGET test_LOG_Spy POST_BUILD

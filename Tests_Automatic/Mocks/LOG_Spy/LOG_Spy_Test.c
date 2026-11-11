@@ -1,5 +1,4 @@
 #include "unity_fixture.h"
-
 #include "LOG_Spy.h"
 
 TEST_GROUP(LOG_Spy);

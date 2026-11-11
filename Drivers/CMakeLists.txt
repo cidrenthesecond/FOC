@@ -1,0 +1,7 @@
+add_subdirectory(LoggerTransport)
+add_subdirectory(CMD_Transport)
+add_subdirectory(ADC_Service)
+add_subdirectory(GPIO_Driver)
+add_subdirectory(PWM_Driver)
+add_subdirectory(SysTickWrapper)
+add_subdirectory(FPU)
