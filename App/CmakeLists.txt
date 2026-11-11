@@ -1,6 +1,7 @@
 add_subdirectory(NTC_Task)
 add_subdirectory(CMD_Task)
 add_subdirectory(Control_Task)
+add_subdirectory(SpeedEstimation_Task)
 add_subdirectory(EmergencyHandler)
 add_subdirectory(App_Init)
 add_subdirectory(MainSM)

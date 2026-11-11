@@ -13,4 +13,5 @@ target_link_libraries(NTC_Task
     PRIVATE
         Thermistor
         Logger
+        ADC_Interface
 )

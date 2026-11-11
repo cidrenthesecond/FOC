@@ -1,6 +1,7 @@
 #include "NTC_Task.h"
 #include "Thermistor.h"
 #include "Logger.h"
+#include "ADC_Service.h"
 
 #include <stdio.h>
 #include "qkernel.h"
@@ -15,20 +16,33 @@ static uint16_t repetitions = 0;
 static qTask_t NTC_Task;
 static uint8_t isInitialized = 0;
 static uint8_t isActive      = 0;
+static uint8_t isMeasurementPending = 0;
 
 void NTC_TaskInit(void)
 {
     qOS_Add_Task(&NTC_Task, NTC_TaskCallback, qLowest_Priority, NTC_TASK_PERIOD, qIndefinite, qDisabled, NULL);
+    ADC_Set_EOC_Callback(NTC_SendNotyfication);
     OnTemperatureOutOfRange = NULL;
-    isActive      = 0;
-    isInitialized = 1;
+    isActive             = 0;
+    isMeasurementPending = 0;
+    isInitialized        = 1;
 }
 
 void NTC_TaskCallback(qEvent_t e)
 {
     (void)e;
 
+    //If measurement didnt start then start it
+    //If data isnt ready then task got preempted then start it
+    if(!isMeasurementPending || !ADC_NTC_IsDataReady())
+    {
+        ADC_NTC_StartMeasurement();
+        isMeasurementPending = 1;
+        return;
+    }
+        
     int16_t HeatSinkTemp_mC = Thermistor_GetHeatsinkTemp();
+    isMeasurementPending    = 0;
 
     if(HeatSinkTemp_mC < minTemp_mC || HeatSinkTemp_mC > maxTemp_mC)
     {
@@ -61,6 +75,11 @@ void NTC_SetActive(bool set)
         qTask_Disable(&NTC_Task);
         isActive = 0;
     }
+}
+
+void NTC_SendNotyfication()
+{
+    qTask_Notification_Send(&NTC_Task, NULL);
 }
 
 void NTC_SetOnTempOutOfRangeCallback(void (*callback)(void))

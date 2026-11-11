@@ -41,6 +41,8 @@ uint16_t ADC_ReadSingleChannelRaw(ADC_Channel_t channel);
 uint32_t ADC_GetDcLinkVoltage();
 uint32_t ADC_CalculateDcLinkVoltage(uint16_t adcMeasurement);
 
+void    ADC_NTC_StartMeasurement();
+uint8_t ADC_NTC_IsDataReady();
 uint16_t ADC_GetNtcVoltage();
 uint16_t ADC_CalculateNtcVoltage(uint16_t adcMeasurement);
 
@@ -49,6 +51,8 @@ Phase_Currents_t  ADC_CalculatePhaseCurrents(uint16_t ADC_Phase_A, uint16_t ADC_
 
 void ADC_Set_OCP_Threshold(uint16_t thresholdCurrent_ma);
 void ADC_Set_OCP_ISR(void (*isr)(void));
+
+void ADC_Set_EOC_Callback(void (*callback)(void));
 
 uint16_t GetNtcVoltage();
 

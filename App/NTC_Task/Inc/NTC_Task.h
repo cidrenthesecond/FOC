@@ -12,5 +12,6 @@ void NTC_TaskInit(void);
 void NTC_TaskCallback(qEvent_t e);
 void NTC_SetActive(bool set);
 void NTC_SetOnTempOutOfRangeCallback(void (*callback)(void));
+void NTC_SendNotyfication();
 
 #endif

@@ -12,6 +12,7 @@
 #include "ScalarControl.h"
 #include "Control_Task.h"
 #include "SysTickWrapper.h"
+#include "SpeedEstimation_Task.h"
 
 typedef enum {
     INIT_LOGGER,
@@ -25,6 +26,7 @@ typedef enum {
     RELAY_CLOSING,
     INIT_SCALAR_CONTROL,
     INIT_CONTROL_TASK,
+    INIT_SPEED_ESTIMATION_TASK,
     INIT_FINISHED,
     INIT_ERROR
 } SystemInitState_t;
@@ -126,6 +128,10 @@ SystemInitStatus_t System_Init()
                 break;
             }
 
+            result = ProceedInitialisation();
+            break;
+        case INIT_SPEED_ESTIMATION_TASK:
+            SpeedEstimation_Init();
             result = ProceedInitialisation();
             break;
             

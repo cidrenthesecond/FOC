@@ -60,14 +60,14 @@ add_subdirectory(${APP_DIR} app_build)
 
 target_link_libraries(Relay PRIVATE GPIO_Driver)
 # Add sources to executable
-#target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+target_sources(${CMAKE_PROJECT_NAME} PRIVATE
  #   ${CMAKE_CURRENT_SOURCE_DIR}/Tests/FOC_SCHEME/FOC_Scheme_Test.c
-#)
+)
 
 # Add include paths
-#target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
- #   ${CMAKE_CURRENT_SOURCE_DIR}/Tests/FOC_SCHEME
-#)
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+   ${CMAKE_CURRENT_SOURCE_DIR}/Tests/FOC_SCHEME
+)
 
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)

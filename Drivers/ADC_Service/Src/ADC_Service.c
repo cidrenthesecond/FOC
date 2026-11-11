@@ -26,8 +26,9 @@ static const uint32_t adc_channel_map[5] =
 #define ADC_OFFSET_TOP_MARGAIN    2200u
 #define ADC_OFFSET_BOTTOM_MARGAIN 2000u
 
-#define FLAG_ADC_OFFSETS_CALIBRATED (1U << 0)
-#define FLAG_ADC_INITIALISED        (1U << 1)
+#define FLAG_ADC_OFFSETS_CALIBRATED           (1U << 0)
+#define FLAG_ADC_INITIALISED                  (1U << 1)
+#define FLAG_SYNC_CONVERSION_ONGOING          (1U << 2)
 
 typedef struct {
   uint16_t a;
@@ -44,6 +45,7 @@ static MovingAvarage Phase_B_Filter;
 static MovingAvarage Phase_C_Filter;
 
 static void (*OverCurrentInterruptCallback)(void);
+static void (*AsyncConverionDoneCallback)(void);
 
 static void ADC_Calibrate();
 
@@ -53,6 +55,9 @@ static Phase_Offsets_t ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_d
 static ADC_Status_t    ADC_ValidatePhaseOffsets(Phase_Offsets_t offsets);
 
 static uint8_t ADC_Status = 0;
+
+static volatile uint16_t g_async_adc_value = 0;
+static volatile uint8_t  g_async_conversion_done = 0;
 
 ADC_Status_t ADC_Init()
 {
@@ -108,6 +113,9 @@ Analog_Feedback_t ADC_GetAnalogFeedback()
 
 uint16_t ADC_ReadSingleChannelRaw(ADC_Channel_t channel)
 {
+  LL_ADC_REG_StopConversion(ADC_USED);
+  LL_ADC_ClearFlag_EOC(ADC1);
+
   uint32_t ll_channel = adc_channel_map[channel];
 
   LL_ADC_REG_SetSequencerRanks(ADC_USED, LL_ADC_REG_RANK_1, ll_channel);
@@ -121,6 +129,23 @@ uint16_t ADC_ReadSingleChannelRaw(ADC_Channel_t channel)
   return LL_ADC_REG_ReadConversionData12(ADC_USED);
 }
 
+void ADC_StartSingleChannel_Async(ADC_Channel_t channel)
+{
+    uint32_t ll_channel = adc_channel_map[channel];
+
+    // 1. Ustaw kanał w sekwencerze dla konwersji regularnej
+    LL_ADC_REG_SetSequencerRanks(ADC_USED, LL_ADC_REG_RANK_1, ll_channel);
+    
+    // 2. Wyczyść flagę końca konwersji przed startem
+    LL_ADC_ClearFlag_EOC(ADC_USED);
+    
+    // 3. Włącz przerwanie EOC (End of Conversion) dla ADC
+    LL_ADC_EnableIT_EOC(ADC_USED);
+
+    // 4. Zresetuj flagę statusu i wystartuj konwersję (funkcja natychmiast wraca, nie czeka!)
+    g_async_conversion_done = 0;
+    LL_ADC_REG_StartConversion(ADC_USED);
+}
 
 //______________DC Link_____________
 
@@ -135,11 +160,22 @@ uint32_t ADC_GetDcLinkVoltage()
 
 //_____________NTC______________
 
+void ADC_NTC_StartMeasurement()
+{
+  ADC_StartSingleChannel_Async(NTC_VOLTAGE_CHANNEL);
+}
+
+uint8_t ADC_NTC_IsDataReady()
+{
+  return g_async_conversion_done;
+}
+
 //TO DO
 uint16_t ADC_GetNtcVoltage()
 {
-  uint16_t measurement = ADC_ReadSingleChannelRaw(NTC_VOLTAGE_CHANNEL);
-  uint16_t NTC_Measurement      = MovingAvarage_Filter(NTC_Filter, measurement);
+  uint16_t measurement     = g_async_adc_value;
+  uint16_t NTC_Measurement = MovingAvarage_Filter(NTC_Filter, measurement);
+  g_async_conversion_done  = 0;
   return ADC_CalculateNtcVoltage(NTC_Measurement);
 }
 
@@ -265,6 +301,14 @@ void ADC_Set_OCP_ISR(void (*isr)(void))
   OverCurrentInterruptCallback = isr;
 }
 
+void ADC_Set_EOC_Callback(void (*callback)(void))
+{
+  if(callback == NULL)
+    return;
+
+  AsyncConverionDoneCallback = callback;
+}
+
 static void LogOverCurrentReason()
 {
   uint16_t phase_a, phase_b, phase_c;
@@ -283,7 +327,7 @@ static void LogOverCurrentReason()
 /**
   * @brief This function handles ADC_USED global interrupt.
   */
-void ADC_USED_IRQHandler(void)
+void ADC1_IRQHandler(void)
 {
   if(LL_ADC_IsActiveFlag_AWD2(ADC_USED))
   {
@@ -293,4 +337,14 @@ void ADC_USED_IRQHandler(void)
     LogOverCurrentReason();
     LL_ADC_ClearFlag_AWD2(ADC_USED);
   }
+  if(LL_ADC_IsActiveFlag_EOC(ADC_USED))
+  {
+    g_async_adc_value = LL_ADC_REG_ReadConversionData12(ADC_USED);  
+    LL_ADC_ClearFlag_EOC(ADC_USED);
+    LL_ADC_DisableIT_EOC(ADC_USED);
+    g_async_conversion_done = 1;
+    if(AsyncConverionDoneCallback != NULL)
+      AsyncConverionDoneCallback();
+  }
 }
+
