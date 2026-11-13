@@ -65,21 +65,7 @@ static void MPU_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-void LED_TASK(void)
-{
-  LL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-}
-
-void UART_PrintCharPolling(void *sp , const char c)
-{
-  (void)sp;
-
-  while(!LL_USART_IsActiveFlag_TXE(USART2))
-	  ;
-
-	LL_USART_TransmitData8(USART2, c);	
-}
+GPIO_TypeDef fake_gpio_instance;
 /* USER CODE END 0 */
 
 /**

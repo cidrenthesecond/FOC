@@ -166,7 +166,6 @@ uint8_t ADC_NTC_IsDataReady()
   return g_async_conversion_done;
 }
 
-//TO DO
 uint16_t ADC_GetNtcVoltage()
 {
   uint16_t measurement     = g_async_adc_value;

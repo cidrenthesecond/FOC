@@ -50,7 +50,6 @@ void SpeedEstimation_Task_Callback(qEvent_t e)
     if(!AreRunConditionsMet())
         return;
 
-    
 }
 
 void SpeedEstimation_SetStrategy(SpeedEstimation_Enum_t strategy)

@@ -15,4 +15,5 @@ target_link_libraries(MainSM
         NTC_Task
         Control_Task
         PWM_Driver
+        RUN_LED_Task
 )

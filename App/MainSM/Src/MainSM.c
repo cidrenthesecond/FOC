@@ -3,6 +3,7 @@
 #include "MainSM.h"
 #include "PWM_Driver.h"
 #include "Control_Task.h"
+#include "RUN_LED_Task.h"
 #include "qfsm.h"
 #include "qkernel.h"
 #include <stdbool.h>
@@ -112,6 +113,7 @@ qSM_Status_t IDLE_Callback(qSM_Handler_t h)
             NTC_SetActive(true);
             PWM_Stop();
             Control_Task_SetActive(false);
+            RUN_LED_Task_SetActive(false);
             LOG("Entered IDLE State");
             break;
         case NEXT_STATE_SCHEDULED:
@@ -133,6 +135,7 @@ qSM_Status_t RUN_Callback(qSM_Handler_t h)
     {
         case QSM_SIGNAL_ENTRY:
             LOG("Entered RUN State");
+            RUN_LED_Task_SetActive(true);
             Control_Task_SetActive(true);
             Control_Before_Launch();
             PWM_Start();

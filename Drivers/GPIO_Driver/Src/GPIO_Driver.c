@@ -25,6 +25,37 @@ int  GPIO_Relay_GetState()
 	return LL_GPIO_IsOutputPinSet(GPIO_RELAY_PORT, GPIO_RELAY_PIN);
 }
 
+void GPIO_RUN_LED_TurnOn()
+{
+	LL_GPIO_SetOutputPin(RUN_LED_GPIO_PORT, RUN_LED_GPIO_PIN);
+}
+
+void GPIO_RUN_LED_TurnOff()
+{
+	LL_GPIO_ResetOutputPin(RUN_LED_GPIO_PORT, RUN_LED_GPIO_PIN);
+}
+
+void GPIO_Error_LED_TurnOn()
+{
+	LL_GPIO_SetOutputPin(ERROR_LED_GPIO_PORT, ERROR_LED_GPIO_PIN);
+}
+
+void GPIO_Error_LED_TurnOff()
+{
+	LL_GPIO_ResetOutputPin(ERROR_LED_GPIO_PORT, ERROR_LED_GPIO_PIN);
+} 
+
+void GPIO_ESTOP_LED_TurnOn()
+{
+	LL_GPIO_SetOutputPin(ESTOP_LED_GPIO_PORT,ESTOP_LED_GPIO_PIN);
+}
+
+void GPIO_ESTOP_LED_TurnOff()
+{
+	LL_GPIO_ResetOutputPin(ESTOP_LED_GPIO_PORT, ESTOP_LED_GPIO_PIN);
+}
+
+
 void GPIO_Enable_LineReceiver()
 {
 

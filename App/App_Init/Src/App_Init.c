@@ -13,6 +13,7 @@
 #include "Control_Task.h"
 #include "SysTickWrapper.h"
 #include "SpeedEstimation_Task.h"
+#include "RUN_LED_Task.h"
 
 typedef enum {
     INIT_LOGGER,
@@ -27,6 +28,7 @@ typedef enum {
     INIT_SCALAR_CONTROL,
     INIT_CONTROL_TASK,
     INIT_SPEED_ESTIMATION_TASK,
+    INIT_RUN_LED_TASK,
     INIT_FINISHED,
     INIT_ERROR
 } SystemInitState_t;
@@ -133,6 +135,11 @@ SystemInitStatus_t System_Init()
         case INIT_SPEED_ESTIMATION_TASK:
             SpeedEstimation_Init();
             result = ProceedInitialisation();
+            break;
+        case INIT_RUN_LED_TASK:
+            RUN_LED_Task_Init();
+            result = ProceedInitialisation();
+            LOG("RUN LED Task init");
             break;
             
         default:
