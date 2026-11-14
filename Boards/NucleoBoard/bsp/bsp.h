@@ -15,8 +15,8 @@ extern GPIO_TypeDef fake_gpio_instance;
 #define FAKE_GPIO_PORT (&fake_gpio_instance)
 #define FAKE_GPIO_PIN  1
 
-#define RUN_LED_GPIO_PORT   (FAKE_GPIO_PORT)
-#define RUN_LED_GPIO_PIN    (FAKE_GPIO_PIN)
+#define RUN_LED_GPIO_PORT   (GPIOA)
+#define RUN_LED_GPIO_PIN    (LL_GPIO_PIN_5)
 #define ERROR_LED_GPIO_PORT (FAKE_GPIO_PORT) 
 #define ERROR_LED_GPIO_PIN  (FAKE_GPIO_PIN)
 #define ESTOP_LED_GPIO_PORT (FAKE_GPIO_PORT)

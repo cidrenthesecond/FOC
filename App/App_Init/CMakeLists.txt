@@ -24,5 +24,4 @@ target_link_libraries(App_init
         SpeedEstimation_Task
         SysTickWrapper
         PWM_Schemes
-        RUN_LED_Task
 )

@@ -14,9 +14,11 @@ extern "C" {
 #endif
 
 #include "stdint.h"
+#include "SpeedFeedback.h"
 
-
-int32_t PCV_CalculateVelocity(uint16_t num_pulses);
+void             Encoder_Start();
+Speed_Feedback_t Encoder_GetFeedback(uint16_t num_pulses);
+void             Encoder_Stop();
 
 #ifdef __cplusplus
 }

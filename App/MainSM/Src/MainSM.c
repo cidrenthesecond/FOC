@@ -3,7 +3,8 @@
 #include "MainSM.h"
 #include "PWM_Driver.h"
 #include "Control_Task.h"
-#include "RUN_LED_Task.h"
+#include "LED_Task.h"
+#include "GPIO_Driver.h"
 #include "qfsm.h"
 #include "qkernel.h"
 #include <stdbool.h>
@@ -36,18 +37,22 @@ qSM_Status_t IDLE_Callback(qSM_Handler_t h);
 qSM_Status_t RUN_Callback(qSM_Handler_t h);
 qSM_Status_t ERROR_Callback(qSM_Handler_t h);
 
-uint8_t firstRun = 1;
-
 static bool RequestNextState(qSM_State_t *target);
 static void ProccessScheduledState(qSM_Handler_t h);
 static bool CanTransitionTo(const qSM_State_t *target);
+
+const LED_Task_Interface_t RUN_LED_Interface = {
+    .Led_ON  = GPIO_RUN_LED_TurnOn,
+    .Led_OFF = GPIO_RUN_LED_TurnOff
+};
+
+static LED_Task_t RUN_LED_Task;
 
 void Enter_MainStateMachine()
 {
     mainSM_Status.systemInitalised = 0;
     CurrentState                   = &INIT;
     ScheduledState                 = NULL;
-    firstRun                       = 1;
 
     qStateMachine_Setup(&MainSM, NULL, &INIT, NULL, NULL);
 
@@ -62,7 +67,7 @@ void Enter_MainStateMachine()
     
     /* Task reaguje na zdarzenia asynchroniczne */
     qOS_Add_StateMachineTask(&Main_Task,&MainSM,qHigh_Priority,1,qEnabled,NULL);
-
+    LED_Task_Init(&RUN_LED_Task, &RUN_LED_Interface, 1000);
     // /* Jednorazowe wejście do INIT */
     // qSM_Signal_t initSignal = {.id = QSM_SIGNAL_NONE,.sigData = NULL};  
     // qStateMachine_Run(&MainSM, initSignal);
@@ -113,7 +118,7 @@ qSM_Status_t IDLE_Callback(qSM_Handler_t h)
             NTC_SetActive(true);
             PWM_Stop();
             Control_Task_SetActive(false);
-            RUN_LED_Task_SetActive(false);
+            LED_Task_SetActive(&RUN_LED_Task, false, 0);
             LOG("Entered IDLE State");
             break;
         case NEXT_STATE_SCHEDULED:
@@ -135,7 +140,7 @@ qSM_Status_t RUN_Callback(qSM_Handler_t h)
     {
         case QSM_SIGNAL_ENTRY:
             LOG("Entered RUN State");
-            RUN_LED_Task_SetActive(true);
+            LED_Task_SetActive(&RUN_LED_Task,true,ITERATIONS_INDEFINITE);
             Control_Task_SetActive(true);
             Control_Before_Launch();
             PWM_Start();
@@ -156,6 +161,7 @@ qSM_Status_t ERROR_Callback(qSM_Handler_t h)
     switch (h->Signal)
     {
         case QSM_SIGNAL_ENTRY:
+            LED_Task_SetActive(&RUN_LED_Task, false, 0);
             LOG("Entered ERROR");
             break;
         case NEXT_STATE_SCHEDULED:
