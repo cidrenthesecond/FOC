@@ -27,9 +27,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <arm_math.h>
-#include "Logger.h"
-#include <stdint.h>
 #include "SysTickWrapper.h"
 #include "qkernel.h"
 #include "MainSM.h"

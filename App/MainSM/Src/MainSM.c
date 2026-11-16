@@ -140,7 +140,7 @@ qSM_Status_t RUN_Callback(qSM_Handler_t h)
     {
         case QSM_SIGNAL_ENTRY:
             LOG("Entered RUN State");
-            LED_Task_SetActive(&RUN_LED_Task,true,ITERATIONS_INDEFINITE);
+            LED_Task_SetActive(&RUN_LED_Task,true,5);
             Control_Task_SetActive(true);
             Control_Before_Launch();
             PWM_Start();

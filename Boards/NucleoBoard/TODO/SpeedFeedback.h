@@ -12,6 +12,6 @@ typedef struct {
     void             (*begin)(void);
     Speed_Feedback_t (*getFeedback)(void);
     void             (*end)(void);
-} Speed_Feedback_Ctx_t;
+} Speed_Feedback_Strategy_t;
 
 #endif

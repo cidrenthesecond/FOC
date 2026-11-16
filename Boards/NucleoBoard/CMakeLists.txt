@@ -37,7 +37,7 @@ add_subdirectory(cmake/stm32cubemx)
 #build OS
 add_subdirectory(${MAIN_DIR}/QuarkTS-7.3.3 quarkts_build)
 
-#short workaround
+#short workaround because linking CMSIS_DSP doesntwork now
 add_library(PWM_Schemes STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/TODO/PWM_Schemes.c
 )
