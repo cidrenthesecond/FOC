@@ -22,9 +22,10 @@ static const uint32_t adc_channel_map[5] =
 #define ADC_OFFSET_TOP_MARGAIN    2200u
 #define ADC_OFFSET_BOTTOM_MARGAIN 2000u
 
-#define FLAG_ADC_OFFSETS_CALIBRATED           (1U << 0)
-#define FLAG_ADC_INITIALISED                  (1U << 1)
-#define FLAG_SYNC_CONVERSION_ONGOING          (1U << 2)
+#define FLAG_ADC_OFFSETS_CALIBRATED  (1U << 0)
+#define FLAG_ADC_INITIALISED         (1U << 1)
+#define FLAG_SYNC_CONVERSION_ONGOING (1U << 2)
+#define FLAG_FEEDBACK_DATA_READY     (1U << 3)
 
 typedef struct {
   uint16_t a;
@@ -50,7 +51,7 @@ static void            ADC_GatherOffsetData(uint16_t * a_data,uint16_t * b_data,
 static Phase_Offsets_t ADC_CalculatePhaseOffsets(uint16_t *a_data, uint16_t *b_data, uint16_t * c_data);
 static ADC_Status_t    ADC_ValidatePhaseOffsets(Phase_Offsets_t offsets);
 
-static uint8_t ADC_Status = 0;
+static volatile uint8_t ADC_Status = 0;
 
 static volatile uint16_t g_async_adc_value = 0;
 static volatile uint8_t  g_async_conversion_done = 0;
@@ -85,6 +86,12 @@ void ADC_PrepareForControlLoop()
   MovingAvarage_Reset(Phase_A_Filter);
   MovingAvarage_Reset(Phase_B_Filter);
   MovingAvarage_Reset(Phase_C_Filter);
+  LL_ADC_EnableIT_JEOS(ADC_USED);
+}
+
+uint32_t ADC_IsFeedbackReady()
+{
+  return ADC_Status & FLAG_FEEDBACK_DATA_READY;
 }
 
 Analog_Feedback_t ADC_GetAnalogFeedback()
@@ -103,6 +110,8 @@ Analog_Feedback_t ADC_GetAnalogFeedback()
 
   result.Currents = ADC_CalculatePhaseCurrents(phase_a_measurement, phase_b_measurement, phase_c_measurement);
   result.DcBus    = ADC_CalculateDcLinkVoltage(dcBus_measurement);
+
+  ADC_Status &= ~FLAG_FEEDBACK_DATA_READY;
 
   return result;
 }
@@ -340,6 +349,11 @@ void ADC1_IRQHandler(void)
     g_async_conversion_done = 1;
     if(AsyncConverionDoneCallback != NULL)
       AsyncConverionDoneCallback();
+  }
+  if(LL_ADC_IsActiveFlag_JEOS(ADC_USED))
+  {
+    ADC_Status |= FLAG_FEEDBACK_DATA_READY;
+    LL_ADC_ClearFlag_JEOS(ADC_USED);
   }
 }
 

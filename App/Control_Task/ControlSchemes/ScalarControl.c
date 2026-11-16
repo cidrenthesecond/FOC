@@ -5,30 +5,41 @@
 #include "WaveGen_LUTs.h"
 #include "PWM_Schemes.h"
 #include "PWM_Driver.h"
-#include "stdbool.h" 
+#include "stdbool.h"
+#include "qstimers.h"
+#include "Logger.h"
 
 #define SWITCHING_FREQUENCY 1000.0f
 #define FREQUENCY_TOLERANCE 0.001f
-
-static WaveGen sin_wave;
-static WaveGen cos_wave;
-static float CurrentFrequency;
-static float FrequencyStep;
-static uint32_t periodsSinceLastFrequencyChange;
-static uint32_t periodsToChangeFrequency;
-static float Setpoint = 5.0f;
 
 typedef struct {
     float alpha;
     float beta;
 } VoltageVector_t;
 
+typedef struct {
+    float target_rpm;
+    float ramp_rpm_s; 
+} MotionProfile_t;
+
+static MotionProfile_t motionProfile;
+
+static WaveGen sin_wave;
+static WaveGen cos_wave;
+static float CurrentFrequency;
+static float FrequencyStep;                       // ramp_rpm_s*poles*periodstochangeFrueqncy/mainsFrequency/switchingFrequency
+static uint32_t periodsSinceLastFrequencyChange;
+static uint32_t periodsToChangeFrequency;         // equal to 1 next update now stays as is because its easier to understand
+static float setpointFrequency = 5.0f;            // target_rpm/mainsFrequency //ale slip jeszcze trzeba pamietac i poles silnika
+
+static qSTimer_t ADC_Timeout = QSTIMER_INITIALIZER;
+
+
+
 static bool IsSetPointReached();
 static float Absolute_F(float x);
 static VoltageVector_t GetVoltageVector(float magnitude);
 static Duty_t          SwapPhases      (Duty_t duty);
-
-Analog_Feedback_t test;
 
 void ScalarControl_Init()
 {
@@ -58,9 +69,7 @@ void ScalarControl_BeforeLaunch()
 
 void ScalarControl_Task()
 {
-    Analog_Feedback_t measurements = ADC_GetAnalogFeedback();
-
-    float error = Setpoint - CurrentFrequency;
+    float error = setpointFrequency - CurrentFrequency;
 
     if(!IsSetPointReached() && periodsSinceLastFrequencyChange >= periodsToChangeFrequency)
     {
@@ -69,7 +78,7 @@ void ScalarControl_Task()
         else if (error < -FrequencyStep)
             CurrentFrequency -= FrequencyStep;
         else
-            CurrentFrequency = Setpoint;
+            CurrentFrequency = setpointFrequency;
 
         WaveGen_SetFrequency(sin_wave,Absolute_F(CurrentFrequency),SWITCHING_FREQUENCY);
         WaveGen_SetFrequency(cos_wave,Absolute_F(CurrentFrequency),SWITCHING_FREQUENCY);
@@ -78,6 +87,18 @@ void ScalarControl_Task()
 
     float voltageMagnitude = ScalarProfile_GetVoltage(Absolute_F(CurrentFrequency)); //In need of phase RMS to line Amplitude
     VoltageVector_t vector = GetVoltageVector(voltageMagnitude);
+
+    qSTimer_Set(&ADC_Timeout, 1);
+    uint8_t isFeedbackReady;
+
+    do{
+        isFeedbackReady = ADC_IsFeedbackReady();
+    } while (!qSTimer_Expired(&ADC_Timeout) && !isFeedbackReady);
+
+    if(!isFeedbackReady)
+        LOG("ADC timeout expired");
+
+    Analog_Feedback_t measurements = ADC_GetAnalogFeedback();
 
     Duty_t dutyCycles = SPWM(vector.alpha,vector.beta,(float)measurements.DcBus/1000.0f);
 
@@ -91,12 +112,12 @@ void ScalarControl_Task()
 
 void ScalarControl_SetSetpoint(float target)
 {
-    Setpoint = target;
+    setpointFrequency = target;
 }
 
 static bool IsSetPointReached()
 {
-    return Absolute_F(Setpoint - CurrentFrequency) <= FREQUENCY_TOLERANCE;
+    return Absolute_F(setpointFrequency - CurrentFrequency) <= FREQUENCY_TOLERANCE;
 }
 
 static float Absolute_F(float x)
@@ -131,6 +152,8 @@ static Duty_t SwapPhases (Duty_t duty)
 
     return duty;
 }
+
+static void CalculateMotionProfileParams(MotionProfile_t profile,float switchingFrequency); //motor_params
 
 
 

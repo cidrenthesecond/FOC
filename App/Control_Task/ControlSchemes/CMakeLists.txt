@@ -17,4 +17,6 @@ target_link_libraries(ControlSchemes
         PWM_Driver
         PID
         PWM_Schemes
+        quarkts
+        Logger
 )

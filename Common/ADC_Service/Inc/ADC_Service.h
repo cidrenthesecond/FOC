@@ -33,7 +33,9 @@ typedef struct {
 } Analog_Feedback_t;
 
 ADC_Status_t ADC_Init();
-void ADC_PrepareForControlLoop();
+
+void              ADC_PrepareForControlLoop();
+uint32_t           ADC_IsFeedbackReady();
 Analog_Feedback_t ADC_GetAnalogFeedback();
 
 uint16_t ADC_ReadSingleChannelRaw(ADC_Channel_t channel);

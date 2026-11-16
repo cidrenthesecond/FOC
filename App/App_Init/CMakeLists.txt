@@ -22,6 +22,5 @@ target_link_libraries(App_init
         ControlSchemes
         Control_Task
         SpeedEstimation_Task
-        SysTickWrapper
         PWM_Schemes
 )

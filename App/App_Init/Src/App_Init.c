@@ -11,8 +11,8 @@
 #include "NTC_Task.h"
 #include "ScalarControl.h"
 #include "Control_Task.h"
-#include "SysTickWrapper.h"
 #include "SpeedEstimation_Task.h"
+#include "qstimers.h"
 
 typedef enum {
     INIT_LOGGER,
@@ -114,21 +114,26 @@ SystemInitStatus_t System_Init()
 
         case RELAY_CLOSING:
             Relay_SetThreshold(8000);
-            Timeout_t timeout = Timeout_Create(5000);
-            Timeout_Start(timeout);
-    
-            while(!Relay_IsOn() && !Timeout_IsTriggered(timeout))
-                Relay_SM();
 
-            if(!Relay_IsOn())
+            qSTimer_t timeout = QSTIMER_INITIALIZER;
+            qSTimer_Set(&timeout, 100);
+            uint8_t relayStatus = 0;
+
+            while(!qSTimer_Expired(&timeout) && !relayStatus)
+            {
+                Relay_SM();
+                relayStatus = Relay_IsOn();
+            }
+
+            if(relayStatus)
+                result = ProceedInitialisation();
+            else 
             {
                 LOG("Relay : Error");
                 LOG("Relay : DC link voltage below threshold");
                 result = INIT_FAIL;
-                break;
             }
 
-            result = ProceedInitialisation();
             break;
         case INIT_SPEED_ESTIMATION_TASK:
             SpeedEstimation_Init();
