@@ -116,9 +116,6 @@ qSM_Status_t IDLE_Callback(qSM_Handler_t h)
         case QSM_SIGNAL_ENTRY:
             qTask_Disable(&Main_Task); //now only signals
             NTC_SetActive(true);
-            PWM_Stop();
-            Control_Task_SetActive(false);
-            LED_Task_SetActive(&RUN_LED_Task, false, 0);
             LOG("Entered IDLE State");
             break;
         case NEXT_STATE_SCHEDULED:
@@ -149,6 +146,10 @@ qSM_Status_t RUN_Callback(qSM_Handler_t h)
             ProccessScheduledState(h);
             retVal = qSM_STATUS_SIGNAL_HANDLED;
             break;
+        case QSM_SIGNAL_EXIT:
+            PWM_Stop();
+            Control_Task_SetActive(false);
+            LED_Task_SetActive(&RUN_LED_Task, false, 0);
         default:
             break;
     }
