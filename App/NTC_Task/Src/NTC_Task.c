@@ -8,8 +8,8 @@
 #include "qtasks.h"
 #include "qtypes.h"
 
-static int16_t maxTemp_mC;   // <= config
-static int16_t minTemp_mC;   // <= config
+static int16_t maxTemp_mC = 800;   // <= config
+static int16_t minTemp_mC = -200;   // <= config
 static void (*OnTemperatureOutOfRange)(void);
 static uint16_t repetitions = 0;
 

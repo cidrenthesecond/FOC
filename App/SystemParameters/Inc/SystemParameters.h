@@ -1,5 +1,5 @@
-#ifndef DRIVE_PARAMETERS_H
-#define DRIVE_PARAMETERS_H
+#ifndef SYSTEM_PARAMETERS_H
+#define SYSTEM_PARAMETERS_H
 
 #include "stdint.h"
 
@@ -20,6 +20,7 @@ typedef struct {
 typedef struct {
     uint16_t switchingFrequency;
     uint16_t mainsVoltage;
+    uint8_t  mainsFrequency;
 } Drive_Parameters_t;
 
 Motor_params_t          GetMotorParameters();
@@ -27,12 +28,19 @@ Encoder_Parameters_t GetEncoderParameters();
 Drive_Parameters_t      GetDriveParameters();
 
 #define ENCODER_DEFAULT_CONFIG { \
-    .countsPerRevolution = 1024            \
-}                                                             \
+    .countsPerRevolution = 1024  \
+}                                \
 
-#define DRIVE_DEFAULT_CONFIG { \
-    .switchingFrequency = 1000       \
-    .mainsVoltage           = 230         \
-}                                                      \
+#define DRIVE_DEFAULT_CONFIG {  \
+    .switchingFrequency = 1000, \
+    .mainsVoltage       = 230,  \
+    .mainsFrequency     = 50    \
+}                               \
+
+#define MOTOR_DEFAULT_CONFIG {   \
+    .ratedDeltaVoltage = 230000, \
+    .ratedDeltaCurrent = 2140    \
+}                                \
+
 
 #endif

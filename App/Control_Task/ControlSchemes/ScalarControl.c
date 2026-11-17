@@ -7,7 +7,8 @@
 #include "PWM_Driver.h"
 #include "qstimers.h"
 #include "Logger.h"
-#include "DriveParameters.h"
+#include "stdbool.h"
+#include "SystemParameters.h"
 
 #define SWITCHING_FREQUENCY 1000.0f
 #define FREQUENCY_TOLERANCE 0.001f
@@ -17,12 +18,19 @@ typedef struct {
     float beta;
 } VoltageVector_t;
 
+
+
 typedef struct {
-    float target_rpm;
+    float target_rpm; //niekoniecznie rpm  to silnik asynchroniczny!!!
     float ramp_rpm_s; 
 } MotionProfile_t;
 
-static MotionProfile_t motionProfile;
+#define DEFAULT_BENCH_PROFILE { \
+    .target_rpm = 300,          \
+    .ramp_rpm_s = 30            \
+}                               \
+
+static MotionProfile_t motionProfile = DEFAULT_BENCH_PROFILE;
 
 static WaveGen sin_wave;
 static WaveGen cos_wave;
@@ -37,6 +45,8 @@ static bool IsSetPointReached();
 static float Absolute_F(float x);
 static VoltageVector_t GetVoltageVector(float magnitude);
 static Duty_t          SwapPhases      (Duty_t duty);
+static uint8_t TimeoutAnalogFeedback();
+static void    CalculateMotionProfileParams(MotionProfile_t profile,Drive_Parameters_t driveParams, Motor_params_t motorParams);
 
 void ScalarControl_Init()
 {
@@ -54,7 +64,8 @@ void ScalarControl_BeforeLaunch()
 {
     CurrentFrequency = 0.0f;
     periodsSinceLastFrequencyChange = 0;
-    periodsToChangeFrequency = 2000;
+    //periodsToChangeFrequency = 2000;
+    CalculateMotionProfileParams(motionProfile, GetDriveParameters(), GetMotorParameters());
     WaveGen_Reset(sin_wave);
     WaveGen_Reset(cos_wave);
     WaveGen_SetFrequency(sin_wave, CurrentFrequency, SWITCHING_FREQUENCY);
@@ -63,7 +74,7 @@ void ScalarControl_BeforeLaunch()
 }
 
 void ScalarControl_Task()
-{
+{   
     float error = setpointFrequency - CurrentFrequency;
 
     if(!IsSetPointReached() && periodsSinceLastFrequencyChange >= periodsToChangeFrequency)
@@ -89,7 +100,7 @@ void ScalarControl_Task()
         measurements = ADC_GetAnalogFeedback();
     else
     {
-        //throw expection
+        LOG("ADC : Err : NoData");
     }
 
     Duty_t dutyCycles = SPWM(vector.alpha,vector.beta,(float)measurements.DcBus/1000.0f);
@@ -127,10 +138,8 @@ static bool IsSetPointReached()
 
 static float Absolute_F(float x)
 {
-    if(x >= 0.0f)
-        return x;
-    else
-        return -x;
+    if(x >= 0.0f) return x;
+    else          return -x;    
 }
 
 static VoltageVector_t GetVoltageVector(float magnitude)
@@ -158,7 +167,14 @@ static Duty_t SwapPhases (Duty_t duty)
     return duty;
 }
 
-static void CalculateMotionProfileParams(MotionProfile_t profile,float switchingFrequency); //motor_params
+static void CalculateMotionProfileParams(MotionProfile_t profile,Drive_Parameters_t driveParams, Motor_params_t motorParams)
+{
+    (void)motorParams; // workaround for now we need to include poles
+    periodsToChangeFrequency = 1;
+    setpointFrequency = profile.target_rpm/(float)driveParams.mainsFrequency; //5.0f; // target_rpm/mainsFrequency //ale slip jeszcze trzeba pamietac i poles silnika
+    FrequencyStep     = profile.ramp_rpm_s*periodsToChangeFrequency/(float)driveParams.mainsFrequency/(float)driveParams.switchingFrequency; // dodac poles silnika
+    // ramp_rpm_s*poles*periodstochangeFrueqncy/mainsFrequency/switchingFrequency
+}
 
 
 

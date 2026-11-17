@@ -1,3 +1,4 @@
+add_subdirectory(SystemParameters)
 add_subdirectory(NTC_Task)
 add_subdirectory(CMD_Task)
 add_subdirectory(Control_Task)

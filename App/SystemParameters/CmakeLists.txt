@@ -1,0 +1,9 @@
+add_library(SystemParameters
+    Src/SystemParameters.c
+)
+
+target_include_directories(SystemParameters
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Inc
+)
+

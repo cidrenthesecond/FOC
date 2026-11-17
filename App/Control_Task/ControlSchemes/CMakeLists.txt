@@ -19,4 +19,5 @@ target_link_libraries(ControlSchemes
         PWM_Schemes
         quarkts
         Logger
+        SystemParameters
 )

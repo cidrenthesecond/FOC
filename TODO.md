@@ -2,10 +2,9 @@
 1. on brake disable pwm counter
 
 #scalar Control
-1. sprawdzic czy NTC sie wywala
-2. sprawdzic czy adc sie wywala
-3. dodac default config
-
+1. dodac default config (switching frequency)
+2. wyjac get voltage vector i tworzenie tych wektorow do osobnego modulu
+                 
 
 
 
