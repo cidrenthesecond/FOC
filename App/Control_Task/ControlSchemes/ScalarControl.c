@@ -31,9 +31,9 @@ static WaveGen cos_wave;
 static float CurrentFrequency;
 static uint32_t periodsSinceLastFrequencyChange;
 
-static float FrequencyStep;                                  // ramp_rpm_s*poles*periodstochangeFrueqncy/mainsFrequency/switchingFrequency
-static uint32_t periodsToChangeFrequency;         // equal to 1 next update now stays as is because its easier to understand
-static float setpointFrequency = 5.0f;            // target_rpm/mainsFrequency //ale slip jeszcze trzeba pamietac i poles silnika
+static float    FrequencyStep;            // ramp_rpm_s*poles*periodstochangeFrueqncy/mainsFrequency/switchingFrequency
+static uint32_t periodsToChangeFrequency; // equal to 1 next update now stays as is because its easier to understand
+static float    setpointFrequency = 5.0f; // target_rpm/mainsFrequency //ale slip jeszcze trzeba pamietac i poles silnika
 
 static float switchingFrequency_Cached;
 
@@ -45,10 +45,6 @@ static void    CalculateMotionProfileParams(MotionProfile_t profile,Drive_Parame
 
 void ScalarControl_Init()
 {
-    CurrentFrequency = 0.0f;
-    FrequencyStep = 1.0f;
-    periodsSinceLastFrequencyChange = 0;
-    periodsToChangeFrequency = 2000;
     sin_wave = WaveGen_Create(&SINE);
     cos_wave = WaveGen_Create(&COSINE);
     ScalarProfile_Init(230.0f, 0.0f, 50.0f,  0.0f);
@@ -59,7 +55,6 @@ void ScalarControl_BeforeLaunch()
 {
     CurrentFrequency = 0.0f;
     periodsSinceLastFrequencyChange = 0;
-    //periodsToChangeFrequency = 2000;
     CalculateMotionProfileParams(motionProfile, GetDriveParameters(), GetMotorParameters());
     WaveGen_Reset(sin_wave);
     WaveGen_Reset(cos_wave);
