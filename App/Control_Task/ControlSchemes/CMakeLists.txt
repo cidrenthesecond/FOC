@@ -1,3 +1,18 @@
+add_library(ControlUtility
+    ControlUtility.c
+)
+
+target_include_directories(ControlUtility
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(ControlUtility
+    PUBLIC
+        WaveGen
+)
+
+
 add_library(ControlSchemes STATIC
     ScalarControl.c
     #ScalarControlSensored.c
@@ -20,4 +35,5 @@ target_link_libraries(ControlSchemes
         quarkts
         Logger
         SystemParameters
+        ControlUtility
 )

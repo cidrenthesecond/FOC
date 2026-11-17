@@ -7,6 +7,7 @@ typedef struct {
     float duty_c;
 } Duty_t;
 
+Duty_t SwapPhases (Duty_t duty);
 Duty_t SVPWM    (float v_alpha, float v_beta, float v_bus);
 Duty_t SPWM     (float v_alpha, float v_beta, float v_bus);
 Duty_t DPWM_MAX (float v_alpha, float v_beta, float v_bus);

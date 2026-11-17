@@ -9,16 +9,10 @@
 #include "Logger.h"
 #include "stdbool.h"
 #include "SystemParameters.h"
+#include "ControlUtility.h"
 
 #define SWITCHING_FREQUENCY 1000.0f
 #define FREQUENCY_TOLERANCE 0.001f
-
-typedef struct {
-    float alpha;
-    float beta;
-} VoltageVector_t;
-
-
 
 typedef struct {
     float target_rpm; //niekoniecznie rpm  to silnik asynchroniczny!!!
@@ -35,16 +29,17 @@ static MotionProfile_t motionProfile = DEFAULT_BENCH_PROFILE;
 static WaveGen sin_wave;
 static WaveGen cos_wave;
 static float CurrentFrequency;
-static float FrequencyStep;                                  // ramp_rpm_s*poles*periodstochangeFrueqncy/mainsFrequency/switchingFrequency
 static uint32_t periodsSinceLastFrequencyChange;
+
+static float FrequencyStep;                                  // ramp_rpm_s*poles*periodstochangeFrueqncy/mainsFrequency/switchingFrequency
 static uint32_t periodsToChangeFrequency;         // equal to 1 next update now stays as is because its easier to understand
 static float setpointFrequency = 5.0f;            // target_rpm/mainsFrequency //ale slip jeszcze trzeba pamietac i poles silnika
+
 static float switchingFrequency_Cached;
 
 static bool IsSetPointReached();
 static float Absolute_F(float x);
-static VoltageVector_t GetVoltageVector(float magnitude);
-static Duty_t          SwapPhases      (Duty_t duty);
+
 static uint8_t TimeoutAnalogFeedback();
 static void    CalculateMotionProfileParams(MotionProfile_t profile,Drive_Parameters_t driveParams, Motor_params_t motorParams);
 
@@ -92,7 +87,7 @@ void ScalarControl_Task()
     }
 
     float voltageMagnitude = ScalarProfile_GetVoltage(Absolute_F(CurrentFrequency)); //In need of phase RMS to line Amplitude
-    VoltageVector_t vector = GetVoltageVector(voltageMagnitude);
+    VoltageVector_t vector = GetVoltageVector(WaveGen_Get(sin_wave),WaveGen_Get(cos_wave),voltageMagnitude);
 
     Analog_Feedback_t measurements;
 
@@ -140,31 +135,6 @@ static float Absolute_F(float x)
 {
     if(x >= 0.0f) return x;
     else          return -x;    
-}
-
-static VoltageVector_t GetVoltageVector(float magnitude)
-{
-    int32_t sinValue = WaveGen_Get(sin_wave);
-    int32_t cosValue = WaveGen_Get(cos_wave);
-
-    float sinNorm = (float)sinValue / (float)INT32_MAX;
-    float cosNorm = (float)cosValue / (float)INT32_MAX;
-
-    VoltageVector_t result;
-    result.alpha = cosNorm * magnitude;
-    result.beta  = sinNorm * magnitude;
-
-    return result;
-}
-
-static Duty_t SwapPhases (Duty_t duty)
-{
-    float helper = duty.duty_a;
-
-    duty.duty_a = duty.duty_b;
-    duty.duty_b = helper;
-
-    return duty;
 }
 
 static void CalculateMotionProfileParams(MotionProfile_t profile,Drive_Parameters_t driveParams, Motor_params_t motorParams)

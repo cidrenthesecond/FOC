@@ -98,6 +98,16 @@ static inline Duty_t Saturate(Duty_t d)
     return d;
 }
 
+Duty_t SwapPhases (Duty_t duty)
+{
+    float helper = duty.duty_a;
+
+    duty.duty_a = duty.duty_b;
+    duty.duty_b = helper;
+
+    return duty;
+}
+
 Duty_t SVPWM(float v_alpha, float v_beta, float v_bus)
 {
 	float _alpha = v_alpha/ v_bus;

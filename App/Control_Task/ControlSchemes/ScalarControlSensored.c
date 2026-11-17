@@ -1,4 +1,5 @@
 #include "ScalarControlSensored.h"
+#include "ControlUtility.h"
 #include "PID.h"
 #include "ScalarProfile.h"
 #include "WaveGen.h"
@@ -10,11 +11,6 @@
 #include "SpeedFeedback.h"
 
 #define SWITCHING_FREQUENCY 1000
-
-typedef struct {
-    float alpha;
-    float beta;
-} VoltageVector_t;
 
 typedef struct {
     float Ki;
@@ -34,8 +30,6 @@ static WaveGen cosWave;
 
 static Speed_Feedback_Strategy_t speedMeasurementStrategy;
 
-static VoltageVector_t GetVoltageVector(float magnitude);
-static Duty_t          SwapPhases(Duty_t duty);
 static float             Absolute_F(float x);
 
 void ScalarControlSensored_Init()
@@ -79,7 +73,7 @@ void ScalarControlSensored_Task()
     WaveGen_SetFrequency(sinWave, Absolute_F(frequencySet), SWITCHING_FREQUENCY);
     WaveGen_SetFrequency(cosWave, Absolute_F(frequencySet), SWITCHING_FREQUENCY);
 
-    VoltageVector_t vector = GetVoltageVector(voltageMagnitude);
+    VoltageVector_t vector = GetVoltageVector(WaveGen_Get(sinWave),WaveGen_Get(cosWave),voltageMagnitude);
     Analog_Feedback_t measurements = ADC_GetAnalogFeedback();
 
     Duty_t duty = SVPWM(vector.alpha, vector.beta, (float)measurements.DcBus/1000.0f);
@@ -88,31 +82,6 @@ void ScalarControlSensored_Task()
         duty = SwapPhases(duty);
 
     PWM_SetDuty(duty.duty_a, duty.duty_b, duty.duty_c);
-}
-
-static VoltageVector_t GetVoltageVector(float magnitude)
-{
-    int32_t sinValue = WaveGen_Get(sinWave);
-    int32_t cosValue = WaveGen_Get(cosWave);
-
-    float sinNorm = (float)sinValue / (float)INT32_MAX;
-    float cosNorm = (float)cosValue / (float)INT32_MAX;
-
-    VoltageVector_t result;
-    result.alpha = cosNorm * magnitude;
-    result.beta  = sinNorm * magnitude;
-
-    return result;
-}
-
-static Duty_t SwapPhases (Duty_t duty)
-{
-    float helper = duty.duty_a;
-
-    duty.duty_a = duty.duty_b;
-    duty.duty_b = helper;
-
-    return duty;
 }
 
 static float Absolute_F(float x)
