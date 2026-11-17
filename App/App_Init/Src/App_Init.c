@@ -11,7 +11,6 @@
 #include "NTC_Task.h"
 #include "ScalarControl.h"
 #include "Control_Task.h"
-#include "SpeedEstimation_Task.h"
 #include "qstimers.h"
 
 typedef enum {
@@ -26,7 +25,6 @@ typedef enum {
     RELAY_CLOSING,
     INIT_SCALAR_CONTROL,
     INIT_CONTROL_TASK,
-    INIT_SPEED_ESTIMATION_TASK,
     INIT_FINISHED,
     INIT_ERROR
 } SystemInitState_t;
@@ -134,10 +132,6 @@ SystemInitStatus_t System_Init()
                 result = INIT_FAIL;
             }
 
-            break;
-        case INIT_SPEED_ESTIMATION_TASK:
-            SpeedEstimation_Init();
-            result = ProceedInitialisation();
             break;
             
         default:

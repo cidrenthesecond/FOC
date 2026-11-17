@@ -12,4 +12,6 @@ target_link_libraries(EmergencyHandler
         PWM_Driver
         ADC_Interface
         ADC_Service
+        NTC_Task
+        MainSM
 )

@@ -21,6 +21,5 @@ target_link_libraries(App_init
         NTC_Task
         ControlSchemes
         Control_Task
-        SpeedEstimation_Task
         PWM_Schemes
 )

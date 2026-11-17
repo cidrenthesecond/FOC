@@ -8,8 +8,8 @@
 #include "qtasks.h"
 #include "qtypes.h"
 
-static int16_t maxTemp_mC;
-static int16_t minTemp_mC;
+static int16_t maxTemp_mC;   // <= config
+static int16_t minTemp_mC;   // <= config
 static void (*OnTemperatureOutOfRange)(void);
 static uint16_t repetitions = 0;
 
@@ -48,6 +48,10 @@ void NTC_TaskCallback(qEvent_t e)
     {
         if(OnTemperatureOutOfRange != NULL)
             OnTemperatureOutOfRange();
+
+        char errLog[60];
+        sprintf(errLog, "NTC : Err : Ht temp %d mC",HeatSinkTemp_mC);
+        LOG(errLog);
     }
 
     repetitions++;
