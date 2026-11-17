@@ -25,7 +25,7 @@ typedef struct {
 static int32_t MotorSpeedSetpoint = 3600;//rpm
 
 
-static PID*                    speedRegulator;
+static PID*                                   speedRegulator;
 static SpeedRegulator_Params_t speedRegulator_Params;
 // filtr predkosci
 
@@ -36,7 +36,7 @@ static Speed_Feedback_Strategy_t speedMeasurementStrategy;
 
 static VoltageVector_t GetVoltageVector(float magnitude);
 static Duty_t          SwapPhases(Duty_t duty);
-static float           Absolute_F(float x);
+static float             Absolute_F(float x);
 
 void ScalarControlSensored_Init()
 {

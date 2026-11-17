@@ -5,9 +5,9 @@
 #include "WaveGen_LUTs.h"
 #include "PWM_Schemes.h"
 #include "PWM_Driver.h"
-#include "stdbool.h"
 #include "qstimers.h"
 #include "Logger.h"
+#include "DriveParameters.h"
 
 #define SWITCHING_FREQUENCY 1000.0f
 #define FREQUENCY_TOLERANCE 0.001f
@@ -27,14 +27,11 @@ static MotionProfile_t motionProfile;
 static WaveGen sin_wave;
 static WaveGen cos_wave;
 static float CurrentFrequency;
-static float FrequencyStep;                       // ramp_rpm_s*poles*periodstochangeFrueqncy/mainsFrequency/switchingFrequency
+static float FrequencyStep;                                  // ramp_rpm_s*poles*periodstochangeFrueqncy/mainsFrequency/switchingFrequency
 static uint32_t periodsSinceLastFrequencyChange;
 static uint32_t periodsToChangeFrequency;         // equal to 1 next update now stays as is because its easier to understand
 static float setpointFrequency = 5.0f;            // target_rpm/mainsFrequency //ale slip jeszcze trzeba pamietac i poles silnika
-
-static qSTimer_t ADC_Timeout = QSTIMER_INITIALIZER;
-
-
+static float switchingFrequency_Cached;
 
 static bool IsSetPointReached();
 static float Absolute_F(float x);
@@ -49,8 +46,6 @@ void ScalarControl_Init()
     periodsToChangeFrequency = 2000;
     sin_wave = WaveGen_Create(&SINE);
     cos_wave = WaveGen_Create(&COSINE);
-    WaveGen_SetFrequency(sin_wave,CurrentFrequency,SWITCHING_FREQUENCY);
-    WaveGen_SetFrequency(cos_wave,CurrentFrequency,SWITCHING_FREQUENCY);
     ScalarProfile_Init(230.0f, 0.0f, 50.0f,  0.0f);
     ADC_PrepareForControlLoop();
 }
@@ -59,7 +54,7 @@ void ScalarControl_BeforeLaunch()
 {
     CurrentFrequency = 0.0f;
     periodsSinceLastFrequencyChange = 0;
-    periodsToChangeFrequency = 2000;  // needs config
+    periodsToChangeFrequency = 2000;
     WaveGen_Reset(sin_wave);
     WaveGen_Reset(cos_wave);
     WaveGen_SetFrequency(sin_wave, CurrentFrequency, SWITCHING_FREQUENCY);
@@ -88,17 +83,14 @@ void ScalarControl_Task()
     float voltageMagnitude = ScalarProfile_GetVoltage(Absolute_F(CurrentFrequency)); //In need of phase RMS to line Amplitude
     VoltageVector_t vector = GetVoltageVector(voltageMagnitude);
 
-    qSTimer_Set(&ADC_Timeout, 1);
-    uint8_t isFeedbackReady;
+    Analog_Feedback_t measurements;
 
-    do{
-        isFeedbackReady = ADC_IsFeedbackReady();
-    } while (!qSTimer_Expired(&ADC_Timeout) && !isFeedbackReady);
-
-    if(!isFeedbackReady)
-        LOG("ADC timeout expired");
-
-    Analog_Feedback_t measurements = ADC_GetAnalogFeedback();
+    if(TimeoutAnalogFeedback())
+        measurements = ADC_GetAnalogFeedback();
+    else
+    {
+        //throw expection
+    }
 
     Duty_t dutyCycles = SPWM(vector.alpha,vector.beta,(float)measurements.DcBus/1000.0f);
 
@@ -108,6 +100,19 @@ void ScalarControl_Task()
     PWM_SetDuty(dutyCycles.duty_a,dutyCycles.duty_b,dutyCycles.duty_c);
 
     periodsSinceLastFrequencyChange++;
+}
+
+static uint8_t TimeoutAnalogFeedback()
+{
+    static qSTimer_t ADC_Timeout = QSTIMER_INITIALIZER;
+    qSTimer_Set(&ADC_Timeout, 1);
+    uint8_t isFeedbackReady;
+
+    do{
+        isFeedbackReady = ADC_IsFeedbackReady();
+    } while (!qSTimer_Expired(&ADC_Timeout) && !isFeedbackReady);
+
+    return isFeedbackReady;
 }
 
 void ScalarControl_SetSetpoint(float target)
