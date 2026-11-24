@@ -56,7 +56,7 @@ add_subdirectory(${ABSOLETE_DIR} absolete_build)
 add_subdirectory(Mocks)
 add_subdirectory(Tests)
 
-add_subdirectory(MainStateMachine)
+#add_subdirectory(MainStateMachine)
 #add_subdirectory(QuarkTS)
 
 

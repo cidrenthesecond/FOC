@@ -24,7 +24,7 @@ typedef struct {
     .ramp_rpm_s = 30            \
 }                               \
 
-static MotionProfile_t motionProfile = DEFAULT_BENCH_PROFILE;
+static MotionProfile_t motionProfile = DEFAULT_BENCH_PROFILE;  
 
 static WaveGen sin_wave;
 static WaveGen cos_wave;
