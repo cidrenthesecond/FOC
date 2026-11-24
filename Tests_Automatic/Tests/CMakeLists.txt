@@ -8,7 +8,4 @@ add_subdirectory(ScalarProfile)
 add_subdirectory(CommandExecute)
 add_subdirectory(Relay)
 add_subdirectory(ConfigManager)
-add_subdirectory(Modbus_Rtu)
-
-#depracated
-add_subdirectory(SysTickDispatcher)
+add_subdirectory(libModbus)

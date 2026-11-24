@@ -60,16 +60,6 @@ Rtu_Status_t Rtu_Interpret_Frame(uint8_t * data, uint16_t len)
     
     Rtu_Status_t validationStatus = ValidateFrame(data,len);
     if(validationStatus != RTU_OK) return validationStatus;
-    // if(len < RTU_FRAME_MIN_LEN || len > RTU_FRAME_MAX_LEN)
-    //     return RTU_ERR_FRAME_WRONG_LEN;
-
-    // uint16_t frameCRC= data[len-1] << 8 | data[len-CRC_LEN]; //Little Endian
-
-    // if(frameCRC != CRC16(data,len - CRC_LEN))
-    //     return RTU_ERR_WRONG_CRC;
-        
-    // if(data[0] != slaveAddress && data[0] != BROADCAST_ADDR)
-    //     return RTU_IGNORE;
 
     for(uint8_t index = 0; index < FUNCTIONS_IMPLEMENTED; index++)
     {

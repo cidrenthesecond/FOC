@@ -5,7 +5,6 @@ set(CMAKE_C_STANDARD 99)
 add_definitions(-DUNITY_FIXTURE_NO_EXTERN)
 
 add_compile_options(-Wall -Wextra)
-add_link_options(--trace)
 
 # Ścieżka bazowa do Twojego folderu Unity
 set(MAIN_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/..)
@@ -49,9 +48,10 @@ add_subdirectory(
     "${CMAKE_BINARY_DIR}/CMSIS-DSP"
 )
 
+add_subdirectory(${MAIN_DIR}/lib/libModbus libModbus)
+
 #UUT builds
 add_subdirectory(${UUT_DIR}      uut_build)
-add_subdirectory(${ABSOLETE_DIR} absolete_build)
 
 add_subdirectory(Mocks)
 add_subdirectory(Tests)
